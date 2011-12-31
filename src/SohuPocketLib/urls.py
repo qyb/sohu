@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'SohuPocketLib.views.home', name='home'),
+    url(r'^$', 'SohuPocketLib.views.home', name = 'home'),
     # url(r'^SohuPocketLib/', include('SohuPocketLib.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
@@ -15,5 +15,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     
-    url(r'^passport/$', 'SohuPocketLib.views.passport', name='passport')
+    url(r'^passport/$', 'SohuPocketLib.views.passport', name = 'passport'),
+    url(r'^authorize/userinfo/$', 'SohuPocketLib.authorize.views.user_info', name = 'user_info'),
 )

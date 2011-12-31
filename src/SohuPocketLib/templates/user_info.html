@@ -1,0 +1,17 @@
+<html>
+<head>
+	<title>user info</title>
+</head>
+<body>
+sohupassport_uuid: {{ sohupassport_uuid }} <br>
+kan_certification: {{ kan_certification }} <br>
+{% if sohupassport_uuid and kan_certification %}
+you passed the authorization <br>
+{% if should_set_cookies %}
+it seems that you are a new user. i've created a kan_certification for you. <br>
+{% else %}
+it seems you are a returning user. <br>
+{% endif %}
+{% endif%}
+</body>
+</html>
