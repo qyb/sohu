@@ -121,8 +121,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
+    'SohuPocketLib.djcelery',
     'SohuPocketLib.authorize',
     'SohuPocketLib.contact',
+    'SohuPocketLib.readable',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -147,3 +149,12 @@ LOGGING = {
         },
     }
 }
+
+import djcelery
+djcelery.setup_loader()
+
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "guest"
+BROKER_PASSWORD = "guest"
+BROKER_VHOST = "/"
