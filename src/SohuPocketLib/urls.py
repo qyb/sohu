@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     
     url(r'^passport/$', 'SohuPocketLib.views.passport', name = 'passport'),
     url(r'^authorize/userinfo/$', 'SohuPocketLib.authorize.views.user_info', name = 'user_info'),
+    url(r'^article/post/(?P<url>.*)$', 'SohuPocketLib.article.views.post', name = 'article post')
 )
