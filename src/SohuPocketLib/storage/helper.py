@@ -18,6 +18,22 @@ def get_or_create_bucket(bucket_name, location=Location.DEFAULT):
             print 'Bucket (%s) is owned by another user' % bucket_name
     return bucket
 
+def get_private_data_to_string(bucket_name, key_name):
+    #get_contents_to_filename,get_file
+    bucket = get_or_create_bucket(bucket_name, location=Location.DEFAULT)
+    key = bucket.lookup(key_name)
+    if not key:
+        return None
+    return key.get_contents_as_string()
+
+def get_private_data_to_filename(bucket_name, key_name, filename):
+    #get_contents_to_filename,get_file
+    bucket = get_or_create_bucket(bucket_name, location=Location.DEFAULT)
+    key = bucket.lookup(key_name)
+    if not key:
+        return None
+    return key.get_contents_to_filename(filename)
+
 def store_private_data_from_filename(bucket_name, key_name, path_source_file, metadata=None):
     bucket = get_or_create_bucket(bucket_name, location=Location.DEFAULT)
     key = bucket.new_key(key_name)
