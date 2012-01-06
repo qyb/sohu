@@ -23,4 +23,7 @@ urlpatterns = patterns('',
     url(r'^article/post/(?P<url>.*)$',
         'SohuPocketLib.article.views.post',
         name = 'article post'),
+    url(r'^article/get/(?P<url>.*)$',
+        'SohuPocketLib.article.views.get_string_from_url',
+        name = 'article get'),
 )
