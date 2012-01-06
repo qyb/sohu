@@ -7,14 +7,14 @@ Created on 2012-1-5
 from readability.readability import Document
 # from celery.task import task
 
-class ReadableArticle(object):
+class ReadableArticleHandler(object):
     '''
     translate html into readable article
     usage:
-        ra = ReadableArticle()
-        ra.feed('<html><title>test</title><body>test body</body></html>')
-        print ra.get_readable_title()
-        print ra.get_readable_article()
+        rah = ReadableArticleHandler()
+        rah.feed('<html><title>test</title><body>test body</body></html>')
+        print rah.get_readable_title()
+        print rah.get_readable_article()
     '''
 
 

@@ -1,4 +1,4 @@
-#Fri Jan 06 11:15:24 CST 2012
+#Fri Jan 06 16:00:48 CST 2012
 eclipse.preferences.version=1
 encoding//src/SohuPocketLib/article/celeryconfig.py=utf-8
 encoding//src/SohuPocketLib/article/fetch.py=utf-8
@@ -14,5 +14,6 @@ encoding//src/SohuPocketLib/contact/tests.py=utf-8
 encoding//src/SohuPocketLib/contact/views.py=utf-8
 encoding//src/SohuPocketLib/manage.py=utf-8
 encoding//src/SohuPocketLib/settings.py=utf-8
+encoding//src/SohuPocketLib/storage/helper.py=utf-8
 encoding//src/SohuPocketLib/urls.py=utf-8
 encoding//src/SohuPocketLib/views.py=utf-8

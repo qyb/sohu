@@ -15,16 +15,22 @@ def user_info(request):
     # with uuid, we create new kan_certification
     if context['sohupassport_uuid'] and not context['kan_certification']:
         should_set_cookies = True
+        # use sohupassport_uuid and current server time as the hash key,
+        # result used as kan_certification
         hash_obj = hashlib.new('sha1', context['sohupassport_uuid'] + str(time.time()))
         context['kan_certification'] = hash_obj.hexdigest()
-        queryset = User.objects.filter(sohupassport_uuid = context['sohupassport_uuid'])
+        queryset = User.objects \
+                        .filter(sohupassport_uuid = context['sohupassport_uuid'])
         if len(queryset) == 0:
-            User.objects.create(sohupassport_uuid = context['sohupassport_uuid'], kan_certification = context['kan_certification'])
+            User.objects \
+                .create(sohupassport_uuid = context['sohupassport_uuid'],
+                        kan_certification = context['kan_certification'])
         else:
             queryset.update(kan_certification = context['kan_certification'])
     # with kan_certification, we retrieve uuid from db
     elif not context['sohupassport_uuid'] and context['kan_certification']:
-        queryset = User.objects.filter(kan_certification = context['kan_certification'])
+        queryset = User.objects \
+                        .filter(kan_certification = context['kan_certification'])
         if len(queryset) != 0:
             context['sohupassport_uuid'] = queryset[0].sohupassport
             
