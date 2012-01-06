@@ -10,15 +10,19 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+try:
+    from local_settings import *
+except ImportError:
+    pass
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'sohupocketlib',                      # Or path to database file if using sqlite3.
-        'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': 'aptx4869',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': DATABASE_ENGINE, # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': DATABASE_NAME,                      # Or path to database file if using sqlite3.
+        'USER': DATABASE_USER,                      # Not used with sqlite3.
+        'PASSWORD': DATABASE_PASSWORD,                  # Not used with sqlite3.
+        'HOST': DATABASE_HOST,                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': DATABASE_PORT,                      # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -79,8 +83,8 @@ STATICFILES_DIRS = (
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#    'django.contrib.staticfiles.finders.FileSystemFinder',
+#    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
@@ -117,15 +121,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
+    #'django.contrib.staticfiles',
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     # 'djcelery',
     # 'SohuPocketLib.authorize',
     # 'SohuPocketLib.contact',
     'SohuPocketLib.article',
+    'SohuPocketLib.storage',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -159,3 +162,5 @@ LOGGING = {
 # BROKER_USER = "guest"
 # BROKER_PASSWORD = "guest"
 # BROKER_VHOST = "/"
+AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
+AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'
