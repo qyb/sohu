@@ -18,6 +18,7 @@ def post(request, url):
     ra.feed(originalPage)
     readableArticle = ra.get_readable_article()
     readableTitle = ra.get_readable_title()
-    with open(os.path.join(os.path.dirname(__file__), 'temp').replace('\\','/') + '/' + readableTitle, 'w') as tempFile:
+    tempFilePath = os.path.join(os.path.dirname(__file__), 'temp', readableTitle).replace('\\','/')
+    with open(tempFilePath, 'w') as tempFile:
         tempFile.write(readableArticle)
-    return HttpResponse(readableArticle)
+    return HttpResponse('pls checkout temp file -> ' + tempFilePath)
