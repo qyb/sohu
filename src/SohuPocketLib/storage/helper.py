@@ -4,7 +4,7 @@ from django.conf import settings
 import boto
 from boto.s3.connection import Location
 
-def bulid_connect_s3():
+def build_connect_s3():
     s3 = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
     return s3
 
