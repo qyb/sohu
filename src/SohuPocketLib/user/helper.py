@@ -16,28 +16,48 @@ class KanUser(object):
         """
         constructor
         """
-        self.sohupassport_uuid = sohupassport_uuid
-        self.access_token_input = access_token_input
-        self.access_token = ''
-        self.user = None
-        self.is_logged_in = False
+        self._sohupassport_uuid = sohupassport_uuid
+        self._access_token_input = access_token_input
+        self._access_token = ''
+        self._user = None
+        self._is_logged_in = False
         
     def login(self):
         """
-        if successfully log in, returns true, self.is_logged_in self.access_token self.user will be updated
+        if successfully log in, returns true, self._is_logged_in self.access_token self.user will be updated
         if not, returns false
         """
-        if self.sohupassport_uuid and not self.access_token_input:
-            self.user = self._retrieve_or_create_user_from_uuid()
-            self.access_token = self._create_access_token()
-            self.is_logged_in = True
-        elif self.access_token_input:
-            self.user = self._retrieve_user_from_access_token_input()
-            if self.user:
-                self.is_logged_in = True
-                self.access_token = self.access_token_input
-        return self.is_logged_in
+        if self._sohupassport_uuid and not self._access_token_input:
+            self._user = self._retrieve_or_create_user_from_uuid()
+            self._access_token = self._create_access_token()
+            self._is_logged_in = True
+        elif self._access_token_input:
+            self._user = self._retrieve_user_from_access_token_input()
+            if self._user:
+                self._is_logged_in = True
+                self._access_token = self._access_token_input
+        return self._is_logged_in
                 
+    def is_logged_in(self):
+        return self._is_logged_in
+    
+    def get_sohupassport_uuid(self):
+        if self._is_logged_in:
+            return self.user.sohupassport_uuid
+        else:
+            return None
+        
+    def get_kan_username(self):
+        if self._is_logged_in:
+            return self.user.kan_username
+        
+    def set_kan_username(self, kan_username):
+        if self._is_logged_in:
+            User.objects.filter(sohupassport_uuid = self.user.sohupassport_uuid).update(kan_username = kan_username)
+            return True
+        else:
+            return False
+            
     def _create_access_token(self):
         hash_source = self.sohupassport_uuid + str(time.time())
         access_token_string = hashlib.new('sha1', hash_source).hexdigest()
