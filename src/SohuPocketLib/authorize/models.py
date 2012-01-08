@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
+
 from django.db import models
 
 # Create your models here.
 class User(models.Model):
-    #sohupassport_uid = models.CharField(max_length = 128)
-    #sohupassport_userid = models.CharField(max_length = 512)
+    """
+    implement kan user
+    """
     sohupassport_uuid = models.CharField(max_length = 128)
-    # unique and secret access key for kan.sohu.com
-    kan_certification = models.CharField(max_length = 256)
-    # different from the automatic generated id, only to hide the real user group size
-    #kan_uid = models.CharField(max_length = 128)
-    # user modifiable username
-    #kan_username = models.CharField(max_length = 256)
-    # more to be complemented
+#    user defined, more to be comlemented
+    kan_username = models.CharField(max_length = 256)
+    kan_self_description = models.CharField(max_length = 1024)
+    
+class Access(models.Model):
+    """
+    keep record of permanent access to kan from mobile device or web
+    """
+    access_token = models.CharField(max_length = 256)
+    user = models.ForeignKey(User)

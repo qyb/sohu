@@ -1,41 +1,24 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 from django.shortcuts import render_to_response
-from models import User
-import time
-import hashlib
+from django.http import HttpResponse
+from helper import KanUser
 
-def user_info(request):
-    """simple demo page shows how to use sohupassport for authorization"""
-    context = dict()
-    should_set_cookies = False
-    context['sohupassport_uuid'] = str(request.META.get('HTTP_X_SOHUPASSPORT_UUID', ''))
-    context['kan_certification'] = request.COOKIES.get('kan_certification', '')
-    
-    # with uuid, we create new kan_certification
-    if context['sohupassport_uuid'] and not context['kan_certification']:
-        should_set_cookies = True
-        # use sohupassport_uuid and current server time as the hash key,
-        # result used as kan_certification
-        hash_obj = hashlib.new('sha1', context['sohupassport_uuid'] + str(time.time()))
-        context['kan_certification'] = hash_obj.hexdigest()
-        queryset = User.objects \
-                        .filter(sohupassport_uuid = context['sohupassport_uuid'])
-        if len(queryset) == 0:
-            User.objects \
-                .create(sohupassport_uuid = context['sohupassport_uuid'],
-                        kan_certification = context['kan_certification'])
-        else:
-            queryset.update(kan_certification = context['kan_certification'])
-    # with kan_certification, we retrieve uuid from db
-    elif not context['sohupassport_uuid'] and context['kan_certification']:
-        queryset = User.objects \
-                        .filter(kan_certification = context['kan_certification'])
-        if len(queryset) != 0:
-            context['sohupassport_uuid'] = queryset[0].sohupassport
-            
-    response = render_to_response('user_info.html', context)
-    
-    if should_set_cookies:
-        response.set_cookie('kan_certification', context['kan_certification'])
+def login(request):
+    sohupassport_uuid, access_token_input = get_user_info_for_web(request)
+    kan_user = KanUser(sohupassport_uuid, access_token_input)
+    is_logged_in = kan_user.login()
+    if is_logged_in:
+        response = HttpResponse(kan_user.sohupassport_uuid)
+        set_user_info_for_web(response, kan_user.user.sohupassport_uuid, kan_user.access_token)
+    else:
+        response = HttpResponse('not logged in')
     return response
+    
+def get_user_info_for_web(request):
+    sohupassport_uuid = str(request.META.get('HTTP_X_SOHUPASSPORT_UUID', ''))
+    access_token_input = request.COOKIES.get('access_token', '')
+    return sohupassport_uuid, access_token_input
+
+def set_user_info_for_web(response, sohupassport_uuid = '', access_token = ''):
+    response.set_cookie('access_token', access_token)

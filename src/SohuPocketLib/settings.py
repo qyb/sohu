@@ -125,7 +125,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     # 'djcelery',
-    # 'SohuPocketLib.authorize',
+    'SohuPocketLib.authorize',
     # 'SohuPocketLib.contact',
     'SohuPocketLib.article',
     'SohuPocketLib.storage',
