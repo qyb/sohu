@@ -22,7 +22,7 @@ class KanUser(object):
         self._user = None
         self._is_logged_in = False
         
-    def login(self):
+    def check_and_login(self):
         """
         if successfully log in, returns true, self._is_logged_in self.access_token self.user will be updated
         if not, returns false
@@ -41,22 +41,37 @@ class KanUser(object):
     def is_logged_in(self):
         return self._is_logged_in
     
+    def get_access_token(self):
+        if self.is_logged_in():
+            return self._access_token
+    
     def get_sohupassport_uuid(self):
-        if self._is_logged_in:
+        if self.is_logged_in():
             return self.user.sohupassport_uuid
         else:
             return None
         
     def get_kan_username(self):
-        if self._is_logged_in:
+        if self.is_logged_in():
             return self.user.kan_username
         
     def set_kan_username(self, kan_username):
-        if self._is_logged_in:
-            User.objects.filter(sohupassport_uuid = self.user.sohupassport_uuid).update(kan_username = kan_username)
+        if self.is_logged_in():
+            User.objects.filter(sohupassport_uuid = self.user.sohupassport_uuid) \
+                        .update(kan_username = kan_username)
             return True
         else:
             return False
+        
+    def get_kan_self_description(self):
+        if self.is_logged_in():
+            return self.user.kan_self_description
+        
+    def set_kan_self_description(self, kan_self_description):
+        if self.is_logged_in():
+            User.objects.filter(sohupassport_uuid = self.user.sohupassport_uuid) \
+                        .update(kan_self_description = kan_self_description)
+            return True 
             
     def _create_access_token(self):
         hash_source = self.sohupassport_uuid + str(time.time())

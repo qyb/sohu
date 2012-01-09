@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
-from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from helper import KanUser
 
 def login(request):
     sohupassport_uuid, access_token_input = get_user_info_for_web(request)
     kan_user = KanUser(sohupassport_uuid, access_token_input)
-    is_logged_in = kan_user.login()
+    is_logged_in = kan_user.check_and_login()
     if is_logged_in:
         response = HttpResponse(kan_user.sohupassport_uuid)
         set_user_info_for_web(response, kan_user.user.sohupassport_uuid, kan_user.access_token)
