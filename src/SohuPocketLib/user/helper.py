@@ -6,6 +6,8 @@ Created on 2012-1-8
 '''
 import hashlib
 import time
+import json
+
 from models import User, Access
 
 class KanUser(object):
@@ -24,7 +26,7 @@ class KanUser(object):
         
     def check_and_login(self):
         """
-        if successfully log in, returns true, self._is_logged_in self.access_token self.user will be updated
+        if successfully log in, returns true, self._is_logged_in self.access_token self._user will be updated
         if not, returns false
         """
         if self._sohupassport_uuid and not self._access_token_input:
@@ -41,23 +43,33 @@ class KanUser(object):
     def is_logged_in(self):
         return self._is_logged_in
     
+    def get_user(self):
+        if self.is_logged_in():
+            return self._user
+        else:
+            return None
+    
     def get_access_token(self):
         if self.is_logged_in():
             return self._access_token
+        else:
+            return None
     
     def get_sohupassport_uuid(self):
         if self.is_logged_in():
-            return self.user.sohupassport_uuid
+            return self._user.sohupassport_uuid
         else:
             return None
         
     def get_kan_username(self):
         if self.is_logged_in():
-            return self.user.kan_username
+            return self._user.kan_username
+        else:
+            return None
         
     def set_kan_username(self, kan_username):
         if self.is_logged_in():
-            User.objects.filter(sohupassport_uuid = self.user.sohupassport_uuid) \
+            User.objects.filter(sohupassport_uuid = self._user.sohupassport_uuid) \
                         .update(kan_username = kan_username)
             return True
         else:
@@ -65,29 +77,31 @@ class KanUser(object):
         
     def get_kan_self_description(self):
         if self.is_logged_in():
-            return self.user.kan_self_description
+            return self._user.kan_self_description
+        else:
+            return None
         
     def set_kan_self_description(self, kan_self_description):
         if self.is_logged_in():
-            User.objects.filter(sohupassport_uuid = self.user.sohupassport_uuid) \
+            User.objects.filter(sohupassport_uuid = self._user.sohupassport_uuid) \
                         .update(kan_self_description = kan_self_description)
             return True 
             
     def _create_access_token(self):
-        hash_source = self.sohupassport_uuid + str(time.time())
+        hash_source = self._sohupassport_uuid + str(time.time())
         access_token_string = hashlib.new('sha1', hash_source).hexdigest()
         Access.objects.create(
                               access_token = access_token_string,
-                              user = self.user,
+                              user = self._user,
                               )
         return access_token_string
     
     def _retrieve_or_create_user_from_uuid(self):
         try:
-            user = User.objects.get(sohupassport_uuid = self.sohupassport_uuid)
+            user = User.objects.get(sohupassport_uuid = self._sohupassport_uuid)
         except User.DoesNotExist:
             user = User.objects.create(
-                                       sohupassport_uuid = self.sohupassport_uuid,
+                                       sohupassport_uuid = self._sohupassport_uuid,
                                        kan_username = '',
                                        kan_self_description = '',
                                        )
@@ -95,8 +109,37 @@ class KanUser(object):
         
     def _retrieve_user_from_access_token_input(self):
         try:
-            user = Access.objects.get(access_token = self.access_token_input).user
+            user = Access.objects.get(access_token = self._access_token_input).user
         except Access.DoesNotExist:
             return None
         else:
             return user
+
+        
+def serialize(python_obj):
+    try:
+        result = json.dumps(python_obj)
+    except TypeError:
+        result = None
+    return result
+    
+def get_user_info_for_web(request):
+    sohupassport_uuid = str(request.META.get('HTTP_X_SOHUPASSPORT_UUID', ''))
+    access_token_input = request.COOKIES.get('access_token', '')
+    return sohupassport_uuid, access_token_input
+
+def set_user_info_for_web(response, sohupassport_uuid = '', access_token = ''):
+    response.set_cookie('access_token', access_token)
+    
+def extract_class_instance_to_dict(ins):
+    """
+    extract class instance to dict
+    dispose keys starts with _
+    dispose key *id*
+    """
+    ins_dict = ins.__dict__.copy()
+    for key in ins_dict.copy():
+        if key.startswith('_'):
+            del ins_dict[key]
+    del ins_dict['id']
+    return ins_dict

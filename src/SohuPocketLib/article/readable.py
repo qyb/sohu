@@ -17,7 +17,6 @@ class ReadableArticleHandler(object):
         print rah.get_readable_article()
     '''
 
-
     def __init__(self):
         '''
         Constructor

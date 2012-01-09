@@ -13,8 +13,8 @@ urlpatterns = patterns('',
     
     url(r'^passport/$', 'SohuPocketLib.views.passport'),
     
-#    url(r'^user/$',
-#        'SohuPocketLib.user.views.check_and_login'),
+    url(r'^user/$',
+        'SohuPocketLib.user.views.check_and_login'),
 #    url(r'^user/me/$',
 #        'SohuPocketLib.user.views.me_handler'),
 #    url(r'^user/(?P<user_id>\d+)/$',
