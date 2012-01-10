@@ -1,0 +1,13 @@
+<html>
+<head>
+	<title>user_verify_test</title>
+</head>
+<body>
+<form action="/user/verify.json/" method="POST">
+{% csrf_token %}
+sohupassport_uuid <input type="text" name="sohupassport_uuid"></input> <br>
+access_token <input type="text" name="access_token"></input> <br>
+<input type="submit"></input>
+</form>
+</body>
+</html>
