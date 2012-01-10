@@ -11,11 +11,10 @@ def check_and_login(request):
     kan_user = KanUser(sohupassport_uuid, access_token_input)
     kan_user.check_and_login()
     if kan_user.is_logged_in():
-        print kan_user.get_user().__dict__
-        kan_user_dict = extract_class_instance_to_dict(kan_user.get_user())
-        response = HttpResponse(serialize(kan_user_dict))
+        response_dict = extract_class_instance_to_dict(kan_user.get_user())
+        response_dict['access_token'] = kan_user.get_access_token()
+        response = HttpResponse(serialize(response_dict))
         set_user_info_for_web(response, kan_user.get_sohupassport_uuid(), kan_user.get_access_token())
     else:
         response = HttpResponse(serialize(None))
     return response
-
