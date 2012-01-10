@@ -129,7 +129,12 @@ def get_user_info_for_web(request):
     return sohupassport_uuid, access_token_input
 
 def set_user_info_for_web(response, sohupassport_uuid = '', access_token = ''):
-    response.set_cookie('access_token', access_token)
+    try:
+        response.set_cookie('access_token', access_token)
+    except Exception:
+        return False
+    else:
+        return True
     
 def extract_class_instance_to_dict(ins):
     """
