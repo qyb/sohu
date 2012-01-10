@@ -6,21 +6,14 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    (r'^admin/', include(admin.site.urls)),
     
-    url(r'^$', 'SohuPocketLib.views.home'),
-    
-    url(r'^passport/$', 'SohuPocketLib.views.passport'),
-    
-    url(r'^user/$',
-        'SohuPocketLib.user.views.check_and_login'),
-#    url(r'^user/me/$',
-#        'SohuPocketLib.user.views.me_handler'),
-#    url(r'^user/(?P<user_id>\d+)/$',
-#        'SohuPocketLib.user.view.user_handler'),
-#    url(r'^article/$',
-#        'SohuPocketLib.user.views.article_list_handler'),
-#    url(r'^article/(?P<article_id>\d+)/$',
-#        'SohuPocketLib.user.views.article_handler'),
+    (r'^$', 'SohuPocketLib.views.home'),
+    (r'^passport/$', 'SohuPocketLib.views.passport'),
+    (r'^user/$', 'SohuPocketLib.user.views.check_and_login'),
+#   (r'^user/me/$', 'SohuPocketLib.user.views.me_handler'),
+#   (r'^user/(?P<user_id>\d+)/$', 'SohuPocketLib.user.view.user_handler'),
+#   (r'^article/$', 'SohuPocketLib.user.views.article_list_handler'),
+#   (r'^article/(?P<article_id>\d+)/$', 'SohuPocketLib.user.views.article_handler'),
 )
