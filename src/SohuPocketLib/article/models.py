@@ -27,12 +27,13 @@ class MultiDB(models.Model):
 
 class MyArticleInstance(MultiDB):
     #user_id = models.IntegerField()
-    key = models.CharField(max_length=32)        #从S3获取静态文件
-    title = models.CharField(max_length=512)     #文章的标题
-    url = models.CharField(max_length=512)       #文章原始URL
-    is_read = models.BooleanField(default=False) #是否已读   
-    cover = models.CharField(max_length=128)     #网页HEADER图片
-    is_star = models.BooleanField(default=False) #是否标记星标
+    key = models.CharField(max_length=32)         #从S3获取静态文件
+    title = models.CharField(max_length=512)      #文章的标题
+    url = models.CharField(max_length=512)        #文章原始URL
+    is_read = models.BooleanField(default=False)  #是否已读   
+    cover = models.CharField(max_length=128)      #网页HEADER图片
+    is_star = models.BooleanField(default=False)  #是否标记星标
+    is_delete = models.BooleanField(default=False)#是否删除
 
     def __unicode__(self):
         return u'%s,%s' % (self.user_id, self.title)
