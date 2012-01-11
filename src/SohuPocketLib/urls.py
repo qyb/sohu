@@ -17,5 +17,8 @@ urlpatterns = patterns('',
     
     (r'^user/show.json/$', 'SohuPocketLib.user.views.show'),
     (r'^user/show.json/test/$', 'SohuPocketLib.user.views.show_test'),
+
+    (r'^user/update.json/$', 'SohuPocketLib.user.views.update'),
+    (r'^user/update.json/test/$', 'SohuPocketLib.user.views.update_test'),
     
 )

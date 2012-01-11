@@ -73,8 +73,8 @@ class KanUser(object):
         
     def set_kan_username(self, kan_username):
         if self.is_logged_in():
-            User.objects.filter(sohupassport_uuid = self._user.sohupassport_uuid) \
-                        .update(kan_username = kan_username)
+            self._user.kan_username = kan_username
+            self._user.save()
             return True
         else:
             return False
@@ -87,10 +87,11 @@ class KanUser(object):
         
     def set_kan_self_description(self, kan_self_description):
         if self.is_logged_in():
-            User.objects.filter(sohupassport_uuid = self._user.sohupassport_uuid) \
-                        .update(kan_self_description = kan_self_description)
-                        
-            return True 
+            self._user.kan_self_description = kan_self_description
+            self._user.save()
+            return True
+        else:
+            return False
             
     def _create_access_token(self):
         hash_source = self._sohupassport_uuid + str(time.time())
@@ -171,7 +172,7 @@ def input_for_show_func(request):
 def input_for_update_func(request):
     access_token_input = get_POST_dict(request).get('access_token', '')
     user_info_dict = dict()
-    keys = ('kan_username', 'kan_description')
+    keys = ('kan_username', 'kan_self_description')
     for key in keys:
         user_info_dict[key] = get_POST_dict(request).get(key, '')
         
@@ -187,6 +188,9 @@ def extract_class_instance_to_dict(ins):
     for key in ins_dict.copy():
         if key.startswith('_'):
             del ins_dict[key]
-    del ins_dict['id']
+    try:
+        del ins_dict['id']
+    except Exception:
+        pass
     
     return ins_dict
