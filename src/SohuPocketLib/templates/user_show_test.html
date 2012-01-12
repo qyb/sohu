@@ -1,0 +1,12 @@
+<html>
+<head>
+	<title>user_verify_test</title>
+</head>
+<body>
+<form action="/user/show.json/" method="GET">
+{% csrf_token %}
+access_token <input type="text" name="access_token"></input> <br>
+<input type="submit"></input>
+</form>
+</body>
+</html>

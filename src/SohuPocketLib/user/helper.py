@@ -14,7 +14,7 @@ class KanUser(object):
     """
     wrapper around User
     """
-    def __init__(self, sohupassport_uuid, access_token_input):
+    def __init__(self, sohupassport_uuid = '', access_token_input = ''):
         """
         constructor
         """
@@ -23,6 +23,8 @@ class KanUser(object):
         self._access_token = ''
         self._user = None
         self._is_logged_in = False
+        
+        return None
         
     def check_and_login(self):
         """
@@ -38,9 +40,11 @@ class KanUser(object):
             if self._user:
                 self._is_logged_in = True
                 self._access_token = self._access_token_input
+                
         return self._is_logged_in
                 
     def is_logged_in(self):
+        
         return self._is_logged_in
     
     def get_user(self):
@@ -85,6 +89,7 @@ class KanUser(object):
         if self.is_logged_in():
             User.objects.filter(sohupassport_uuid = self._user.sohupassport_uuid) \
                         .update(kan_self_description = kan_self_description)
+                        
             return True 
             
     def _create_access_token(self):
@@ -94,6 +99,7 @@ class KanUser(object):
                               access_token = access_token_string,
                               user = self._user,
                               )
+        
         return access_token_string
     
     def _retrieve_or_create_user_from_uuid(self):
@@ -105,6 +111,7 @@ class KanUser(object):
                                        kan_username = '',
                                        kan_self_description = '',
                                        )
+            
         return user
         
     def _retrieve_user_from_access_token_input(self):
@@ -121,11 +128,13 @@ def serialize(python_obj):
         result = json.dumps(python_obj)
     except TypeError:
         result = None
+        
     return result
     
 def get_user_info_for_web(request):
     sohupassport_uuid = str(request.META.get('HTTP_X_SOHUPASSPORT_UUID', ''))
     access_token_input = request.COOKIES.get('access_token', '')
+    
     return sohupassport_uuid, access_token_input
 
 def set_user_info_for_web(response, sohupassport_uuid = '', access_token = ''):
@@ -135,6 +144,38 @@ def set_user_info_for_web(response, sohupassport_uuid = '', access_token = ''):
         return False
     else:
         return True
+
+def get_GET_dict(request):
+    if request.method == 'GET':
+        return request.GET
+    else:
+        return None
+    
+def get_POST_dict(request):
+    if request.method == 'POST':
+        return request.POST
+    else:
+        return None    
+
+def input_for_verify_func(request):
+    sohupassport_uuid = str(request.META.get('HTTP_X_SOHUPASSPORT_UUID', ''))
+    access_token_input = get_POST_dict(request).get('access_token', '')
+    
+    return sohupassport_uuid, access_token_input
+
+def input_for_show_func(request):
+    access_token_input = get_GET_dict(request).get('access_token', '')
+    
+    return access_token_input
+
+def input_for_update_func(request):
+    access_token_input = get_POST_dict(request).get('access_token', '')
+    user_info_dict = dict()
+    keys = ('kan_username', 'kan_description')
+    for key in keys:
+        user_info_dict[key] = get_POST_dict(request).get(key, '')
+        
+    return access_token_input, user_info_dict
     
 def extract_class_instance_to_dict(ins):
     """
@@ -147,4 +188,5 @@ def extract_class_instance_to_dict(ins):
         if key.startswith('_'):
             del ins_dict[key]
     del ins_dict['id']
+    
     return ins_dict
