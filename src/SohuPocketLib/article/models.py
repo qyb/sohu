@@ -27,13 +27,16 @@ class MultiDB(models.Model):
 
 class MyArticleInstance(MultiDB):
     #user_id = models.IntegerField()
-    key = models.CharField(max_length=32)         #从S3获取静态文件
-    title = models.CharField(max_length=512)      #文章的标题
-    url = models.CharField(max_length=512)        #文章原始URL
-    is_read = models.BooleanField(default=False)  #是否已读   
-    cover = models.CharField(max_length=128)      #网页HEADER图片
-    is_star = models.BooleanField(default=False)  #是否标记星标
-    is_delete = models.BooleanField(default=False)#是否删除
+    key = models.CharField(max_length=32)                       #从S3获取静态文件
+    title = models.CharField(max_length=512)                    #文章的标题
+    url = models.CharField(max_length=512)                      #文章原始URL
+    is_read = models.BooleanField(default=False)                #是否已读   
+    cover = models.CharField(max_length=128)                    #网页HEADER图片
+    is_star = models.BooleanField(default=False)                #是否标记星标
+    is_delete = models.BooleanField(default=False)              #是否删除
+    create_time = models.DateTimeField(auto_now_add=True)       #文章创建时间
+    readed_time = models.DateTimeField(null=True, blank=True)   #标记为已读时间
+    delete_time = models.DateTimeField(null=True, blank=True)   #标记为删除时间
 
     def __unicode__(self):
         return u'%s,%s' % (self.user_id, self.title)
