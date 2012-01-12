@@ -1,0 +1,14 @@
+<html>
+<head>
+	<title>user_update_test</title>
+</head>
+<body>
+<form action="/user/update.json/" method="POST">
+{% csrf_token %}
+access_token <input type="text" name="access_token"></input> <br>
+kan_username <input type="text" name="kan_username"></input> <br>
+kan_self_description <input type="text" name="kan_self_description"></input> <br>
+<input type="submit" name="submit"></input>
+</form>
+</body>
+</html>

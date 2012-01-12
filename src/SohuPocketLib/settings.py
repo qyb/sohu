@@ -124,11 +124,11 @@ INSTALLED_APPS = (
     #'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    # 'djcelery',
-    'SohuPocketLib.user',
-    # 'SohuPocketLib.contact',
-    'SohuPocketLib.article',
-    'SohuPocketLib.storage',
+    'djcelery',
+    'user',
+    # 'contact',
+    'article',
+    'storage',
 )
 
 CACHE_BACKEND = 'locmem://'
@@ -156,13 +156,13 @@ LOGGING = {
     }
 }
 
-# import djcelery
-# djcelery.setup_loader()
-# 
-# BROKER_HOST = "localhost"
-# BROKER_PORT = 5672
-# BROKER_USER = "guest"
-# BROKER_PASSWORD = "guest"
-# BROKER_VHOST = "/"
+import djcelery
+djcelery.setup_loader()
+
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "guest"
+BROKER_PASSWORD = "guest"
+BROKER_VHOST = "/"
 AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
 AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'

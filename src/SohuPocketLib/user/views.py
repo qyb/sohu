@@ -61,7 +61,6 @@ def update(request):
         response_dict = extract_class_instance_to_dict(kan_user.get_user())
         response = HttpResponse(serialize(response_dict))
     else:
-        print 'not logged in'
         response = HttpResponse(serialize(None))
         
     return response

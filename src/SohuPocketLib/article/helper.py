@@ -47,3 +47,25 @@ def delete_html_tag_attribute(html_string):
                 tag.attrs.remove(attr)
 
     return allTags[0].contents[0]
+
+class PageFetcher(object):
+    '''
+    fetch page from page
+    '''
+    
+    def __init__(self):
+        '''
+        Constructor
+        '''
+        pass
+    
+    def single_page(self, url):
+        '''
+        fetch a single page, no cookies, etc.
+        '''
+        page = ''
+        try:
+            page = urllib2.urlopen(url).read()
+        except IOError:
+            page = '404 not found'
+        return page

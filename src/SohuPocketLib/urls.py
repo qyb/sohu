@@ -21,4 +21,6 @@ urlpatterns = patterns('',
     (r'^user/update.json/$', 'SohuPocketLib.user.views.update'),
     (r'^user/update.json/test/$', 'SohuPocketLib.user.views.update_test'),
     
+    (r'^article/get/(?P<url>.*)$', 'SohuPocketLib.article.views.get_string_from_url')
+    
 )

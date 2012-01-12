@@ -4,11 +4,10 @@ Created on 2012-1-8
 
 @author: diracfang
 '''
+from models import Access, User
 import hashlib
-import time
 import json
-
-from models import User, Access
+import time
 
 class KanUser(object):
     """

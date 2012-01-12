@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import hashlib
+import logging
 
 from django.http import HttpResponse
 
-from readable import ReadableArticleHandler
-from fetch import PageFetcher
-
 from SohuPocketLib.storage import helper
+
+from readable import ReadableArticleHandler
+from article.tasks import PageFetcher
 
 bucketName = 'sohu_kan_test'
 
@@ -25,18 +26,23 @@ def get_string_from_url(request, url):
     get article string from cloud
     '''
     readableTitle, readableArticle = get_and_clean_article(url)
-    keyName = hashlib.new('sha1', readableTitle).hexdigest()
-    dataString = helper.get_private_data_to_string(bucketName, keyName)
-    return HttpResponse(dataString)
+#    keyName = hashlib.new('sha1', readableTitle).hexdigest()
+#    dataString = helper.get_private_data_to_string(bucketName, keyName)
+#    return HttpResponse(dataString)
+    return HttpResponse(readableArticle)
 
 def get_and_clean_article(url):
     '''
     return article title and body
     '''
-    fetcher = PageFetcher()
-    originalPage = fetcher.single_page(url)
+    originalPage = PageFetcher.delay(url)
     rah = ReadableArticleHandler()
-    rah.feed(originalPage)
-    readableArticle = rah.get_readable_article()
-    readableTitle = rah.get_readable_title()
-    return (readableTitle, readableArticle)
+    readableTitle = ''
+    readableArticle = ''
+    try:
+        rah.feed(originalPage.get())
+        readableArticle = rah.get_readable_article()
+        readableTitle = rah.get_readable_title()
+    except Exception:
+        logging.warning('error when parsing article')
+    return readableTitle, readableArticle
