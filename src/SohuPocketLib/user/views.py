@@ -13,7 +13,7 @@ def verify(request):
     """
     sohupassport_uuid, access_token_input = input_for_verify_func(request)
     kan_user = KanUser(sohupassport_uuid, access_token_input)
-    kan_user.check_and_login()
+    kan_user.verify_and_login()
     if kan_user.is_logged_in():
         response_dict = dict()
         response_dict['access_token'] = kan_user.get_access_token()
@@ -34,7 +34,7 @@ def show(request):
     """
     access_token_input = input_for_show_func(request)
     kan_user = KanUser('', access_token_input)
-    kan_user.check_and_login()
+    kan_user.verify_and_login()
     if kan_user.is_logged_in():
         response_dict = extract_class_instance_to_dict(kan_user.get_user())
         response = HttpResponse(serialize(response_dict))
@@ -54,7 +54,7 @@ def update(request):
     """
     access_token_input, user_info_dict = input_for_update_func(request)
     kan_user = KanUser('', access_token_input)
-    kan_user.check_and_login()
+    kan_user.verify_and_login()
     if kan_user.is_logged_in():
         kan_user.set_kan_username(user_info_dict.get('kan_username', ''))
         kan_user.set_kan_self_description(user_info_dict.get('kan_self_description', ''))

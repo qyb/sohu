@@ -25,7 +25,7 @@ class KanUser(object):
         
         return None
         
-    def check_and_login(self):
+    def verify_and_login(self):
         """
         if successfully log in, returns true, self._is_logged_in self.access_token self._user will be updated
         if not, returns false

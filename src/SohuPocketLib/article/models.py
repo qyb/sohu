@@ -31,7 +31,7 @@ class MyArticleInstance(MultiDB):
     title = models.CharField(max_length=512)                    #文章的标题
     url = models.CharField(max_length=512)                      #文章原始URL
     is_read = models.BooleanField(default=False)                #是否已读   
-    cover = models.CharField(max_length=128)                    #网页HEADER图片
+    cover = models.CharField(max_length=128, blank=True)                    #网页HEADER图片
     is_star = models.BooleanField(default=False)                #是否标记星标
     is_delete = models.BooleanField(default=False)              #是否删除
     create_time = models.DateTimeField(auto_now_add=True)       #文章创建时间
@@ -60,3 +60,9 @@ class MyArticleInstance(MultiDB):
     class Meta:
         unique_together = (('user_id', 'key'),)
         db_table = 'user_article_instance'
+
+class RawHtml(models.Model):
+    """
+    save raw html waiting for transcode
+    """
+    content = models.TextField()

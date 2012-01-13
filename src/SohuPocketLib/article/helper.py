@@ -49,28 +49,6 @@ def delete_html_tag_attribute(html_string):
 
     return allTags[0].contents[0]
 
-class PageFetcher(object):
-    '''
-    fetch page from page
-    '''
-    
-    def __init__(self):
-        '''
-        Constructor
-        '''
-        pass
-    
-    def single_page(self, url):
-        '''
-        fetch a single page, no cookies, etc.
-        '''
-        page = ''
-        try:
-            page = urllib2.urlopen(url).read()
-        except IOError:
-            page = '404 not found'
-        return page
-
 def scale_image(img_path, width=None, height=None):
     if not isinstance(img_path, basestring):
         return 'parameter error'

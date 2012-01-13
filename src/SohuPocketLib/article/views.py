@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from SohuPocketLib.storage import helper
 
 from readable import ReadableArticleHandler
-from article.tasks import PageFetcher
+from article.tasks import PageFetchHandler
 
 bucketName = 'sohu_kan_test'
 
@@ -35,7 +35,7 @@ def get_and_clean_article(url):
     '''
     return article title and body
     '''
-    originalPage = PageFetcher.delay(url)
+    originalPage = PageFetchHandler.delay(url)
     rah = ReadableArticleHandler()
     readableTitle = ''
     readableArticle = ''
