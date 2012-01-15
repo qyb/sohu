@@ -61,8 +61,14 @@ class MyArticleInstance(MultiDB):
         unique_together = (('user_id', 'key'),)
         db_table = 'user_article_instance'
 
-class RawHtml(models.Model):
+class MyArticleInstanceStatus(models.Model):
     """
-    save raw html waiting for transcode
+    record article transcode status
     """
-    content = models.TextField()
+    ready = models.BooleanField(default = False)
+    number_of_images_to_download = models.IntegerField()
+    number_of_images_downloaded = models.IntegerField()
+    number_of_images_download_failed = models.IntegerField()
+    
+    def __unicode__(self):
+        return unicode(self.ready)

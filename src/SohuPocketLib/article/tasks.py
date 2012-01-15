@@ -38,10 +38,9 @@ class PageFetchHandler(Task):
     def run(self, url):
         is_successful = True
         try:
-            html = self.single_page(url)
-            raw_html = RawHtml(content = html)
-            raw_html.save()
-            ReadableArticleHandler.delay(raw_html.id)
+            raw_html = self.single_page(url)
+#            call next process
+            ReadableArticleHandler.delay(raw_html)
         except Exception:
             is_successful = False
             
@@ -85,14 +84,25 @@ class ReadableArticleHandler(Task):
         
         return helper.delete_html_tag_attribute(self.doc.summary())
     
-    def run(self, raw_html_id):
+    def run(self, raw_html):
         is_successful = True
         try:
-            self.doc = RawHtml.objects.get(id = raw_html_id)
+            self.doc = raw_html
             title = self.get_readable_title()
             article = self.get_readable_article()
-            print title
+#            call next process
+            article_id = create_article_instance(title, article)
+            image_list = ImageListHandler.delay(article)
+            for image in image_list:
+                DownloadAndSaveImageHandler.delay(image, article_id)
         except Exception:
             is_successful = False
         
         return is_successful
+    
+class DownloadAndSaveImageHandler(Task):
+    """
+    handler that download a image, save to s3, write record to local db
+    """
+    def run(self, image, article_id):
+        pass
