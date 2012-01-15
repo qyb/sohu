@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import Image
 from BeautifulSoup import BeautifulSoup
-from django.core.cache import cache
-from constants import *
+from SohuPocketLib.article.models import MyArticleInstance
+from SohuPocketLib.constants import *
 from article.models import *
+from django.core.cache import cache
+import Image
 
 def choose_a_db(user_id):
     if user_id <= LIMIT_USERS_ONE_DB:
@@ -16,22 +17,37 @@ def choose_a_db(user_id):
 
     return chosen_db
 
+def create_myarticle_instance(user_id, key, title, url):
+    global_key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
+    chosen_db = choose_a_db(user_id)
+    myarticle_instance = MyArticleInstance.objects.using(chosen_db) \
+                                                  .create(
+                                                          user_id=user_id,
+                                                          key = global_key,
+                                                          title = title,
+                                                          url = url
+                                                          )
+    cache.set(global_key, myarticle_instance)
+    
+    return myarticle_instance
+
+
 def get_myarticle_instance(user_id, key):
-    key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
-    myarticle_instance = cache.get(key, None)
+    global_key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
+    myarticle_instance = cache.get(global_key, None)
     if myarticle_instance is None:
         try:
             chosen_db = choose_a_db(user_id)
-            myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(user_id=user_id, key=key)
-            cache.set(key, myarticle_instance)
+            myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(user_id=user_id, key=global_key)
+            cache.set(global_key, myarticle_instance)
         except MyArticleInstance.DoesNotExist:
             pass 
 
     return myarticle_instance  
 
 def update_myarticle_instance_cache(user_id, key, myarticle_instance):
-    key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
-    cache.set(key, myarticle_instance)
+    global_key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
+    cache.set(global_key, myarticle_instance)
     
     return None
 
@@ -75,3 +91,10 @@ def scale_image(img_path, width=None, height=None):
     im = im.convert('RGB')
 
     return im
+
+def parse_and_replace_image_url_list(html, user_id):
+    """
+    return all image urls in a html, and tranlate them into s3 address
+    """
+    pass
+

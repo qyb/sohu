@@ -37,6 +37,7 @@ class MyArticleInstance(MultiDB):
     create_time = models.DateTimeField(auto_now_add=True)       #文章创建时间
     readed_time = models.DateTimeField(null=True, blank=True)   #标记为已读时间
     delete_time = models.DateTimeField(null=True, blank=True)   #标记为删除时间
+    is_ready = models.BooleanField(default = False)
 
     def __unicode__(self):
         return u'%s,%s' % (self.user_id, self.title)
@@ -60,15 +61,3 @@ class MyArticleInstance(MultiDB):
     class Meta:
         unique_together = (('user_id', 'key'),)
         db_table = 'user_article_instance'
-
-class MyArticleInstanceStatus(models.Model):
-    """
-    record article transcode status
-    """
-    ready = models.BooleanField(default = False)
-    number_of_images_to_download = models.IntegerField()
-    number_of_images_downloaded = models.IntegerField()
-    number_of_images_download_failed = models.IntegerField()
-    
-    def __unicode__(self):
-        return unicode(self.ready)

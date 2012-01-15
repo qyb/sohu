@@ -131,7 +131,7 @@ INSTALLED_APPS = (
     'storage',
 )
 
-CACHE_BACKEND = 'locmem://'
+CACHE_BACKEND = 'locmem:///?timeout=3600'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

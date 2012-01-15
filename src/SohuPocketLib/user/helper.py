@@ -57,6 +57,12 @@ class KanUser(object):
             return self._access_token
         else:
             return None
+        
+    def get_user_id(self):
+        if self.is_logged_in():
+            return self._user.id
+        else:
+            return None
     
     def get_sohupassport_uuid(self):
         if self.is_logged_in():
