@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
-Created on 2011-12-29
 
-@author: diracfang
-'''
 from django.http import HttpResponse
 
 def passport(request):

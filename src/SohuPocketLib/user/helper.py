@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
-Created on 2012-1-8
 
-@author: diracfang
-'''
 from models import Access, User
 import hashlib
 import json

@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
-Created on 2012-1-11
 
-@author: diracfang
-'''
 from SohuPocketLib.article.helper import delete_html_tag_attribute, \
     create_myarticle_instance, parse_and_replace_image_url_list
 from SohuPocketLib.constants import *

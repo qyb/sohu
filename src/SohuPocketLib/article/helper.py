@@ -3,9 +3,7 @@
 from BeautifulSoup import BeautifulSoup
 from SohuPocketLib.article.models import MyArticleInstance
 from SohuPocketLib.constants import *
-from article.models import *
 from django.core.cache import cache
-import Image
 
 def choose_a_db(user_id):
     if user_id <= LIMIT_USERS_ONE_DB:
@@ -64,33 +62,6 @@ def delete_html_tag_attribute(html_string):
                 tag.attrs.remove(attr)
 
     return allTags[0].contents[0]
-
-def scale_image(img_path, width=None, height=None):
-    if not isinstance(img_path, basestring):
-        return 'parameter error'
-
-    try:
-        im = Image.open(img_path)
-    except:
-        return 'file can not found'
-    if not im:
-        return 'file can not found'
-
-    if not height and not width:
-        return im
-
-    old_width, old_height = im.size
-    if height and width:
-        im = im.resize((width, height), Image.ANTIALIAS)
-    elif width:
-        new_height = old_height * (old_width / width)
-        im = im.resize((width, new_height), Image.ANTIALIAS)
-    elif height:
-        new_width = old_width * (old_height / height)
-        im = im.resize((new_width, height), Image.ANTIALIAS)
-    im = im.convert('RGB')
-
-    return im
 
 def parse_and_replace_image_url_list(html, user_id):
     """

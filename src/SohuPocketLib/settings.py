@@ -1,5 +1,5 @@
-# Django settings for SohuPocketLib project.
 # -*- coding: utf-8 -*-
+
 import os
 
 DEBUG = True

@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from SohuPocketLib.storage import helper
+from article.tasks import PageFetchHandler
+from django.http import HttpResponse
+from readable import ReadableArticleHandler
 import hashlib
 import logging
-
-from django.http import HttpResponse
-
-from SohuPocketLib.storage import helper
-
-from readable import ReadableArticleHandler
-from article.tasks import PageFetchHandler
 
 bucketName = 'sohu_kan_test'
 
