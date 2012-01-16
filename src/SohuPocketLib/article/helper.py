@@ -5,6 +5,7 @@ from SohuPocketLib.article.models import MyArticleInstance
 from SohuPocketLib.constants import *
 from django.core.cache import cache
 
+
 def choose_a_db(user_id):
     if user_id <= LIMIT_USERS_ONE_DB:
         chosen_db = 'default'
@@ -14,6 +15,7 @@ def choose_a_db(user_id):
         chosen_db = 'third'
 
     return chosen_db
+
 
 def create_myarticle_instance(user_id, key, title, url):
     global_key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
@@ -43,29 +45,9 @@ def get_myarticle_instance(user_id, key):
 
     return myarticle_instance  
 
+
 def update_myarticle_instance_cache(user_id, key, myarticle_instance):
     global_key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
     cache.set(global_key, myarticle_instance)
     
     return None
-
-def delete_html_tag_attribute(html_string): 
-    soup = BeautifulSoup(html_string)
-    allTags = soup.findAll(True)
-    for tag in allTags:
-        for attr in tag.attrs:
-            if attr[0] in ['src', 'href', 'alt']:
-                continue
-            elif attr[0] == 'target':
-                tag.attrs[tag.attrs.index(attr)] = ('target', '_blank')
-            else:
-                tag.attrs.remove(attr)
-
-    return allTags[0].contents[0]
-
-def parse_and_replace_image_url_list(html, user_id):
-    """
-    return all image urls in a html, and tranlate them into s3 address
-    """
-    pass
-

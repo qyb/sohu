@@ -1,49 +1,41 @@
 # -*- codiing: utf-8 -*-
-from article.helper import delete_html_tag_attribute, create_myarticle_instance, \
-    parse_and_replace_image_url_list
+
+from SohuPocketLib.article.helper import delete_html_tag_attribute, \
+    create_myarticle_instance, parse_and_replace_image_url_list
+from SohuPocketLib.constants import CACHE_KEY_USER_ARTICLE_INSTANCE, \
+    ARTICLE_BUCKET_NAME, CAHCE_KEY_IMAGE_LEFT_COUNT
+from SohuPocketLib.image.tasks import DownloadAndSaveImageHandler
+from SohuPocketLib.storage.helper import store_data_from_string
 from celery.task import Task
-from constants import CACHE_KEY_USER_ARTICLE_INSTANCE, ARTICLE_BUCKET_NAME, \
-    CAHCE_KEY_IMAGE_LEFT_COUNT
 from django.core.cache import cache
-from image.tasks import DownloadAndSaveImageHandler
 from readability.readability import Document
-from storage.helper import store_data_from_string
 import hashlib
 import urllib2
 
+
 class PageFetchHandler(Task):
     '''
-    Page Fetch Handler
+    fetch a single html page
     '''
-    def single_page(self, url):
-        page = ''
-        try:
-            page = urllib2.urlopen(url).read()
-        except IOError:
-            page = None
-            
-        return page
     
     def run(self, url, user_id):
         is_successful = True
         try:
-            raw_html = self.single_page(url)
-#            call next process
-            ReadableArticleHandler.delay(url, raw_html, user_id)
-        except Exception:
+            raw_html = urllib2.urlopen(url).read()
+        except IOError:
             is_successful = False
+#            call next process
+        else:
+            ReadableArticleHandler.delay(url, raw_html, user_id)
             
         return is_successful
-    
+
+
 class ReadableArticleHandler(Task):
     '''
     translate html into readable article
     '''
-    def feed(self, raw_html):
-        self.doc = Document(raw_html)
-        
-        return None
-        
+    
     def get_readable_title(self):
         
         return self.doc.short_title()
@@ -71,7 +63,8 @@ class ReadableArticleHandler(Task):
             image_left_count_key = CAHCE_KEY_IMAGE_LEFT_COUNT % global_key 
             cache.set(image_left_count_key, len(image_url_list))
             for image_url in image_url_list:
-                DownloadAndSaveImageHandler.delay(image_url, user_id, article_id, image_left_count_key)
+                DownloadAndSaveImageHandler.delay(image_url, user_id, article_id,
+                                                  image_left_count_key)
                 PageFetchHandler.delay()
         except Exception:
             is_successful = False

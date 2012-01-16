@@ -4,10 +4,12 @@ from django.conf import settings
 import boto
 from boto.s3.connection import Location
 
+
 def build_connect_s3():
     s3 = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
 
     return s3
+
 
 def get_or_create_bucket(bucket_name, policy='public-read', location=Location.DEFAULT):
     s3 = build_connect_s3()
@@ -21,6 +23,7 @@ def get_or_create_bucket(bucket_name, policy='public-read', location=Location.DE
 
     return bucket
 
+
 def get_data_to_string(bucket_name, key_name):
     #get_contents_to_filename,get_file
     bucket = get_or_create_bucket(bucket_name)
@@ -29,6 +32,7 @@ def get_data_to_string(bucket_name, key_name):
         return None
 
     return key.get_contents_as_string()
+
 
 def get_data_to_filename(bucket_name, key_name, filename):
     #get_contents_to_filename,get_file
@@ -39,6 +43,7 @@ def get_data_to_filename(bucket_name, key_name, filename):
 
     return key.get_contents_to_filename(filename)
 
+
 def store_data_from_filename(bucket_name, key_name, path_source_file, metadata=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
@@ -47,6 +52,7 @@ def store_data_from_filename(bucket_name, key_name, path_source_file, metadata=N
         key.metadata.update(metadata)
 
     return key
+
 
 def store_data_from_stream(bucket_name, key_name, stream, metadata=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
@@ -57,6 +63,7 @@ def store_data_from_stream(bucket_name, key_name, stream, metadata=None, policy=
 
     return key
 
+
 def store_data_from_string(bucket_name, key_name, need_store_string, metadata=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
@@ -66,6 +73,7 @@ def store_data_from_string(bucket_name, key_name, need_store_string, metadata=No
 
     return key
 
+
 def modify_metadata(bucket_name, key_name, metadata):
     bucket = get_or_create_bucket(bucket_name)
     key = bucket.lookup(key_name)
@@ -73,6 +81,7 @@ def modify_metadata(bucket_name, key_name, metadata):
         key.copy(bucket.name, key.name, metadata, preserve_acl=True)
 
     return key
+
 
 def enable_logging(bucket_name, log_bucket_name, log_prefix=None):
     bucket = get_or_create_bucket(bucket_name)
@@ -82,11 +91,13 @@ def enable_logging(bucket_name, log_bucket_name, log_prefix=None):
 
     return None
 
+
 def disable_logging(bucket_name):
     bucket = get_or_create_bucket(bucket_name)
     bucket.disable_logging()
 
     return None
+
 
 def bucket_du(bucket_name):
     bucket = get_or_create_bucket(bucket_name)
@@ -97,6 +108,7 @@ def bucket_du(bucket_name):
 
     return total_bytes
 
+
 def get_expire_data_url(bucket_name, key_name, expires_seconds):#该URL地址有过期时间
     bucket = get_or_create_bucket(bucket_name)
     key = bucket.lookup(key_name)
@@ -105,11 +117,13 @@ def get_expire_data_url(bucket_name, key_name, expires_seconds):#该URL地址有
 
     return key.generate_url(expires_seconds)
 
+
 def get_data_url(bucket_name, key_name):
     domain = 's3.amazonaws.com'
     url = 'http://%s.s3.amazonaws.com/%s' % (bucket_name, key_name)
 
     return url
+
 
 def set_bucket_acl(bucket_name, policy):
     '''
@@ -120,6 +134,7 @@ def set_bucket_acl(bucket_name, policy):
     bucket.set_acl(policy)
     
     return None
+
 
 def get_bucket_acl(bucket_name):
     bucket = get_or_create_bucket(bucket_name)

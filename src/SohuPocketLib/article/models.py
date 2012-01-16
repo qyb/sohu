@@ -3,7 +3,9 @@
 from django.db import models
 from django.core.cache import cache
 
+
 class MultiDB(models.Model):
+
     user_id = models.IntegerField()
 
     def save(self):
@@ -25,7 +27,9 @@ class MultiDB(models.Model):
     class Meta:
         abstract = True
 
+
 class MyArticleInstance(MultiDB):
+    
     #user_id = models.IntegerField()
     key = models.CharField(max_length=32)                       #从S3获取静态文件
     title = models.CharField(max_length=512)                    #文章的标题

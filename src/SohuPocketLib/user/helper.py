@@ -5,14 +5,13 @@ import hashlib
 import json
 import time
 
+
 class KanUser(object):
     """
     wrapper around User
     """
+    
     def __init__(self, sohupassport_uuid = '', access_token_input = ''):
-        """
-        constructor
-        """
         self._sohupassport_uuid = sohupassport_uuid
         self._access_token_input = access_token_input
         self._access_token = ''
@@ -132,12 +131,14 @@ def serialize(python_obj):
         result = None
         
     return result
+
     
 def get_user_info_for_web(request):
     sohupassport_uuid = str(request.META.get('HTTP_X_SOHUPASSPORT_UUID', ''))
     access_token_input = request.COOKIES.get('access_token', '')
     
     return sohupassport_uuid, access_token_input
+
 
 def set_user_info_for_web(response, sohupassport_uuid = '', access_token = ''):
     try:
@@ -147,11 +148,13 @@ def set_user_info_for_web(response, sohupassport_uuid = '', access_token = ''):
     else:
         return True
 
+
 def get_GET_dict(request):
     if request.method == 'GET':
         return request.GET
     else:
         return None
+
     
 def get_POST_dict(request):
     if request.method == 'POST':
@@ -159,16 +162,19 @@ def get_POST_dict(request):
     else:
         return None    
 
+
 def input_for_verify_func(request):
     sohupassport_uuid = str(request.META.get('HTTP_X_SOHUPASSPORT_UUID', ''))
     access_token_input = get_POST_dict(request).get('access_token', '')
     
     return sohupassport_uuid, access_token_input
 
+
 def input_for_show_func(request):
     access_token_input = get_GET_dict(request).get('access_token', '')
     
     return access_token_input
+
 
 def input_for_update_func(request):
     access_token_input = get_POST_dict(request).get('access_token', '')
@@ -178,6 +184,7 @@ def input_for_update_func(request):
         user_info_dict[key] = get_POST_dict(request).get(key, '')
         
     return access_token_input, user_info_dict
+
     
 def extract_class_instance_to_dict(ins):
     """

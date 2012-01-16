@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from helper import KanUser, serialize
 
+
 def verify(request):
     """
     verify user infomation, return access_token
@@ -23,10 +24,12 @@ def verify(request):
         
     return response
 
+
 def verify_test(request):
     
     return render_to_response('user_verify_test.html',
                               context_instance = RequestContext(request))
+
     
 def show(request):
     """
@@ -43,10 +46,12 @@ def show(request):
         
     return response
 
+
 def show_test(request):
     
     return render_to_response('user_show_test.html',
                               context_instance = RequestContext(request))
+
     
 def update(request):
     """
@@ -65,7 +70,9 @@ def update(request):
         
     return response
 
+
 def update_test(request):
     
     return render_to_response('user_update_test.html',
                               context_instance = RequestContext(request))
+    

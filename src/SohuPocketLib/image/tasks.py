@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from article.models import MyArticleInstance
+from SohuPocketLib.article.models import MyArticleInstance
 from celery.task import Task
-from constants import CACHE_KEY_IMAGE, IMAGE_BUCKET_NAME
+from SohuPocketLib.constants import CACHE_KEY_IMAGE, IMAGE_BUCKET_NAME
 from django.core.cache import cache
-from storage.helper import store_data_from_string
+from SohuPocketLib.storage.helper import store_data_from_string
 import hashlib
 import urllib2
+
 
 class DownloadAndSaveImageHandler(Task):
     """
     handler that download a image, save to s3, and then write record to local db
     """
+    
     def run(self, image_url, user_id, article_id, image_left_count_key):
         image_data = urllib2.urlopen(image_url).read()
         

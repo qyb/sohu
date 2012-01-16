@@ -2,6 +2,7 @@
 
 import Image
 
+
 def scale_image(img_path, width=None, height=None):
     if not isinstance(img_path, basestring):
         return 'parameter error'
