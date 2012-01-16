@@ -9,12 +9,12 @@ import hashlib
 import urllib2
 
 
-class DownloadAndSaveImageHandler(Task):
+class DownloadImageHandler(Task):
     """
-    handler that download a image, save to s3, and then write record to local db
+    download image
     """
     
-    def run(self, image_url, user_id, article_id, image_left_count_key):
+    def run(self, image_url, info):
         image_data = urllib2.urlopen(image_url).read()
         
         hash_source = image_url 
@@ -29,3 +29,12 @@ class DownloadAndSaveImageHandler(Task):
                 myarticle_instance.is_ready = True
             except Exception:
                 pass
+
+
+class StoreImageHandler(Task):
+    """
+    store image to s3
+    """
+    
+    def run(self):
+        pass

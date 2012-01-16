@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 LIMIT_USERS_ONE_DB = 1000000
-CACHE_KEY_USER_ARTICLE_INSTANCE = 'key_user_article_instance_%s_%s_v1'
-CAHCE_KEY_IMAGE_LEFT_COUNT = '%s_image_left_count'
-CACHE_KEY_IMAGE = 'key_image_%s_%s_%s_v1'
-ARTICLE_BUCKET_NAME = 'sohukan_article'
-IMAGE_BUCKET_NAME = 'sohukan_image'
+KEY_ARTICLE_INSTANCE = 'key_article_instance_%s_v1'
+KEY_IMAGE_TOBEDONE = 'key_image_tobedone_%s_v1'
+KEY_IMAGE_INSTANCE = 'key_image_instance_%s_v1'
+BUCKET_NAME_ARTICLE = 'bucket_sohukan_article_%s_v1'
+BUCKET_NAME_IMAGE = 'bucket_sohukan_image_%s_v1'
 
 

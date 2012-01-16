@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from BeautifulSoup import BeautifulSoup
 from SohuPocketLib.article.models import MyArticleInstance
-from SohuPocketLib.constants import *
+from SohuPocketLib.constants import LIMIT_USERS_ONE_DB, KEY_ARTICLE_INSTANCE
 from django.core.cache import cache
+import hashlib
 
 
 def choose_a_db(user_id):
@@ -18,28 +18,26 @@ def choose_a_db(user_id):
 
 
 def create_myarticle_instance(user_id, key, title, url):
-    global_key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
     chosen_db = choose_a_db(user_id)
     myarticle_instance = MyArticleInstance.objects.using(chosen_db) \
                                                   .create(
                                                           user_id=user_id,
-                                                          key = global_key,
+                                                          key = key,
                                                           title = title,
                                                           url = url
                                                           )
-    cache.set(global_key, myarticle_instance)
+    cache.set(key, myarticle_instance)
     
     return myarticle_instance
 
 
 def get_myarticle_instance(user_id, key):
-    global_key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
-    myarticle_instance = cache.get(global_key, None)
+    myarticle_instance = cache.get(key, None)
     if myarticle_instance is None:
         try:
             chosen_db = choose_a_db(user_id)
-            myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(user_id=user_id, key=global_key)
-            cache.set(global_key, myarticle_instance)
+            myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(user_id=user_id, key=key)
+            cache.set(key, myarticle_instance)
         except MyArticleInstance.DoesNotExist:
             pass 
 
@@ -47,7 +45,14 @@ def get_myarticle_instance(user_id, key):
 
 
 def update_myarticle_instance_cache(user_id, key, myarticle_instance):
-    global_key = CACHE_KEY_USER_ARTICLE_INSTANCE % (user_id, key)
-    cache.set(global_key, myarticle_instance)
+    cache.set(key, myarticle_instance)
     
     return None
+
+
+def generate_article_instance_key(url, user_id):
+    hash_source = url
+    url_hash = hashlib.new('sha1', hash_source).hexdigest()
+    key = KEY_ARTICLE_INSTANCE % (user_id, url_hash)
+    
+    return key
