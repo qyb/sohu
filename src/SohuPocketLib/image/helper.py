@@ -79,7 +79,7 @@ def generate_image_instance_key(article_id, image_url):
     return image_instance_key
 
 
-def create_myimage_instance(key, url, title, description):
+def create_myimage_instance(key, url, title='', description=''):
     myimage_instance = MyImageInstance(
                                        key=key,
                                        url=url,

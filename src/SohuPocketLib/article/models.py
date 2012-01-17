@@ -25,14 +25,12 @@ class MyArticleInstance(MultiDB):
         return u'%s,%s' % (self.user_id, self.title)
     
     def update_cache(self):
-        key = KEY_ARTICLE_INSTANCE % (self.user_id, self.key)
-        cache.set(key, self)
+        cache.set(self.key, self)
         
         return None
 
     def delete_cache(self):
-        key = KEY_ARTICLE_INSTANCE % (self.user_id, self.key)
-        cache.delete(key)
+        cache.delete(self.key)
         
         return None
 

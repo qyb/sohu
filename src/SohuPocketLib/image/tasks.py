@@ -3,7 +3,7 @@
 from SohuPocketLib.article.models import MyArticleInstance
 from SohuPocketLib.constants import BUCKET_NAME_IMAGE
 from SohuPocketLib.image.helper import generate_image_instance_key, \
-    decrease_image_tobedone, get_image_tobedone
+    decrease_image_tobedone, get_image_tobedone, create_myimage_instance
 from SohuPocketLib.storage.helper import store_data_from_string
 from celery.task import Task
 import urllib2
@@ -36,6 +36,7 @@ class StoreImageHandler(Task):
         image_instance_key = generate_image_instance_key(info['article_id'], image_url)
         try:
             store_data_from_string(BUCKET_NAME_IMAGE, image_instance_key, image_data)
+            create_myimage_instance(image_instance_key, image_url)
         except Exception:
             is_successful = False
         else:
