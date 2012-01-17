@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.constants import LIMIT_USERS_ONE_DB, KEY_ARTICLE_INSTANCE
 from SohuPocketLib.storage.models import MultiDB
 from django.core.cache import cache
 from django.db import models
