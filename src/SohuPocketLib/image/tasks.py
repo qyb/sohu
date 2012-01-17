@@ -4,7 +4,8 @@ from SohuPocketLib.article.models import MyArticleInstance
 from SohuPocketLib.constants import BUCKET_NAME_IMAGE
 from SohuPocketLib.image.helper import generate_image_instance_key, \
     decrease_image_tobedone, get_image_tobedone, create_myimage_instance
-from SohuPocketLib.storage.helper import store_data_from_string
+from SohuPocketLib.storage.helper import store_data_from_string, \
+    store_data_from_stream
 from celery.task import Task
 import urllib2
 
@@ -17,11 +18,11 @@ class DownloadImageHandler(Task):
     def run(self, image_url, image_tobedone_key, info):
         is_successful = True
         try:
-            image_data = urllib2.urlopen(image_url).read()
+            image_stream = urllib2.urlopen(image_url)
         except Exception:
             is_successful = False
         else:
-            StoreImageHandler.delay(image_url, image_data, image_tobedone_key, info)
+            StoreImageHandler.delay(image_url, image_stream, image_tobedone_key, info)
             
         return is_successful    
 
@@ -31,11 +32,11 @@ class StoreImageHandler(Task):
     store image to s3
     """
     
-    def run(self, image_url, image_data, image_tobedone_key, info):
+    def run(self, image_url, image_stream, image_tobedone_key, info):
         is_successful = True
         image_instance_key = generate_image_instance_key(info['article_id'], image_url)
         try:
-            store_data_from_string(BUCKET_NAME_IMAGE, image_instance_key, image_data)
+            store_data_from_stream(BUCKET_NAME_IMAGE, image_instance_key, image_stream)
             create_myimage_instance(image_instance_key, image_url, info['article_id'])
         except Exception:
             is_successful = False

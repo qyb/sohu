@@ -4,6 +4,7 @@ from SohuPocketLib.storage.models import MultiDB
 from django.core.cache import cache
 from django.db import models
 
+
 class MyArticleInstance(MultiDB):
     
 #    user_id = models.IntegerField()

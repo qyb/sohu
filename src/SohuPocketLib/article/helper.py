@@ -59,7 +59,6 @@ def get_myarticle_instance_with_image_list(user_id, key):
     
     return myarticle_instance
                                             
-                                            
 
 def update_myarticle_instance_cache(user_id, key, myarticle_instance):
     cache.set(key, myarticle_instance)
