@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from SohuPocketLib.article.models import MyArticleInstance
-from celery.task import Task
-from SohuPocketLib.constants import CACHE_KEY_IMAGE, IMAGE_BUCKET_NAME
-from django.core.cache import cache
+from SohuPocketLib.constants import BUCKET_NAME_IMAGE
+from SohuPocketLib.image.helper import generate_image_instance_key, \
+    decrease_image_tobedone, get_image_tobedone
 from SohuPocketLib.storage.helper import store_data_from_string
-import hashlib
+from celery.task import Task
 import urllib2
 
 
@@ -14,21 +14,16 @@ class DownloadImageHandler(Task):
     download image
     """
     
-    def run(self, image_url, info):
-        image_data = urllib2.urlopen(image_url).read()
-        
-        hash_source = image_url 
-        key = hashlib.new('sha1', hash_source).hexdigest()
-        global_key = CACHE_KEY_IMAGE % (str(user_id), str(article_id), key)
-        store_data_from_string(IMAGE_BUCKET_NAME, global_key, image_data)
-        
-        cache.decr(image_left_count_key, 1)
-        if cache.get(image_left_count_key) == 0:
-            try:
-                myarticle_instance = MyArticleInstance.objects.get(id = article_id)
-                myarticle_instance.is_ready = True
-            except Exception:
-                pass
+    def run(self, image_url, image_tobedone_key, info):
+        is_successful = True
+        try:
+            image_data = urllib2.urlopen(image_url).read()
+        except Exception:
+            is_successful = False
+        else:
+            StoreImageHandler.delay(image_url, image_data, image_tobedone_key, info)
+            
+        return is_successful    
 
 
 class StoreImageHandler(Task):
@@ -36,5 +31,21 @@ class StoreImageHandler(Task):
     store image to s3
     """
     
-    def run(self):
-        pass
+    def run(self, image_url, image_data, image_tobedone_key, info):
+        is_successful = True
+        image_instance_key = generate_image_instance_key(info['article_id'], image_url)
+        try:
+            store_data_from_string(BUCKET_NAME_IMAGE, image_instance_key, image_data)
+        except Exception:
+            is_successful = False
+        else:
+            decrease_image_tobedone(image_tobedone_key)
+            if get_image_tobedone(image_tobedone_key) == 0:
+                try:
+                    article_instance = MyArticleInstance.objects.get(id = info['article_id'])
+                    article_instance.is_ready = True
+                    article_instance.save()
+                except MyArticleInstance.DoesNotExist:
+                    is_successful = False
+                    
+        return is_successful

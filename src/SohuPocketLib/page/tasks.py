@@ -1,7 +1,10 @@
-# -*- codiing: utf-8 -*-
+# -*- coding: utf-8 -*-
+
 from SohuPocketLib.article.helper import generate_article_instance_key, \
     create_myarticle_instance
 from SohuPocketLib.constants import BUCKET_NAME_ARTICLE
+from SohuPocketLib.image.helper import parse_and_replace_image_url_list, \
+    set_image_tobedone, generate_image_tobedone_key
 from SohuPocketLib.image.tasks import DownloadImageHandler
 from SohuPocketLib.page.helper import delete_html_tag_attribute
 from SohuPocketLib.storage.helper import store_data_from_string
@@ -91,8 +94,7 @@ class ImageUrlListHandler(Task):
     def run(self, info):
         is_successful = True
         try:
-            image_url_list = []
-            pass
+            image_url_list = parse_and_replace_image_url_list()
         except Exception:
             is_successful = False
         else:
@@ -109,10 +111,11 @@ class BulkImageDownloadHandler(Task):
     def run(self, image_url_list, info):
         is_successful = True
         try:
+            image_tobedone_key = generate_image_tobedone_key(info['user_id'])
+            set_image_tobedone(image_tobedone_key, len(image_url_list))
             for image_url in image_url_list:
-                DownloadImageHandler.delay(image_url, info)
+                DownloadImageHandler.delay(image_url, image_tobedone_key, info)
         except Exception:
             is_successful = False
         
         return is_successful
-    

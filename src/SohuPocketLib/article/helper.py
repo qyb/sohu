@@ -18,15 +18,13 @@ def choose_a_db(user_id):
 
 
 def create_myarticle_instance(user_id, key, title, url):
-    chosen_db = choose_a_db(user_id)
-    myarticle_instance = MyArticleInstance.objects.using(chosen_db) \
-                                                  .create(
-                                                          user_id=user_id,
-                                                          key = key,
-                                                          title = title,
-                                                          url = url
-                                                          )
-    cache.set(key, myarticle_instance)
+    myarticle_instance = MyArticleInstance(
+                                           user_id=user_id,
+                                           key=key,
+                                           title=title,
+                                           url=url
+                                           )
+    myarticle_instance.save()
     
     return myarticle_instance
 
@@ -56,3 +54,4 @@ def generate_article_instance_key(url, user_id):
     key = KEY_ARTICLE_INSTANCE % (user_id, url_hash)
     
     return key
+
