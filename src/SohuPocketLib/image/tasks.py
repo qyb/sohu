@@ -36,7 +36,7 @@ class StoreImageHandler(Task):
         image_instance_key = generate_image_instance_key(info['article_id'], image_url)
         try:
             store_data_from_string(BUCKET_NAME_IMAGE, image_instance_key, image_data)
-            create_myimage_instance(image_instance_key, image_url)
+            create_myimage_instance(image_instance_key, image_url, info['article_id'])
         except Exception:
             is_successful = False
         else:

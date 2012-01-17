@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
+from SohuPocketLib.article.models import MyArticleInstance
+from SohuPocketLib.storage.models import MultiDB
 from django.core.cache import cache
 from django.db import models
 
 
-class MyImageInstance(models.Model):
+class MyImageInstance(MultiDB):
     """
-    represent image, may include meta data in the future
+    represent image, may include exif data in the future
     """
 
-#    user_id
+#    user_id = models.IntegerField()
     key = models.CharField(max_length=32)
     url = models.URLField()
+    myarticle_instance_id = models.IntegerField()
     title = models.CharField(max_length=256, blank=True)
     description = models.CharField(max_length=1024, blank=True)
     width = models.IntegerField(null=True, blank=True)

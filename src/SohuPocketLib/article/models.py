@@ -6,7 +6,7 @@ from django.db import models
 
 class MyArticleInstance(MultiDB):
     
-    #user_id = models.IntegerField()
+#    user_id = models.IntegerField()
     key = models.CharField(max_length=32)                       #从S3获取静态文件
     title = models.CharField(max_length=512)                    #文章的标题
     url = models.URLField()                                     #文章原始URL
@@ -45,5 +45,3 @@ class MyArticleInstance(MultiDB):
         
         return None
     
-    class Meta:
-        unique_together = (('user_id', 'key'),)
