@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from SohuPocketLib.article.helper import choose_a_db
 from SohuPocketLib.article.models import MyArticleInstance
 from SohuPocketLib.constants import BUCKET_NAME_IMAGE
 from SohuPocketLib.image.helper import generate_image_instance_key, \
     decrease_image_tobedone, get_image_tobedone, create_myimage_instance
-from SohuPocketLib.storage.helper import store_data_from_string, \
-    store_data_from_stream
+from SohuPocketLib.storage.helper import store_data_from_stream
 from celery.task import Task
 import urllib2
 
@@ -44,7 +44,8 @@ class StoreImageHandler(Task):
             decrease_image_tobedone(image_tobedone_key)
             if get_image_tobedone(image_tobedone_key) == 0:
                 try:
-                    article_instance = MyArticleInstance.objects.get(id = info['article_id'])
+                    chosen_db = choose_a_db(info['user_id'])
+                    article_instance = MyArticleInstance.objects.using(chosen_db).get(id = info['article_id'])
                     article_instance.is_ready = True
                     article_instance.save()
                 except MyArticleInstance.DoesNotExist:
