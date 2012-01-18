@@ -5,6 +5,7 @@ from SohuPocketLib.constants import LIMIT_USERS_ONE_DB, KEY_ARTICLE_INSTANCE, \
     KEY_IMAGE_INSTANCE
 from SohuPocketLib.image.models import MyImageInstance
 from SohuPocketLib.storage.helper import get_data_url
+from SohuPocketLib.user.helper import get_GET_dict
 from django.core.cache import cache
 from lxml import etree
 import hashlib
@@ -124,7 +125,7 @@ def get_myarticle_list_to_xml_etree(user_id):
     
     return articles
 
-def input_for_show_func(request):
+def input_for_list_func(request):
     access_token_input = get_GET_dict(request).get('access_token', '')
     
     return access_token_input
