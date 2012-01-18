@@ -123,3 +123,8 @@ def get_myarticle_list_to_xml_etree(user_id):
         articles.append(get_myarticle_instance_to_xml_etree(user_id, myarticle_instance.key))
     
     return articles
+
+def input_for_show_func(request):
+    access_token_input = get_GET_dict(request).get('access_token', '')
+    
+    return access_token_input
