@@ -18,7 +18,7 @@ def get_or_create_bucket(bucket_name, policy='public-read', location=Location.DE
         try:
             bucket = s3.create_bucket(bucket_name, policy=policy, location=location)
             bucket.set_canned_acl('public-read')
-        except s3.provider.storage_create_error, e:
+        except s3.provider.storage_create_error:
             print 'Bucket (%s) is owned by another user' % bucket_name
 
     return bucket
@@ -84,6 +84,7 @@ def modify_metadata(bucket_name, key_name, metadata):
 
 
 def enable_logging(bucket_name, log_bucket_name, log_prefix=None):
+    s3 = build_connect_s3()
     bucket = get_or_create_bucket(bucket_name)
     log_bucket = s3.lookup(log_bucket_name)
     log_bucket.set_as_logging_target()

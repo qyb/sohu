@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from SohuPocketLib.article.models import MyArticleInstance
-from SohuPocketLib.constants import LIMIT_USERS_ONE_DB, KEY_ARTICLE_INSTANCE, \
-    KEY_IMAGE_INSTANCE
+from SohuPocketLib.constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
+    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE
 from SohuPocketLib.image.models import MyImageInstance
 from SohuPocketLib.storage.helper import get_data_url
 from SohuPocketLib.user.helper import get_GET_dict
@@ -89,10 +89,10 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     url.text = myarticle_instance.url
     
     download_url = etree.SubElement(article, 'download_url')
-    download_url.text = get_data_url(KEY_ARTICLE_INSTANCE, myarticle_instance.key)
+    download_url.text = get_data_url(BUCKET_NAME_ARTICLE, myarticle_instance.key)
     
     image_urls = etree.SubElement(article, 'image_urls')
-    image_urls.text = '|'.join([get_data_url(KEY_IMAGE_INSTANCE, image_key) \
+    image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
                                 for image_key in myarticle_instance.image_list])
     
     is_read = etree.SubElement(article, 'is_read')

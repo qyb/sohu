@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.constants import KEY_IMAGE_INSTANCE, KEY_IMAGE_TOBEDONE
+from BeautifulSoup import BeautifulSoup
+from SohuPocketLib.constants import KEY_IMAGE_INSTANCE, KEY_IMAGE_TOBEDONE, \
+    BUCKET_NAME_IMAGE
 from SohuPocketLib.image.models import MyImageInstance
+from SohuPocketLib.storage.helper import get_data_url
 from django.core.cache import cache
 import Image
 import hashlib
@@ -35,12 +38,25 @@ def scale_image(img_path, width=None, height=None):
     return im
 
 
-def parse_and_replace_image_url_list():
+def parse_and_replace_image_url_list(html, info):
     """
-    return all image urls in a html, and tranlate them into s3 address
+    return all image urls in a html, and convert them into s3 url
     """
-    pass
-
+    soup = BeautifulSoup(html)
+    image_url_list = []
+    for tag in soup.findAll('img'):
+        try:
+            old_image_url = tag['src']
+        except Exception:
+            pass
+        else:
+            image_url_list.append(old_image_url)
+            image_instance_key = generate_image_instance_key(info['article_id'], old_image_url)
+            new_image_url = get_data_url(BUCKET_NAME_IMAGE, image_instance_key)
+            tag['src'] = new_image_url
+    
+    return image_url_list
+            
 
 def generate_image_tobedone_key(article_id):
     

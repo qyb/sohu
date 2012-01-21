@@ -27,7 +27,7 @@ class PageFetchHandler(Task):
         except IOError:
             is_successful = False
         else:
-#            call next step: make html readable
+#            call next step
             info['url'] = url
             ReadableArticleHandler.delay(raw_html, info)
             
@@ -56,11 +56,29 @@ class ReadableArticleHandler(Task):
         except Exception:
             is_successful = False
         else:
-#            call next step: store article html to s3
+#            call next step
             info['article_title'] = article_title
             info['article_content'] = article_content
+            ImageUrlListHandler.delay(info)        
+        return is_successful
+
+
+class ImageUrlListHandler(Task):
+    """
+    parse image url list and replace them with identification in s3
+    """
+    
+    def run(self, info):
+        is_successful = True
+        try:
+            image_url_list = parse_and_replace_image_url_list(info['article_content'], info)
+        except Exception:
+            is_successful = False
+        else:
+            info['image_url_list'] = image_url_list
+#            call next step
             StoreArticleHandler.delay(info)
-        
+            
         return is_successful
 
 
@@ -81,24 +99,8 @@ class StoreArticleHandler(Task):
         else:
             info['article_id'] = article_id
             info['article_instance_key'] = article_instance_key
-            ImageUrlListHandler.delay(info)
-            
-        return is_successful
-    
-    
-class ImageUrlListHandler(Task):
-    """
-    parse image url list and replace them with identification in s3
-    """
-    
-    def run(self, info):
-        is_successful = True
-        try:
-            image_url_list = parse_and_replace_image_url_list()
-        except Exception:
-            is_successful = False
-        else:
-            BulkImageDownloadHandler.delay(image_url_list, info)
+#            call next step
+            BulkImageDownloadHandler.delay(info)
             
         return is_successful
     
@@ -108,14 +110,17 @@ class BulkImageDownloadHandler(Task):
     start bulk image download
     """
     
-    def run(self, image_url_list, info):
+    def run(self, info):
         is_successful = True
         try:
             image_tobedone_key = generate_image_tobedone_key(info['user_id'])
-            set_image_tobedone(image_tobedone_key, len(image_url_list))
-            for image_url in image_url_list:
-                DownloadImageHandler.delay(image_url, image_tobedone_key, info)
+            set_image_tobedone(image_tobedone_key, len(info['image_url_list']))
+            
         except Exception:
             is_successful = False
+        else:
+#            call next step
+            for image_url in info['image_url_list']:
+                DownloadImageHandler.delay(image_url, image_tobedone_key, info)
         
         return is_successful

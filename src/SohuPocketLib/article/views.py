@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from SohuPocketLib.article.helper import get_myarticle_list_to_xml_etree, \
-    input_for_list_func
-from SohuPocketLib.user.helper import KanUser
+    input_for_list_func, get_myarticle_instance_to_xml_etree
+from SohuPocketLib.user.helper import KanUser, input_for_show_func
 from django.http import HttpResponse
 from lxml import etree
+
 
 def list(request, format):
     access_token_input = input_for_list_func(request)
@@ -30,8 +31,4 @@ def show(request, key, format):
             response = etree.tostring(myarticle_instance_etree)
             
     return HttpResponse(response)
-    
-    
-        
-        
     
