@@ -71,7 +71,7 @@ class ImageUrlListHandler(Task):
     def run(self, info):
         is_successful = True
         try:
-            image_url_list = parse_and_replace_image_url_list(info['article_content'], info)
+            image_url_list = parse_and_replace_image_url_list(info['url'], info['article_content'], info)
         except Exception:
             is_successful = False
         else:

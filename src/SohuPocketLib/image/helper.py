@@ -8,6 +8,7 @@ from SohuPocketLib.storage.helper import get_data_url
 from django.core.cache import cache
 import Image
 import hashlib
+import urlparse
 
 
 def scale_image(img_path, width=None, height=None):
@@ -38,7 +39,7 @@ def scale_image(img_path, width=None, height=None):
     return im
 
 
-def parse_and_replace_image_url_list(html, info):
+def parse_and_replace_image_url_list(url, html, info):
     """
     return all image urls in a html, and convert them into s3 url
     """
@@ -46,7 +47,7 @@ def parse_and_replace_image_url_list(html, info):
     image_url_list = []
     for tag in soup.findAll('img'):
         try:
-            old_image_url = tag['src']
+            old_image_url = urlparse.urljoin(url, tag['src'])
         except Exception:
             pass
         else:

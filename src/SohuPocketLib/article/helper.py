@@ -5,7 +5,7 @@ from SohuPocketLib.constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
     BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE
 from SohuPocketLib.image.models import MyImageInstance
 from SohuPocketLib.storage.helper import get_data_url
-from SohuPocketLib.user.helper import get_GET_dict
+from SohuPocketLib.user.helper import get_GET_dict, get_POST_dict
 from django.core.cache import cache
 from lxml import etree
 import hashlib
@@ -125,7 +125,35 @@ def get_myarticle_list_to_xml_etree(user_id):
     
     return articles
 
-def input_for_list_func(request):
-    access_token_input = get_GET_dict(request).get('access_token', '')
+
+def get_access_token(request, method):
+    if method == 'GET':
+        access_token_input = get_GET_dict(request).get('access_token', '')
+    elif method == 'POST':
+        access_token_input = get_POST_dict(request).get('access_token', '')
     
     return access_token_input
+
+
+def input_for_list_func(request):
+    
+    return get_access_token(request, 'GET')
+
+
+def input_for_show_func(request):
+    
+    return get_access_token(request, 'GET')
+
+
+def input_for_update_func(request):
+    access_token = get_access_token(request, 'POST')
+    url = get_POST_dict(request).get('url', '')
+    
+    return access_token, url
+
+
+def generate_single_xml_etree(tag, text, **kwargs):
+    element = etree.Element(tag, **kwargs) 
+    element.text = text
+    
+    return element
