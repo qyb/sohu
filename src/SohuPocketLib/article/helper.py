@@ -9,6 +9,7 @@ from SohuPocketLib.user.helper import get_GET_dict, get_POST_dict
 from django.core.cache import cache
 from lxml import etree
 import hashlib
+import time
 
 
 def choose_a_db(user_id):
@@ -37,12 +38,13 @@ def create_myarticle_instance(user_id, key, title, url):
 def get_myarticle_instance(user_id, key):
     myarticle_instance = cache.get(key, None)
     if myarticle_instance is None:
+        chosen_db = choose_a_db(user_id)
         try:
-            chosen_db = choose_a_db(user_id)
             myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(key=key)
-            cache.set(key, myarticle_instance)
         except MyArticleInstance.DoesNotExist:
             pass
+        else:
+            myarticle_instance.update_cache()
         
     return myarticle_instance  
 
@@ -60,14 +62,35 @@ def get_myarticle_instance_with_image_list(user_id, key):
                                             .filter(myarticle_instance_id=myarticle_instance.id)
         image_list = [image.key for image in myimage_instance_list]
         myarticle_instance.image_list = image_list
+        myarticle_instance.update_cache()
     
     return myarticle_instance
-                                            
 
-def update_myarticle_instance_cache(user_id, key, myarticle_instance):
-    cache.set(key, myarticle_instance)
-    
-    return None
+                                            
+def modify_or_destroy_myarticle_instance(user_id, key, modify_info):
+    is_successful = True
+    chosen_db = choose_a_db(user_id)
+    try:
+        myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(key=key)
+    except MyArticleInstance.DoesNotExist:
+        is_successful = False
+    else:
+        if modify_info['is_delete'] == 'True':
+            myarticle_instance.is_deleted = True
+            myarticle_instance.delete_time = time.time()
+        if modify_info['is_read'] == 'True':
+            myarticle_instance.is_read = True
+            myarticle_instance.read_time = time.time()
+        if modify_info['is_read'] == 'False':
+            myarticle_instance.is_read = False
+            myarticle_instance.read_time = None
+        if modify_info['is_star'] == 'True':
+            myarticle_instance.is_star = True
+        if modify_info['is_star'] == 'False':
+            myarticle_instance.is_star = False
+        myarticle_instance.save()
+        
+    return is_successful        
 
 
 def generate_article_instance_key(url, user_id):
@@ -126,6 +149,13 @@ def get_myarticle_list_to_xml_etree(user_id):
     return articles
 
 
+def generate_single_xml_etree(tag, text, **kwargs):
+    element = etree.Element(tag, **kwargs) 
+    element.text = text
+    
+    return element
+
+
 def get_access_token(request, method):
     if method == 'GET':
         access_token_input = get_GET_dict(request).get('access_token', '')
@@ -152,8 +182,15 @@ def input_for_update_func(request):
     return access_token, url
 
 
-def generate_single_xml_etree(tag, text, **kwargs):
-    element = etree.Element(tag, **kwargs) 
-    element.text = text
+def input_for_destroy_func(request):
     
-    return element
+    return get_access_token(request, 'POST')    
+
+def input_for_modify_func(request):
+    access_token = get_access_token(request, 'POST')
+    modify_info = dict()
+    args = ('is_delete', 'is_read', 'is_star')
+    for arg in args:
+        modify_info[arg] = get_POST_dict(request).get(arg, '')
+        
+    return access_token, modify_info

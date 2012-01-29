@@ -2,7 +2,8 @@
 
 from SohuPocketLib.article.helper import get_myarticle_list_to_xml_etree, \
     input_for_list_func, get_myarticle_instance_to_xml_etree, input_for_show_func, \
-    input_for_update_func, generate_single_xml_etree
+    input_for_update_func, generate_single_xml_etree, input_for_destroy_func, \
+    input_for_modify_func, modify_or_destroy_myarticle_instance
 from SohuPocketLib.page.tasks import PageFetchHandler
 from SohuPocketLib.user.helper import KanUser
 from django.http import HttpResponse
@@ -52,4 +53,31 @@ def update(request, format):
                 response_etree = generate_single_xml_etree('status', 'success')
                 response = etree.tostring(response_etree)
             
+    return HttpResponse(response)
+
+
+def destroy(request, key, format):
+    access_token_input = input_for_destroy_func(request)
+    modify_info = dict()
+    modify_info['is_delete'] ='True'
+    return modify_or_destroy_base(access_token_input, modify_info, key, format)
+        
+        
+def modify(request, key, format):
+    access_token_input, modify_info = input_for_modify_func(request)
+    return modify_or_destroy_base(access_token_input, modify_info, key, format)
+
+
+def modify_or_destroy_base(access_token_input, modify_info, key, format):
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    is_successful = False
+    if kan_user.is_logged_in():
+        user_id = kan_user.get_user_id()
+        is_successful = modify_or_destroy_myarticle_instance(user_id, key, modify_info)
+    if format == 'xml':
+        response_etree = generate_single_xml_etree('status', 'success' if is_successful else 'fail')
+        response = etree.tostring(response_etree)
+        
     return HttpResponse(response)

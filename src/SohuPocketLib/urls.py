@@ -12,15 +12,19 @@ urlpatterns = patterns('',
     (r'^$', 'SohuPocketLib.views.home'),
     (r'^passport/$', 'SohuPocketLib.views.passport'),
     
-    (r'^user/verify.json/$', 'SohuPocketLib.user.views.verify'),
-    (r'^user/verify.json/test/$', 'SohuPocketLib.user.views.verify_test'),
+    (r'^user/verify\.json/$', 'SohuPocketLib.user.views.verify'),
+    (r'^user/verify\.json/test/$', 'SohuPocketLib.user.views.verify_test'),
     
-    (r'^user/show.json/$', 'SohuPocketLib.user.views.show'),
-    (r'^user/show.json/test/$', 'SohuPocketLib.user.views.show_test'),
+    (r'^user/show\.json/$', 'SohuPocketLib.user.views.show'),
+    (r'^user/show\.json/test/$', 'SohuPocketLib.user.views.show_test'),
 
-    (r'^user/update.json/$', 'SohuPocketLib.user.views.update'),
-    (r'^user/update.json/test/$', 'SohuPocketLib.user.views.update_test'),
+    (r'^user/update\.json/$', 'SohuPocketLib.user.views.update'),
+    (r'^user/update\.json/test/$', 'SohuPocketLib.user.views.update_test'),
     
-    (r'^article/get/(?P<url>.*)$', 'SohuPocketLib.article.views.get_string_from_url')
+    (r'^article/update\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.update'),    
+    (r'^article/show/(?P<key>\w+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.show'),
+    (r'^article/modify/(?P<key>\w+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.modify'),
+    (r'^article/destroy/(?P<key>\w+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.destroy'),
+    (r'^article/list\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.list'),
     
 )
