@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from BeautifulSoup import BeautifulSoup
-from SohuPocketLib.constants import KEY_IMAGE_INSTANCE, KEY_IMAGE_TOBEDONE, \
+from constants import KEY_IMAGE_INSTANCE, KEY_IMAGE_TOBEDONE, \
     BUCKET_NAME_IMAGE
-from SohuPocketLib.image.models import MyImageInstance
-from SohuPocketLib.storage.helper import get_data_url
+from image.models import MyImageInstance
+from storage.helper import get_data_url
 from django.core.cache import cache
 import Image
 import hashlib
 import urlparse
+import logging
 
 
 def scale_image(img_path, width=None, height=None):
@@ -65,7 +66,7 @@ def generate_image_tobedone_key(article_id):
 
 
 def set_image_tobedone(image_tobedone_key, amount):
-    cache.set(image_tobedone_key)
+    cache.set(image_tobedone_key, amount)
     
     return None
 
@@ -76,14 +77,14 @@ def get_image_tobedone(image_tobedone_key, ammout):
     return None
 
 
-def increase_image_tobedone(image_tobedone_key, amount=1):
-    cache.incr(image_tobedone_key, amount)
+def increase_image_tobedone(image_tobedone_key, delta=1):
+    cache.incr(image_tobedone_key, delta)
     
     return None
 
 
-def decrease_image_tobedone(image_tobedone_key, amount=1):
-    cache.decr(image_tobedone_key, amount)
+def decrease_image_tobedone(image_tobedone_key, delta=1):
+    cache.decr(image_tobedone_key, delta)
     
     return None
 

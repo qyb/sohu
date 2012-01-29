@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.article.helper import get_myarticle_list_to_xml_etree, \
+from article.helper import get_myarticle_list_to_xml_etree, \
     input_for_list_func, get_myarticle_instance_to_xml_etree, input_for_show_func, \
     input_for_update_func, generate_single_xml_etree, input_for_destroy_func, \
     input_for_modify_func, modify_or_destroy_myarticle_instance
-from SohuPocketLib.page.tasks import PageFetchHandler
-from SohuPocketLib.user.helper import KanUser
+from page.tasks import PageFetchHandler
+from user.helper import KanUser
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from lxml import etree
 
 
@@ -54,6 +56,12 @@ def update(request, format):
                 response = etree.tostring(response_etree)
             
     return HttpResponse(response)
+
+
+def update_test(request, *args, **kwargs):
+    
+    return render_to_response('article_update_test.html',
+                              context_instance = RequestContext(request))
 
 
 def destroy(request, key, format):

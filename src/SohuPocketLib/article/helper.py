@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.article.models import MyArticleInstance
-from SohuPocketLib.constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
+from article.models import MyArticleInstance
+from constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
     BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE
-from SohuPocketLib.image.models import MyImageInstance
-from SohuPocketLib.storage.helper import get_data_url
-from SohuPocketLib.user.helper import get_GET_dict, get_POST_dict
+from image.models import MyImageInstance
+from storage.helper import get_data_url
+from user.helper import get_GET_dict, get_POST_dict
 from django.core.cache import cache
 from lxml import etree
 import hashlib

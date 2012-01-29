@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.storage.models import MultiDB
+from storage.models import MultiDB
 from django.core.cache import cache
 from django.db import models
 

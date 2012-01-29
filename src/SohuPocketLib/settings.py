@@ -125,10 +125,11 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'djcelery',
-    'user',
-    # 'contact',
-    'article',
     'storage',
+    'article',
+    'image',
+    'page',
+    'user',
 )
 
 CACHE_BACKEND = 'locmem:///?timeout=3600'

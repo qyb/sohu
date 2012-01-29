@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.storage.models import MultiDB
+from storage.models import MultiDB
 from django.core.cache import cache
 from django.db import models
 
@@ -8,7 +8,7 @@ from django.db import models
 class MyArticleInstance(MultiDB):
     
 #    user_id = models.IntegerField()
-    key = models.CharField(max_length=32)                       #从S3获取静态文件
+    key = models.CharField(max_length=256)                       #从S3获取静态文件
     title = models.CharField(max_length=512)                    #文章的标题
     url = models.URLField()                                     #文章原始URL
     is_read = models.BooleanField(default=False)                #是否已读   
