@@ -67,14 +67,14 @@ def generate_image_tobedone_key(article_id):
 
 def set_image_tobedone(image_tobedone_key, amount):
     cache.set(image_tobedone_key, amount)
+    logging.warning('set_image_tobedone:' + str(image_tobedone_key) + ':' + str(get_image_tobedone(image_tobedone_key)))
     
     return None
 
 
-def get_image_tobedone(image_tobedone_key, ammout):
-    cache.get(image_tobedone_key)
+def get_image_tobedone(image_tobedone_key):
     
-    return None
+    return cache.get(image_tobedone_key)
 
 
 def increase_image_tobedone(image_tobedone_key, delta=1):

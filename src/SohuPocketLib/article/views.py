@@ -68,11 +68,13 @@ def destroy(request, key, format):
     access_token_input = input_for_destroy_func(request)
     modify_info = dict()
     modify_info['is_delete'] ='True'
+    
     return modify_or_destroy_base(access_token_input, modify_info, key, format)
         
         
 def modify(request, key, format):
     access_token_input, modify_info = input_for_modify_func(request)
+    
     return modify_or_destroy_base(access_token_input, modify_info, key, format)
 
 

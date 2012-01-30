@@ -1,0 +1,13 @@
+<html>
+<head>
+	<title>article_update_test</title>
+</head>
+<body>
+<form action="/article/update.xml/" method="POST">
+{% csrf_token %}
+access_token <input type="text" name="access_token"></input> <br>
+url <input type="text" name="url"></input> <br>
+<input type="submit"></input>
+</form>
+</body>
+</html>

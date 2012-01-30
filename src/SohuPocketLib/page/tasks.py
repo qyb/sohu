@@ -137,7 +137,7 @@ class BulkImageDownloadHandler(Task):
     def run(self, info):
         is_successful = True
         try:
-            image_tobedone_key = generate_image_tobedone_key(info['user_id'])
+            image_tobedone_key = generate_image_tobedone_key(info['article_id'])
             set_image_tobedone(image_tobedone_key, len(info['image_url_list']))
         except Exception:
             is_successful = False

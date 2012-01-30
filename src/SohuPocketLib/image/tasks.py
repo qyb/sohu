@@ -8,7 +8,7 @@ from image.helper import generate_image_instance_key, \
 from storage.helper import store_data_from_string
 from celery.task import Task
 import urllib2
-
+import logging
 
 class DownloadImageHandler(Task):
     """
@@ -28,6 +28,7 @@ class DownloadImageHandler(Task):
             image_info['image_data'] = image_data
             image_info['image_tobedone_key'] = image_tobedone_key
 #            call next step
+            logging.warning('DownloadImageHandler:' + str(image_info['image_tobedone_key']) + ':' + str(get_image_tobedone(image_info['image_tobedone_key'])))
             StoreImageInfoHandler.delay(image_info, info)
             
         return is_successful    
@@ -42,13 +43,14 @@ class StoreImageInfoHandler(Task):
         is_successful = True
         image_instance_key = generate_image_instance_key(info['article_id'], image_info['image_url'])
         try:
-            create_myimage_instance(image_instance_key, image_info['image_url'], info['article_id'])
+            create_myimage_instance(info['user_id'], image_instance_key, image_info['image_url'], info['article_id'])
         except Exception:
             is_successful = False
             raise
         else:
             image_info['image_instance_key'] = image_instance_key
 #            call next step
+            logging.warning('StoreImageInfoHandler:' + str(image_info['image_tobedone_key']) + ':' + str(get_image_tobedone(image_info['image_tobedone_key'])))
             UploadImageHandler.delay(image_info, info)
             
         return is_successful
@@ -63,11 +65,13 @@ class UploadImageHandler(Task):
         is_successful = True
         try:
             store_data_from_string(BUCKET_NAME_IMAGE, image_info['image_instance_key'], image_info['image_data'])
+            pass
         except Exception:
             is_successful = False
             raise
         else:
 #            call next step
+            logging.warning('UploadImageHandler:' + str(image_info['image_tobedone_key']) + ':' + str(get_image_tobedone(image_info['image_tobedone_key'])))
             CheckImagetobedoneHandler.delay(image_info, info)
             
         return is_successful
@@ -80,6 +84,7 @@ class CheckImagetobedoneHandler(Task):
     
     def run(self, image_info, info):
         is_successful = True
+        logging.warning('CheckImagetobedoneHandler:' + str(image_info['image_tobedone_key']) + ':' + str(get_image_tobedone(image_info['image_tobedone_key'])))
         decrease_image_tobedone(image_info['image_tobedone_key'])
         if get_image_tobedone(image_info['image_tobedone_key']) == 0:
             try:
@@ -92,3 +97,4 @@ class CheckImagetobedoneHandler(Task):
                 raise
             
         return is_successful
+    

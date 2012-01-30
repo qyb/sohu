@@ -11,7 +11,7 @@ class MyImageInstance(MultiDB):
     """
 
 #    user_id = models.IntegerField()
-    key = models.CharField(max_length=32)
+    key = models.CharField(max_length=256)
     url = models.URLField()
     myarticle_instance_id = models.IntegerField()
     title = models.CharField(max_length=256, blank=True)
