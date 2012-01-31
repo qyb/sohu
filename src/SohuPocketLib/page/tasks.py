@@ -21,7 +21,7 @@ class PageFetchHandler(Task):
     
 #    info is a dict, used for arguments simplicity
 #    info here must include key 'user_id'
-    def run(self, url, info):
+    def run(self, url, update_article_info):
         is_successful = True
         try:
             raw_html = urllib2.urlopen(url).read()
@@ -29,9 +29,9 @@ class PageFetchHandler(Task):
             is_successful = False
             raise
         else:
-            info['url'] = url
+            update_article_info.url = url
 #            call next step
-            ReadableArticleHandler.delay(raw_html, info)
+            ReadableArticleHandler.delay(raw_html, update_article_info)
             
         return is_successful
 
@@ -49,7 +49,7 @@ class ReadableArticleHandler(Task):
         
         return doc.summary()
     
-    def run(self, raw_html, info):
+    def run(self, raw_html, update_article_info):
         is_successful = True
         try:
             doc = Document(raw_html)
@@ -59,10 +59,10 @@ class ReadableArticleHandler(Task):
             is_successful = False
             raise
         else:
-            info['article_title'] = article_title
-            info['article_content'] = article_content
+            update_article_info.article_title = article_title
+            update_article_info.article_content = article_content
 #            call next step
-            StoreArticleInfoHandler.delay(info)
+            StoreArticleInfoHandler.delay(update_article_info)
             
         return is_successful
 
@@ -72,20 +72,20 @@ class StoreArticleInfoHandler(Task):
     store article info to local db
     """
     
-    def run(self, info):
+    def run(self, update_article_info):
         is_successful =  True
-        article_instance_key = generate_article_instance_key(info['url'], info['user_id'])
+        article_instance_key = generate_article_instance_key(update_article_info.url, update_article_info.user_id)
         try:
-            article_instance = create_myarticle_instance(info['user_id'], article_instance_key, info['article_title'], info['url'])
+            article_instance = create_myarticle_instance(update_article_info.user_id, article_instance_key, update_article_info.article_title, update_article_info.url)
             article_id = article_instance.id
         except Exception:
             is_successful = False
             raise
         else:
-            info['article_id'] = article_id
-            info['article_instance_key'] = article_instance_key
+            update_article_info.article_id = article_id
+            update_article_info.article_instance_key = article_instance_key
 #            call next step
-            ImageUrlListHandler.delay(info)
+            ImageUrlListHandler.delay(update_article_info)
             
         return is_successful
 
@@ -95,17 +95,17 @@ class ImageUrlListHandler(Task):
     parse image url list and replace them with identification in s3
     """
     
-    def run(self, info):
+    def run(self, update_article_info):
         is_successful = True
         try:
-            image_url_list = parse_and_replace_image_url_list(info['url'], info['article_content'], info)
+            image_url_list = parse_and_replace_image_url_list(update_article_info.url, update_article_info.article_content, update_article_info)
         except Exception:
             is_successful = False
             raise
         else:
-            info['image_url_list'] = image_url_list
+            update_article_info.image_url_list = image_url_list
 #            call next step
-            UploadArticleHandler.delay(info)
+            UploadArticleHandler.delay(update_article_info)
             
         return is_successful
 
@@ -115,15 +115,15 @@ class UploadArticleHandler(Task):
     upload article html to s3
     """
     
-    def run(self, info):
+    def run(self, update_article_info):
         is_successful = True
         try:
-            store_data_from_string(BUCKET_NAME_ARTICLE, info['article_instance_key'], info['article_content'])
+            store_data_from_string(BUCKET_NAME_ARTICLE, update_article_info.article_instance_key, update_article_info.article_content)
         except Exception:
             is_successful = False
         else:
 #            call next step
-            BulkImageDownloadHandler.delay(info)
+            BulkImageDownloadHandler.delay(update_article_info)
             
         return is_successful
     
@@ -133,17 +133,17 @@ class BulkImageDownloadHandler(Task):
     start bulk image download
     """
     
-    def run(self, info):
+    def run(self, update_article_info):
         is_successful = True
         try:
-            image_tobedone_key = generate_image_tobedone_key(info['article_id'])
-            set_image_tobedone(image_tobedone_key, len(info['image_url_list']))
+            image_tobedone_key = generate_image_tobedone_key(update_article_info.article_id)
+            set_image_tobedone(image_tobedone_key, len(update_article_info.image_url_list))
         except Exception:
             is_successful = False
             raise
         else:
 #            call next step
-            for image_url in info['image_url_list']:
-                DownloadImageHandler.delay(image_url, image_tobedone_key, info)
+            for image_url in update_article_info.image_url_list:
+                DownloadImageHandler.delay(image_url, image_tobedone_key, update_article_info)
         
         return is_successful

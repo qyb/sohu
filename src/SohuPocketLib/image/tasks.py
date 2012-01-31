@@ -4,7 +4,8 @@ from article.helper import choose_a_db
 from article.models import MyArticleInstance
 from constants import BUCKET_NAME_IMAGE
 from image.helper import generate_image_instance_key, \
-    decrease_image_tobedone, get_image_tobedone, create_myimage_instance
+    decrease_image_tobedone, get_image_tobedone, create_myimage_instance, \
+    UpdateImageInfo
 from storage.helper import store_data_from_string
 from celery.task import Task
 import urllib2
@@ -15,21 +16,20 @@ class DownloadImageHandler(Task):
     download image
     """
     
-    def run(self, image_url, image_tobedone_key, info):
+    def run(self, image_url, image_tobedone_key, update_article_info):
         is_successful = True
-        image_info = dict()
+        update_image_info = UpdateImageInfo(image_url)
         try:
             image_data = urllib2.urlopen(image_url).read()
         except Exception:
             is_successful = False
             raise
         else:
-            image_info['image_url'] = image_url
-            image_info['image_data'] = image_data
-            image_info['image_tobedone_key'] = image_tobedone_key
+            update_image_info.image_url = image_url
+            update_image_info.image_data = image_data
+            update_image_info.image_tobedone_key = image_tobedone_key
 #            call next step
-            logging.warning('DownloadImageHandler:' + str(image_info['image_tobedone_key']) + ':' + str(get_image_tobedone(image_info['image_tobedone_key'])))
-            StoreImageInfoHandler.delay(image_info, info)
+            StoreImageInfoHandler.delay(update_image_info, update_article_info)
             
         return is_successful    
 
@@ -39,19 +39,18 @@ class StoreImageInfoHandler(Task):
     store image info to local db
     """
     
-    def run(self, image_info, info):
+    def run(self, update_image_info, update_article_info):
         is_successful = True
-        image_instance_key = generate_image_instance_key(info['article_id'], image_info['image_url'])
+        image_instance_key = generate_image_instance_key(update_article_info.article_id, update_image_info.image_url)
         try:
-            create_myimage_instance(info['user_id'], image_instance_key, image_info['image_url'], info['article_id'])
+            create_myimage_instance(update_article_info.user_id, image_instance_key, update_image_info.image_url, update_article_info.article_id)
         except Exception:
             is_successful = False
             raise
         else:
-            image_info['image_instance_key'] = image_instance_key
+            update_image_info.image_instance_key = image_instance_key
 #            call next step
-            logging.warning('StoreImageInfoHandler:' + str(image_info['image_tobedone_key']) + ':' + str(get_image_tobedone(image_info['image_tobedone_key'])))
-            UploadImageHandler.delay(image_info, info)
+            UploadImageHandler.delay(update_image_info, update_article_info)
             
         return is_successful
             
@@ -61,18 +60,17 @@ class UploadImageHandler(Task):
     upload image to s3
     """
     
-    def run(self, image_info, info):
+    def run(self, update_image_info, update_article_info):
         is_successful = True
         try:
-            store_data_from_string(BUCKET_NAME_IMAGE, image_info['image_instance_key'], image_info['image_data'])
+            store_data_from_string(BUCKET_NAME_IMAGE, update_image_info.image_instance_key, update_image_info.image_data)
             pass
         except Exception:
             is_successful = False
             raise
         else:
 #            call next step
-            logging.warning('UploadImageHandler:' + str(image_info['image_tobedone_key']) + ':' + str(get_image_tobedone(image_info['image_tobedone_key'])))
-            CheckImagetobedoneHandler.delay(image_info, info)
+            CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
             
         return is_successful
 
@@ -82,14 +80,13 @@ class CheckImagetobedoneHandler(Task):
     check whether to mark article as is_ready
     """
     
-    def run(self, image_info, info):
+    def run(self, update_image_info, update_article_info):
         is_successful = True
-        logging.warning('CheckImagetobedoneHandler:' + str(image_info['image_tobedone_key']) + ':' + str(get_image_tobedone(image_info['image_tobedone_key'])))
-        decrease_image_tobedone(image_info['image_tobedone_key'])
-        if get_image_tobedone(image_info['image_tobedone_key']) == 0:
+        decrease_image_tobedone(update_image_info.image_tobedone_key)
+        if get_image_tobedone(update_image_info.image_tobedone_key) == 0:
             try:
-                chosen_db = choose_a_db(info['user_id'])
-                article_instance = MyArticleInstance.objects.using(chosen_db).get(id = info['article_id'])
+                chosen_db = choose_a_db(update_article_info.user_id)
+                article_instance = MyArticleInstance.objects.using(chosen_db).get(id = update_article_info.article_id)
                 article_instance.is_ready = True
                 article_instance.save()
             except MyArticleInstance.DoesNotExist:

@@ -3,7 +3,7 @@
 from article.helper import get_myarticle_list_to_xml_etree, \
     input_for_list_func, get_myarticle_instance_to_xml_etree, input_for_show_func, \
     input_for_update_func, generate_single_xml_etree, input_for_destroy_func, \
-    input_for_modify_func, modify_or_destroy_myarticle_instance
+    input_for_modify_func, modify_or_destroy_myarticle_instance, UpdateArticleInfo
 from page.tasks import PageFetchHandler
 from user.helper import KanUser
 from django.http import HttpResponse
@@ -44,10 +44,9 @@ def update(request, format):
     kan_user.verify_and_login()
     response = None
     if kan_user.is_logged_in():
-        info = dict()
-        info['user_id'] = kan_user.get_user_id()
+        update_article_info = UpdateArticleInfo(kan_user.get_user_id())
         try:
-            PageFetchHandler.delay(url, info)
+            PageFetchHandler.delay(url, update_article_info)
         except Exception:
             pass
         else:

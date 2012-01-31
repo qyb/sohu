@@ -12,6 +12,23 @@ import hashlib
 import time
 
 
+class UpdateArticleInfo(object):
+    """
+    stores variables used when update article
+    """
+    
+    def __init__(self, user_id):
+        self.user_id = user_id
+        self.url = None
+        self.article_title = None
+        self.article_content = None
+        self.article_id = None
+        self.article_instance_key = None
+        self.image_url_list = None
+        
+        return None
+
+
 def choose_a_db(user_id):
     if user_id <= LIMIT_USERS_ONE_DB:
         chosen_db = 'default'

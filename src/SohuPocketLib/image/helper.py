@@ -13,6 +13,20 @@ import urlparse
 import logging
 
 
+class UpdateImageInfo(object):
+    """
+    stores variables used when update image
+    """
+    
+    def __init__(self, image_url):
+        self.image_url = image_url
+        self.image_date = None
+        self.image_tobedone_key = None
+        self.image_instance_key = None
+        
+        return None
+
+
 def scale_image(img_path, width=None, height=None):
     if not isinstance(img_path, basestring):
         return 'parameter error'
@@ -41,7 +55,7 @@ def scale_image(img_path, width=None, height=None):
     return im
 
 
-def parse_and_replace_image_url_list(url, html, info):
+def parse_and_replace_image_url_list(url, html, article_update_info):
     """
     return all image urls in a html, and convert them into s3 url
     """
@@ -54,7 +68,7 @@ def parse_and_replace_image_url_list(url, html, info):
             pass
         else:
             image_url_list.append(old_image_url)
-            image_instance_key = generate_image_instance_key(info['article_id'], old_image_url)
+            image_instance_key = generate_image_instance_key(article_update_info.article_id, old_image_url)
             new_image_url = get_data_url(BUCKET_NAME_IMAGE, image_instance_key)
             tag['src'] = new_image_url
     
@@ -68,7 +82,6 @@ def generate_image_tobedone_key(article_id):
 
 def set_image_tobedone(image_tobedone_key, amount):
     cache.set(image_tobedone_key, amount)
-    logging.warning('set_image_tobedone:' + str(image_tobedone_key) + ':' + str(get_image_tobedone(image_tobedone_key)))
     
     return None
 
