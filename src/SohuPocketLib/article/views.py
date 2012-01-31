@@ -25,6 +25,12 @@ def list(request, format):
     return HttpResponse(response)
 
 
+def list_test(request, *args, **kwargs):
+    
+    return render_to_response('article_list_test.html',
+                              context_instance = RequestContext(request))
+
+
 def show(request, key, format):
     access_token_input = input_for_show_func(request)
     kan_user = KanUser('', access_token_input)

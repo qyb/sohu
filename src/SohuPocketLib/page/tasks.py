@@ -98,12 +98,13 @@ class ImageUrlListHandler(Task):
     def run(self, update_article_info):
         is_successful = True
         try:
-            image_url_list = parse_and_replace_image_url_list(update_article_info.url, update_article_info.article_content, update_article_info)
+            image_url_list, new_article_content = parse_and_replace_image_url_list(update_article_info.url, update_article_info.article_content, update_article_info)
         except Exception:
             is_successful = False
             raise
         else:
             update_article_info.image_url_list = image_url_list
+            update_article_info.article_content = new_article_content
 #            call next step
             UploadArticleHandler.delay(update_article_info)
             

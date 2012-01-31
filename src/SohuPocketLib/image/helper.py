@@ -71,8 +71,9 @@ def parse_and_replace_image_url_list(url, html, article_update_info):
             image_instance_key = generate_image_instance_key(article_update_info.article_id, old_image_url)
             new_image_url = get_data_url(BUCKET_NAME_IMAGE, image_instance_key)
             tag['src'] = new_image_url
+    image_replaced_html = unicode(soup)
     
-    return image_url_list
+    return image_url_list, image_replaced_html
             
 
 def generate_image_tobedone_key(article_id):
