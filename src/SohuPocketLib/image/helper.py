@@ -6,6 +6,7 @@ from constants import KEY_IMAGE_INSTANCE, KEY_IMAGE_TOBEDONE, \
 from image.models import MyImageInstance
 from storage.helper import get_data_url
 from django.core.cache import cache
+from article.helper import choose_a_db
 import Image
 import hashlib
 import urlparse
@@ -98,14 +99,17 @@ def generate_image_instance_key(article_id, image_url):
 
 
 def create_myimage_instance(user_id, key, url, myarticle_instance_id, title='', description=''):
-    myimage_instance = MyImageInstance(
-                                       user_id=user_id,
-                                       key=key,
-                                       url=url,
-                                       myarticle_instance_id = myarticle_instance_id,
-                                       title=title,
-                                       description=description
-                                       )
+    chosen_db = choose_a_db(user_id)
+    try:
+        myimage_instance = MyImageInstance.objects.using(chosen_db).get(key=key)
+    except MyImageInstance.DoesNotExist:
+        myimage_instance = MyImageInstance()
+    myimage_instance.user_id=user_id
+    myimage_instance.key=key
+    myimage_instance.url=url
+    myimage_instance.myarticle_instance_id = myarticle_instance_id
+    myimage_instance.title=title
+    myimage_instance.description=description
     myimage_instance.save()
     
     return myimage_instance

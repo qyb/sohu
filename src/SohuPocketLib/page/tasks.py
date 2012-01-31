@@ -90,7 +90,6 @@ class StoreArticleInfoHandler(Task):
         return is_successful
 
 
-
 class ImageUrlListHandler(Task):
     """
     parse image url list and replace them with identification in s3

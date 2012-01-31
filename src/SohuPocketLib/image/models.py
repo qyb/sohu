@@ -44,3 +44,4 @@ class MyImageInstance(MultiDB):
         self.delete_cache()
         
         return None
+    

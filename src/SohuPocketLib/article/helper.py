@@ -24,12 +24,15 @@ def choose_a_db(user_id):
 
 
 def create_myarticle_instance(user_id, key, title, url):
-    myarticle_instance = MyArticleInstance(
-                                           user_id=user_id,
-                                           key=key,
-                                           title=title,
-                                           url=url
-                                           )
+    chosen_db = choose_a_db(user_id)
+    try:
+        myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(key=key)
+    except MyArticleInstance.DoesNotExist:
+        myarticle_instance = MyArticleInstance()
+    myarticle_instance.user_id = user_id
+    myarticle_instance.key = key
+    myarticle_instance.title = title
+    myarticle_instance.url = url
     myarticle_instance.save()
     
     return myarticle_instance
