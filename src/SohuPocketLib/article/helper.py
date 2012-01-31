@@ -10,6 +10,7 @@ from django.core.cache import cache
 from lxml import etree
 import hashlib
 import time
+import logging
 
 
 class UpdateArticleInfo(object):
@@ -70,18 +71,19 @@ def get_myarticle_instance(user_id, key):
 
 
 def get_myarticle_instance_with_image_list(user_id, key):
-    myarticle_instance = cache.get(key, None)
-    if myarticle_instance is None:
-        try:
-            myarticle_instance = get_myarticle_instance(user_id, key)
-        except MyArticleInstance.DoesNotExist:
-            pass
+    myarticle_instance = get_myarticle_instance(user_id, key)
+    logging.warning(str(myarticle_instance.id) + str(hasattr(myarticle_instance, 'image_list')))
     if myarticle_instance and not hasattr(myarticle_instance, 'image_list'):
-        chosen_db = choose_a_db(user_id)
-        myimage_instance_list = MyImageInstance.objects.using(chosen_db) \
-                                            .filter(myarticle_instance_id=myarticle_instance.id)
-        image_list = [image.key for image in myimage_instance_list]
-        myarticle_instance.image_list = image_list
+        logging.warning('trying to get image')
+        myarticle_instance.image_list = []
+        if myarticle_instance.is_ready:
+            chosen_db = choose_a_db(user_id)
+            images = MyImageInstance.objects \
+                                    .using(chosen_db) \
+                                    .filter(myarticle_instance_id=myarticle_instance.id)
+            logging.warning(str(myarticle_instance.id) + ':' + str(len(images)))
+            image_list = [image.key for image in images]
+            myarticle_instance.image_list = image_list
         myarticle_instance.update_cache()
     
     return myarticle_instance

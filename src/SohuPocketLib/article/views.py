@@ -20,9 +20,10 @@ def list(request, format):
     if kan_user.is_logged_in():
         if format == 'xml':
             myarticle_list_etree = get_myarticle_list_to_xml_etree(kan_user.get_user_id())
-            response = etree.tostring(myarticle_list_etree)
-    
-    return HttpResponse(response)
+            response = etree.tostring(myarticle_list_etree, xml_declaration=True, encoding='utf-8')
+            mimetype ='text/xml'
+            
+    return HttpResponse(response, mimetype=mimetype)
 
 
 def list_test(request, *args, **kwargs):
@@ -39,10 +40,17 @@ def show(request, key, format):
     if kan_user.is_logged_in():
         if format == 'xml':
             myarticle_instance_etree = get_myarticle_instance_to_xml_etree(kan_user.get_user_id(), key)
-            response = etree.tostring(myarticle_instance_etree)
+            response = etree.tostring(myarticle_instance_etree, xml_declaration=True, encoding='utf-8')
+            mimetype = 'text/xml'
             
-    return HttpResponse(response)
+    return HttpResponse(response, mimetype=mimetype)
     
+
+def show_test(request, *args, **kwargs):
+    
+    return render_to_response('article_show_test.html',
+                              context_instance = RequestContext(request))
+
     
 def update(request, format):
     access_token_input, url = input_for_update_func(request)
@@ -58,9 +66,10 @@ def update(request, format):
         else:
             if format == 'xml':
                 response_etree = generate_single_xml_etree('status', 'success')
-                response = etree.tostring(response_etree)
-            
-    return HttpResponse(response)
+                response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+                mimetype = 'text/xml'
+                
+    return HttpResponse(response, mimetype=mimetype)
 
 
 def update_test(request, *args, **kwargs):
@@ -93,6 +102,7 @@ def modify_or_destroy_base(access_token_input, modify_info, key, format):
         is_successful = modify_or_destroy_myarticle_instance(user_id, key, modify_info)
     if format == 'xml':
         response_etree = generate_single_xml_etree('status', 'success' if is_successful else 'fail')
-        response = etree.tostring(response_etree)
+        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+        mimetype = 'text/xml'
         
-    return HttpResponse(response)
+    return HttpResponse(response, mimetype=mimetype)
