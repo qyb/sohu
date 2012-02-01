@@ -13,14 +13,18 @@ from lxml import etree
 
 
 def list(request, format):
-    access_token_input = input_for_list_func(request)
+    access_token_input, offset, limit = input_for_list_func(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     response = None
     if kan_user.is_logged_in():
         if format == 'xml':
-            myarticle_list_etree = get_myarticle_list_to_xml_etree(kan_user.get_user_id())
-            response = etree.tostring(myarticle_list_etree, xml_declaration=True, encoding='utf-8')
+            myarticle_list_etree = get_myarticle_list_to_xml_etree(kan_user.get_user_id(),
+                                                                   offset,
+                                                                   limit)
+            response = etree.tostring(myarticle_list_etree,
+                                      xml_declaration=True,
+                                      encoding='utf-8')
             mimetype ='text/xml'
             
     return HttpResponse(response, mimetype=mimetype)
