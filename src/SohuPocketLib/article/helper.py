@@ -2,7 +2,7 @@
 
 from article.models import MyArticleInstance
 from constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
-    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE
+    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT
 from image.models import MyImageInstance
 from storage.helper import get_data_url
 from user.helper import get_GET_dict, get_POST_dict
@@ -155,15 +155,21 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     return article
 
 
-def get_myarticle_list(user_id):
+def get_myarticle_list(user_id, offset, limit):
     chosen_db = choose_a_db(user_id)
-    myarticle_list = MyArticleInstance.objects.using(chosen_db).filter(user_id = user_id)
+    logging.warning(offset)
+    logging.warning(limit)
+    myarticle_list = MyArticleInstance.objects \
+                                      .using(chosen_db) \
+                                      .filter(user_id = user_id, is_delete = False) \
+                                      .order_by('-id') \
+                                      [offset : offset + limit]
     
     return myarticle_list
 
 
-def get_myarticle_list_to_xml_etree(user_id):
-    myarticle_list = get_myarticle_list(user_id)
+def get_myarticle_list_to_xml_etree(user_id, offset, limit):
+    myarticle_list = get_myarticle_list(user_id, offset, limit)
     articles = etree.Element('articles')
     for myarticle_instance in myarticle_list:
         articles.append(get_myarticle_instance_to_xml_etree(user_id, myarticle_instance.key))
@@ -188,8 +194,19 @@ def get_access_token(request, method):
 
 
 def input_for_list_func(request):
-    
-    return get_access_token(request, 'GET')
+    access_token = get_access_token(request, 'GET')
+    offset = get_GET_dict(request).get('offset', '')
+    try:
+        offset = int(offset)
+    except:
+        offset = 0
+    limit = get_GET_dict(request).get('limit', '')
+    try:
+        limit = int(limit)
+    except:
+        limit = DEFAULT_ARTICLE_LIST_LIMIT
+        
+    return access_token, offset, limit
 
 
 def input_for_show_func(request):
