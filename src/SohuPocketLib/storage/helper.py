@@ -47,7 +47,7 @@ def get_data_to_filename(bucket_name, key_name, filename):
 def store_data_from_filename(bucket_name, key_name, path_source_file, metadata=None, headers=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
-    key.set_contents_from_filename(path_source_file, headers=None, policy=policy)
+    key.set_contents_from_filename(path_source_file, headers=headers, policy=policy)
     if metadata:
         key.metadata.update(metadata)
 
@@ -57,7 +57,7 @@ def store_data_from_filename(bucket_name, key_name, path_source_file, metadata=N
 def store_data_from_stream(bucket_name, key_name, stream, metadata=None, headers=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
-    key.set_contents_from_stream(stream, headers=None, policy=policy)
+    key.set_contents_from_stream(stream, headers=headers, policy=policy)
     if metadata:
         key.metadata.update(metadata)
 
@@ -67,7 +67,7 @@ def store_data_from_stream(bucket_name, key_name, stream, metadata=None, headers
 def store_data_from_string(bucket_name, key_name, need_store_string, metadata=None, headers=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
-    key.set_contents_from_string(need_store_string, headers=None, policy=policy)
+    key.set_contents_from_string(need_store_string, headers=headers, policy=policy)
     if metadata:
         key.metadata.update(metadata)
 
