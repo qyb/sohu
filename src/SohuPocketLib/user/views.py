@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.user.helper import input_for_verify_func, input_for_show_func, \
+from user.helper import input_for_verify_func, input_for_show_func, \
     extract_class_instance_to_dict, input_for_update_func
 from django.http import HttpResponse
 from django.shortcuts import render_to_response

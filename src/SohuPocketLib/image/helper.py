@@ -1,10 +1,30 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.constants import KEY_IMAGE_INSTANCE, KEY_IMAGE_TOBEDONE
-from SohuPocketLib.image.models import MyImageInstance
+from BeautifulSoup import BeautifulSoup
+from constants import KEY_IMAGE_INSTANCE, KEY_IMAGE_TOBEDONE, \
+    BUCKET_NAME_IMAGE
+from image.models import MyImageInstance
+from storage.helper import get_data_url
 from django.core.cache import cache
+from article.helper import choose_a_db
 import Image
 import hashlib
+import urlparse
+import logging
+
+
+class UpdateImageInfo(object):
+    """
+    stores variables used when update image
+    """
+    
+    def __init__(self, image_url):
+        self.image_url = image_url
+        self.image_date = None
+        self.image_tobedone_key = None
+        self.image_instance_key = None
+        
+        return None
 
 
 def scale_image(img_path, width=None, height=None):
@@ -35,12 +55,26 @@ def scale_image(img_path, width=None, height=None):
     return im
 
 
-def parse_and_replace_image_url_list():
+def parse_and_replace_image_url_list(url, html, article_update_info):
     """
-    return all image urls in a html, and tranlate them into s3 address
+    return all image urls in a html, and convert them into s3 url
     """
-    pass
-
+    soup = BeautifulSoup(html)
+    image_url_list = []
+    for tag in soup.findAll('img'):
+        try:
+            old_image_url = urlparse.urljoin(url, tag['src'])
+        except Exception:
+            pass
+        else:
+            image_url_list.append(old_image_url)
+            image_instance_key = generate_image_instance_key(article_update_info.article_id, old_image_url)
+            new_image_url = get_data_url(BUCKET_NAME_IMAGE, image_instance_key)
+            tag['src'] = new_image_url
+    image_replaced_html = unicode(soup)
+    
+    return image_url_list, image_replaced_html
+            
 
 def generate_image_tobedone_key(article_id):
     
@@ -48,25 +82,24 @@ def generate_image_tobedone_key(article_id):
 
 
 def set_image_tobedone(image_tobedone_key, amount):
-    cache.set(image_tobedone_key)
+    cache.set(image_tobedone_key, amount)
     
     return None
 
 
-def get_image_tobedone(image_tobedone_key, ammout):
-    cache.get(image_tobedone_key)
+def get_image_tobedone(image_tobedone_key):
+    
+    return cache.get(image_tobedone_key)
+
+
+def increase_image_tobedone(image_tobedone_key, delta=1):
+    cache.incr(image_tobedone_key, delta)
     
     return None
 
 
-def increase_image_tobedone(image_tobedone_key, amount=1):
-    cache.incr(image_tobedone_key, amount)
-    
-    return None
-
-
-def decrease_image_tobedone(image_tobedone_key, amount=1):
-    cache.decr(image_tobedone_key, amount)
+def decrease_image_tobedone(image_tobedone_key, delta=1):
+    cache.decr(image_tobedone_key, delta)
     
     return None
 
@@ -79,13 +112,18 @@ def generate_image_instance_key(article_id, image_url):
     return image_instance_key
 
 
-def create_myimage_instance(key, url, title='', description=''):
-    myimage_instance = MyImageInstance(
-                                       key=key,
-                                       url=url,
-                                       title=title,
-                                       description=description
-                                       )
+def create_myimage_instance(user_id, key, url, myarticle_instance_id, title='', description=''):
+    chosen_db = choose_a_db(user_id)
+    try:
+        myimage_instance = MyImageInstance.objects.using(chosen_db).get(key=key)
+    except MyImageInstance.DoesNotExist:
+        myimage_instance = MyImageInstance()
+    myimage_instance.user_id=user_id
+    myimage_instance.key=key
+    myimage_instance.url=url
+    myimage_instance.myarticle_instance_id = myarticle_instance_id
+    myimage_instance.title=title
+    myimage_instance.description=description
     myimage_instance.save()
     
     return myimage_instance

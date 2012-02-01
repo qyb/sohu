@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from SohuPocketLib.constants import LIMIT_USERS_ONE_DB
+from constants import LIMIT_USERS_ONE_DB
 from django.db import models
 
 

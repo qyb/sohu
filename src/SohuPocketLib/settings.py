@@ -101,7 +101,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+#    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -125,13 +125,15 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'djcelery',
-    'user',
-    # 'contact',
-    'article',
     'storage',
+    'article',
+    'image',
+    'page',
+    'user',
 )
 
-CACHE_BACKEND = 'locmem:///?timeout=3600'
+CACHE_BACKEND = 'db://cache?timeout=3600'
+#CACHE_BACKEND = 'locmem:///?timeout=3600'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -164,5 +166,6 @@ BROKER_PORT = 5672
 BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
+
 AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
 AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'

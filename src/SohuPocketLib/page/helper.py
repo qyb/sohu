@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from BeautifulSoup import BeautifulSoup
-from django.core.cache import cache
 
 
 def delete_html_tag_attribute(html_string): 
