@@ -44,30 +44,30 @@ def get_data_to_filename(bucket_name, key_name, filename):
     return key.get_contents_to_filename(filename)
 
 
-def store_data_from_filename(bucket_name, key_name, path_source_file, metadata=None, policy='public-read'):
+def store_data_from_filename(bucket_name, key_name, path_source_file, metadata=None, headers=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
-    key.set_contents_from_filename(path_source_file, policy=policy)
+    key.set_contents_from_filename(path_source_file, headers=None, policy=policy)
     if metadata:
         key.metadata.update(metadata)
 
     return key
 
 
-def store_data_from_stream(bucket_name, key_name, stream, metadata=None, policy='public-read'):
+def store_data_from_stream(bucket_name, key_name, stream, metadata=None, headers=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
-    key.set_contents_from_stream(stream, policy=policy)
+    key.set_contents_from_stream(stream, headers=None, policy=policy)
     if metadata:
         key.metadata.update(metadata)
 
     return key
 
 
-def store_data_from_string(bucket_name, key_name, need_store_string, metadata=None, policy='public-read'):
+def store_data_from_string(bucket_name, key_name, need_store_string, metadata=None, headers=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
-    key.set_contents_from_string(need_store_string, policy=policy)
+    key.set_contents_from_string(need_store_string, headers=None, policy=policy)
     if metadata:
         key.metadata.update(metadata)
 
