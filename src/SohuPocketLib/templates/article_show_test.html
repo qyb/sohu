@@ -1,11 +1,10 @@
 <html>
 <head>
-	<title>user_verify_test</title>
+	<title>article_show_test</title>
 </head>
 <body>
-<form action="../" method="POST">
+<form action="../" method="GET">
 {% csrf_token %}
-sohupassport_uuid <input type="text" name="sohupassport_uuid"></input> <br>
 access_token <input type="text" name="access_token"></input> <br>
 <input type="submit"></input>
 </form>

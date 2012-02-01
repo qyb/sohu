@@ -72,16 +72,13 @@ def get_myarticle_instance(user_id, key):
 
 def get_myarticle_instance_with_image_list(user_id, key):
     myarticle_instance = get_myarticle_instance(user_id, key)
-    logging.warning(str(myarticle_instance.id) + str(hasattr(myarticle_instance, 'image_list')))
     if myarticle_instance and not hasattr(myarticle_instance, 'image_list'):
-        logging.warning('trying to get image')
         myarticle_instance.image_list = []
         if myarticle_instance.is_ready:
             chosen_db = choose_a_db(user_id)
             images = MyImageInstance.objects \
                                     .using(chosen_db) \
                                     .filter(myarticle_instance_id=myarticle_instance.id)
-            logging.warning(str(myarticle_instance.id) + ':' + str(len(images)))
             image_list = [image.key for image in images]
             myarticle_instance.image_list = image_list
         myarticle_instance.update_cache()
@@ -137,8 +134,11 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     download_url.text = get_data_url(BUCKET_NAME_ARTICLE, myarticle_instance.key)
     
     image_urls = etree.SubElement(article, 'image_urls')
-    image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
-                                for image_key in myarticle_instance.image_list])
+#    image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
+#                                for image_key in myarticle_instance.image_list])
+    for image_key in myarticle_instance.image_list:
+        image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
+        image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
     
     is_read = etree.SubElement(article, 'is_read')
     is_read.text = 'YES' if myarticle_instance.is_read else 'NO'

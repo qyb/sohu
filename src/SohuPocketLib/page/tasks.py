@@ -19,8 +19,6 @@ class PageFetchHandler(Task):
     fetch a single html page
     '''
     
-#    info is a dict, used for arguments simplicity
-#    info here must include key 'user_id'
     def run(self, url, update_article_info):
         is_successful = True
         try:
