@@ -20,13 +20,18 @@ class DownloadImageHandler(Task):
         is_successful = True
         update_image_info = UpdateImageInfo(image_url)
         try:
-            image_data = urllib2.urlopen(image_url).read()
+            resource = urllib2.urlopen(image_url)
+            image_data = resource.read()
+            try:
+                mime = resource.info()['Content-Type']
+            except:
+                mime = None
         except Exception:
             is_successful = False
-            raise
         else:
             update_image_info.image_url = image_url
             update_image_info.image_data = image_data
+            update_image_info.mime = mime
             update_image_info.image_tobedone_key = image_tobedone_key
 #            call next step
             StoreImageInfoHandler.delay(update_image_info, update_article_info)
@@ -46,7 +51,6 @@ class StoreImageInfoHandler(Task):
             create_myimage_instance(update_article_info.user_id, image_instance_key, update_image_info.image_url, update_article_info.article_id)
         except Exception:
             is_successful = False
-            raise
         else:
             update_image_info.image_instance_key = image_instance_key
 #            call next step
@@ -63,11 +67,15 @@ class UploadImageHandler(Task):
     def run(self, update_image_info, update_article_info):
         is_successful = True
         try:
-            store_data_from_string(BUCKET_NAME_IMAGE, update_image_info.image_instance_key, update_image_info.image_data)
-            pass
+            headers = dict()
+            if update_article_info.mime:
+                headers['Content-Type'] = update_image_info.mime
+            store_data_from_string(BUCKET_NAME_IMAGE,
+                                   update_image_info.image_instance_key,
+                                   update_image_info.image_data,
+                                   headers=headers)
         except Exception:
             is_successful = False
-            raise
         else:
 #            call next step
             CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
@@ -91,7 +99,6 @@ class CheckImagetobedoneHandler(Task):
                 article_instance.save()
             except MyArticleInstance.DoesNotExist:
                 is_successful = False
-                raise
             
         return is_successful
     

@@ -67,7 +67,7 @@ def store_data_from_stream(bucket_name, key_name, stream, metadata=None, headers
 def store_data_from_string(bucket_name, key_name, need_store_string, metadata=None, headers=None, policy='public-read'):
     bucket = get_or_create_bucket(bucket_name, policy)
     key = bucket.new_key(key_name)
-    key.set_contents_from_string(need_store_string, headers=None, policy=policy)
+    key.set_contents_from_string(need_store_string, headers=headers, policy=policy)
     if metadata:
         key.metadata.update(metadata)
 
@@ -141,4 +141,3 @@ def get_bucket_acl(bucket_name):
     bucket = get_or_create_bucket(bucket_name)
 
     return bucket.get_acl()
-    

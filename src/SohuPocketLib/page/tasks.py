@@ -22,12 +22,18 @@ class PageFetchHandler(Task):
     def run(self, url, update_article_info):
         is_successful = True
         try:
-            raw_html = urllib2.urlopen(url).read()
+            resource = urllib2.urlopen(url)
+            raw_html = resource.read() 
+            try:
+                mime = resource.info()['Content-Type']
+            except:
+                mime = None
         except IOError:
             is_successful = False
             raise
         else:
             update_article_info.url = url
+            update_article_info.mime = mime
 #            call next step
             ReadableArticleHandler.delay(raw_html, update_article_info)
             
@@ -117,9 +123,16 @@ class UploadArticleHandler(Task):
     def run(self, update_article_info):
         is_successful = True
         try:
-            store_data_from_string(BUCKET_NAME_ARTICLE, update_article_info.article_instance_key, update_article_info.article_content)
+            headers = dict()
+            if update_article_info.mime:
+                headers['Content-Type'] = update_article_info.mime
+            store_data_from_string(BUCKET_NAME_ARTICLE,
+                                   update_article_info.article_instance_key,
+                                   update_article_info.article_content,
+                                   headers=headers)
         except Exception:
             is_successful = False
+            raise
         else:
 #            call next step
             BulkImageDownloadHandler.delay(update_article_info)

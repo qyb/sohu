@@ -23,6 +23,7 @@ class UpdateArticleInfo(object):
         self.url = None
         self.article_title = None
         self.article_content = None
+        self.mime = None
         self.article_id = None
         self.article_instance_key = None
         self.image_url_list = None
@@ -157,8 +158,6 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
 
 def get_myarticle_list(user_id, offset, limit):
     chosen_db = choose_a_db(user_id)
-    logging.warning(offset)
-    logging.warning(limit)
     myarticle_list = MyArticleInstance.objects \
                                       .using(chosen_db) \
                                       .filter(user_id = user_id, is_delete = False) \

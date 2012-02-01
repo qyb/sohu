@@ -20,6 +20,7 @@ class UpdateImageInfo(object):
     
     def __init__(self, image_url):
         self.image_url = image_url
+        self.mime = None
         self.image_date = None
         self.image_tobedone_key = None
         self.image_instance_key = None
