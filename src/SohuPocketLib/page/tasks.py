@@ -9,6 +9,7 @@ from image.tasks import DownloadImageHandler
 from page.helper import delete_html_tag_attribute
 from storage.helper import store_data_from_string
 from celery.task import Task
+from celery.task.sets import subtask
 from readability.readability import Document
 import urllib2
 import logging
@@ -35,7 +36,12 @@ class PageFetchHandler(Task):
             update_article_info.url = url
             update_article_info.mime = mime
 #            call next step
-            ReadableArticleHandler.delay(raw_html, update_article_info)
+            ReadableArticleHandler.delay(raw_html,
+                                         update_article_info,
+                                         callback=subtask(StoreArticleInfoHandler,
+                                         callback=subtask(ImageUrlListHandler,
+                                         callback=subtask(UploadArticleHandler,
+                                         callback=subtask(BulkImageDownloadHandler)))))
             
         return is_successful
 
@@ -53,7 +59,7 @@ class ReadableArticleHandler(Task):
         
         return doc.summary()
     
-    def run(self, raw_html, update_article_info):
+    def run(self, raw_html, update_article_info, callback=None):
         is_successful = True
         try:
             doc = Document(raw_html)
@@ -66,7 +72,8 @@ class ReadableArticleHandler(Task):
             update_article_info.article_title = article_title
             update_article_info.article_content = article_content
 #            call next step
-            StoreArticleInfoHandler.delay(update_article_info)
+#            StoreArticleInfoHandler.delay(update_article_info)
+            subtask(callback).delay(update_article_info)
             
         return is_successful
 
@@ -76,7 +83,7 @@ class StoreArticleInfoHandler(Task):
     store article info to local db
     """
     
-    def run(self, update_article_info):
+    def run(self, update_article_info, callback=None):
         is_successful =  True
         article_instance_key = generate_article_instance_key(update_article_info.url, update_article_info.user_id)
         try:
@@ -89,7 +96,8 @@ class StoreArticleInfoHandler(Task):
             update_article_info.article_id = article_id
             update_article_info.article_instance_key = article_instance_key
 #            call next step
-            ImageUrlListHandler.delay(update_article_info)
+#            ImageUrlListHandler.delay(update_article_info)
+            subtask(callback).delay(update_article_info)
             
         return is_successful
 
@@ -99,7 +107,7 @@ class ImageUrlListHandler(Task):
     parse image url list and replace them with identification in s3
     """
     
-    def run(self, update_article_info):
+    def run(self, update_article_info, callback=None):
         is_successful = True
         try:
             image_url_list, new_article_content = parse_and_replace_image_url_list(update_article_info.url, update_article_info.article_content, update_article_info)
@@ -110,7 +118,8 @@ class ImageUrlListHandler(Task):
             update_article_info.image_url_list = image_url_list
             update_article_info.article_content = new_article_content
 #            call next step
-            UploadArticleHandler.delay(update_article_info)
+#            UploadArticleHandler.delay(update_article_info)
+            subtask(callback).delay(update_article_info)
             
         return is_successful
 
@@ -120,7 +129,7 @@ class UploadArticleHandler(Task):
     upload article html to s3
     """
     
-    def run(self, update_article_info):
+    def run(self, update_article_info, callback=None):
         is_successful = True
         try:
             headers = dict()
@@ -135,7 +144,8 @@ class UploadArticleHandler(Task):
             raise
         else:
 #            call next step
-            BulkImageDownloadHandler.delay(update_article_info)
+#            BulkImageDownloadHandler.delay(update_article_info)
+            subtask(callback).delay(update_article_info)
             
         return is_successful
     
