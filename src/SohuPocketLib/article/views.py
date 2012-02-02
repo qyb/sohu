@@ -85,15 +85,27 @@ def update_test(request, *args, **kwargs):
 def destroy(request, key, format):
     access_token_input = input_for_destroy_func(request)
     modify_info = dict()
-    modify_info['is_delete'] ='True'
+    modify_info['is_delete'] ='YES'
     
     return modify_or_destroy_base(access_token_input, modify_info, key, format)
+
         
+def destroy_test(request, *args, **kwargs):
+    
+    return render_to_response('article_destroy_test.html',
+                              context_instance = RequestContext(request))
+
         
 def modify(request, key, format):
     access_token_input, modify_info = input_for_modify_func(request)
     
     return modify_or_destroy_base(access_token_input, modify_info, key, format)
+
+
+def modify_test(request, *args, **kwargs):
+    
+    return render_to_response('article_modify_test.html',
+                              context_instance = RequestContext(request))
 
 
 def modify_or_destroy_base(access_token_input, modify_info, key, format):

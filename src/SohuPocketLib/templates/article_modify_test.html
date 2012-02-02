@@ -1,0 +1,14 @@
+<html>
+<head>
+	<title>article_modify_test</title>
+</head>
+<body>
+<form action="../" method="POST">
+{% csrf_token %}
+access_token <input type="text" name="access_token"></input> <br>
+is_read <input type="text" name="is_read"></input> <br>
+is_star <input type="text" name="is_star"></input> <br>
+<input type="submit"></input>
+</form>
+</body>
+</html>

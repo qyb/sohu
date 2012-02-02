@@ -31,5 +31,8 @@ urlpatterns = patterns('',
     (r'^article/show/(?P<key>\w+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.show_test'),
     
     (r'^article/modify/(?P<key>\w+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.modify'),
+    (r'^article/modify/(?P<key>\w+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.modify_test'),
+    
     (r'^article/destroy/(?P<key>\w+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.destroy'),
+    (r'^article/destroy/(?P<key>\w+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.destroy_test'),
 )

@@ -9,7 +9,7 @@ from user.helper import get_GET_dict, get_POST_dict
 from django.core.cache import cache
 from lxml import etree
 import hashlib
-import time
+from datetime import datetime
 import logging
 
 
@@ -95,18 +95,18 @@ def modify_or_destroy_myarticle_instance(user_id, key, modify_info):
     except MyArticleInstance.DoesNotExist:
         is_successful = False
     else:
-        if modify_info['is_delete'] == 'True':
-            myarticle_instance.is_deleted = True
-            myarticle_instance.delete_time = time.time()
-        if modify_info['is_read'] == 'True':
+        if modify_info.get('is_delete', None) == 'YES':
+            myarticle_instance.is_delete = True
+            myarticle_instance.delete_time = datetime.now()
+        if modify_info.get('is_read', None) == 'YES':
             myarticle_instance.is_read = True
-            myarticle_instance.read_time = time.time()
-        if modify_info['is_read'] == 'False':
+            myarticle_instance.read_time = datetime.now()
+        elif modify_info.get('is_read', None) == 'NO':
             myarticle_instance.is_read = False
             myarticle_instance.read_time = None
-        if modify_info['is_star'] == 'True':
+        if modify_info.get('is_star', None) == 'YES':
             myarticle_instance.is_star = True
-        if modify_info['is_star'] == 'False':
+        elif modify_info.get('is_star', None) == 'NO':
             myarticle_instance.is_star = False
         myarticle_instance.save()
         
