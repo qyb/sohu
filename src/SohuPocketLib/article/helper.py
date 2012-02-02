@@ -150,9 +150,6 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     is_star = etree.SubElement(article, 'is_star')
     is_star.text = 'YES' if myarticle_instance.is_star else 'NO'
     
-    is_ready = etree.SubElement(article, 'is_ready')
-    is_ready.text = 'YES' if myarticle_instance.is_ready else 'NO'
-    
     return article
 
 
@@ -160,7 +157,7 @@ def get_myarticle_list(user_id, offset, limit):
     chosen_db = choose_a_db(user_id)
     myarticle_list = MyArticleInstance.objects \
                                       .using(chosen_db) \
-                                      .filter(user_id = user_id, is_delete = False) \
+                                      .filter(user_id = user_id, is_delete = False, is_ready = True) \
                                       .order_by('-id') \
                                       [offset : offset + limit]
     
