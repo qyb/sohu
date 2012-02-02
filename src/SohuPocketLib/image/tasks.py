@@ -36,7 +36,6 @@ class DownloadImageHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
-            raise
         except Exception as exc:
             is_successful = False
             try:
