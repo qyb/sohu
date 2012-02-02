@@ -2,7 +2,8 @@
 
 from article.models import MyArticleInstance
 from constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
-    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT
+    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, \
+    TRUE_REPR, FALSE_REPR
 from image.models import MyImageInstance
 from storage.helper import get_data_url
 from user.helper import get_GET_dict, get_POST_dict
@@ -95,18 +96,18 @@ def modify_or_destroy_myarticle_instance(user_id, key, modify_info):
     except MyArticleInstance.DoesNotExist:
         is_successful = False
     else:
-        if modify_info.get('is_delete', None) == 'YES':
+        if modify_info.get('is_delete', None) == TRUE_REPR:
             myarticle_instance.is_delete = True
             myarticle_instance.delete_time = datetime.now()
-        if modify_info.get('is_read', None) == 'YES':
+        if modify_info.get('is_read', None) == TRUE_REPR:
             myarticle_instance.is_read = True
             myarticle_instance.read_time = datetime.now()
-        elif modify_info.get('is_read', None) == 'NO':
+        elif modify_info.get('is_read', None) == FALSE_REPR:
             myarticle_instance.is_read = False
             myarticle_instance.read_time = None
-        if modify_info.get('is_star', None) == 'YES':
+        if modify_info.get('is_star', None) == TRUE_REPR:
             myarticle_instance.is_star = True
-        elif modify_info.get('is_star', None) == 'NO':
+        elif modify_info.get('is_star', None) == FALSE_REPR:
             myarticle_instance.is_star = False
         myarticle_instance.save()
         
@@ -142,13 +143,13 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
         image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
     
     is_read = etree.SubElement(article, 'is_read')
-    is_read.text = 'YES' if myarticle_instance.is_read else 'NO'
+    is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
     
     cover = etree.SubElement(article, 'cover')
     cover.text = myarticle_instance.cover
     
     is_star = etree.SubElement(article, 'is_star')
-    is_star.text = 'YES' if myarticle_instance.is_star else 'NO'
+    is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
     
     return article
 
