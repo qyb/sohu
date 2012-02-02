@@ -34,7 +34,7 @@ class PageFetchHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
-        except IOError as exc:
+        except Exception as exc:
             is_successful = False
             PageFetchHandler.retry(exc=exc)
         else:

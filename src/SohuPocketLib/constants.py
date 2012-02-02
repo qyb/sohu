@@ -11,8 +11,8 @@ KEY_IMAGE_INSTANCE = 'key_image_instance_%s_%s_v1' # require article_id, image_u
 BUCKET_NAME_ARTICLE = 'bucket_sohukan_article_v1'
 BUCKET_NAME_IMAGE = 'bucket_sohukan_image_v1'
 
-PAGE_FETCH_MAX_RETRIES = 5
-PAGE_FETCH_DEFAULT_RETRY_DELAY = 1 * 60 # 1 min
+PAGE_FETCH_MAX_RETRIES = 3
+PAGE_FETCH_DEFAULT_RETRY_DELAY = 1 # 1 min
 
 UPLOAD_ARTICLE_MAX_RETRIES = 5
 UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY = 1 * 60 # i min 
