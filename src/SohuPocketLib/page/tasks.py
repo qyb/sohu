@@ -2,23 +2,28 @@
 
 from article.helper import generate_article_instance_key, \
     create_myarticle_instance
-from constants import BUCKET_NAME_ARTICLE
-from image.helper import parse_and_replace_image_url_list, \
-    set_image_tobedone, generate_image_tobedone_key
-from image.tasks import DownloadImageHandler
-from page.helper import delete_html_tag_attribute
-from storage.helper import store_data_from_string
 from celery.task import Task
 from celery.task.sets import subtask
+from constants import BUCKET_NAME_ARTICLE, \
+    PAGE_FETCH_MAX_RETRIES, PAGE_FETCH_DEFAULT_RETRY_DELAY, \
+    UPLOAD_ARTICLE_MAX_RETRIES, UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY
+from image.helper import parse_and_replace_image_url_list, set_image_tobedone, \
+    generate_image_tobedone_key
+from image.tasks import DownloadImageHandler
+from page.helper import delete_html_tag_attribute
 from readability.readability import Document
-import urllib2
+from storage.helper import store_data_from_string
 import logging
+import urllib2
 
 
 class PageFetchHandler(Task):
     '''
     fetch a single html page
     '''
+    
+    max_retries = PAGE_FETCH_MAX_RETRIES
+    default_retry_delay = PAGE_FETCH_DEFAULT_RETRY_DELAY
     
     def run(self, url, update_article_info):
         is_successful = True
@@ -29,9 +34,9 @@ class PageFetchHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
-        except IOError:
+        except IOError as exc:
             is_successful = False
-            raise
+            PageFetchHandler.retry(exc=exc)
         else:
             update_article_info.url = url
             update_article_info.mime = mime
@@ -68,7 +73,6 @@ class ReadableArticleHandler(Task):
             article_content = self.get_content(doc)
         except Exception:
             is_successful = False
-            raise
         else:
             update_article_info.article_title = article_title
             update_article_info.article_content = article_content
@@ -89,9 +93,8 @@ class StoreArticleInfoHandler(Task):
         try:
             article_instance = create_myarticle_instance(update_article_info.user_id, article_instance_key, update_article_info.article_title, update_article_info.url)
             article_id = article_instance.id
-        except Exception:
+        except Exception as exc:
             is_successful = False
-            raise
         else:
             update_article_info.article_id = article_id
             update_article_info.article_instance_key = article_instance_key
@@ -112,7 +115,6 @@ class ImageUrlListHandler(Task):
             image_url_list, new_article_content = parse_and_replace_image_url_list(update_article_info.url, update_article_info.article_content, update_article_info)
         except Exception:
             is_successful = False
-            raise
         else:
             update_article_info.image_url_list = image_url_list
             update_article_info.article_content = new_article_content
@@ -127,6 +129,9 @@ class UploadArticleHandler(Task):
     upload article html to s3
     """
     
+    max_retries = UPLOAD_ARTICLE_MAX_RETRIES
+    default_retry_delay = UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY
+    
     def run(self, update_article_info, callback=None):
         is_successful = True
         try:
@@ -137,9 +142,9 @@ class UploadArticleHandler(Task):
                                    update_article_info.article_instance_key,
                                    update_article_info.article_content,
                                    headers=headers)
-        except Exception:
+        except Exception as exc:
             is_successful = False
-            raise
+            UploadArticleHandler.retry(exc=exc)
         else:
 #            call next step
             subtask(callback).delay(update_article_info)
@@ -159,7 +164,6 @@ class BulkImageDownloadHandler(Task):
             set_image_tobedone(image_tobedone_key, len(update_article_info.image_url_list))
         except Exception:
             is_successful = False
-            raise
         else:
 #            call next step
             for image_url in update_article_info.image_url_list:

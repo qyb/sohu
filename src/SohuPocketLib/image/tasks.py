@@ -2,7 +2,9 @@
 
 from article.helper import choose_a_db
 from article.models import MyArticleInstance
-from constants import BUCKET_NAME_IMAGE
+from constants import BUCKET_NAME_IMAGE, \
+    DOWNLOAD_IMAGE_MAX_RETRIES, DOWNLOAD_IMAGE_DEFAULT_RETRY_DELAY, \
+    UPLOAD_IMAGE_MAX_RETRIES, UPLOAD_IMAGE_DEFAULT_RETRY_DELAY
 from image.helper import generate_image_instance_key, \
     decrease_image_tobedone, get_image_tobedone, create_myimage_instance, \
     UpdateImageInfo
@@ -17,6 +19,9 @@ class DownloadImageHandler(Task):
     download image
     """
     
+    max_retries = DOWNLOAD_IMAGE_MAX_RETRIES
+    default_retry_delay = DOWNLOAD_IMAGE_DEFAULT_RETRY_DELAY
+    
     def run(self, image_url, image_tobedone_key, update_article_info):
         is_successful = True
         update_image_info = UpdateImageInfo(image_url)
@@ -27,15 +32,15 @@ class DownloadImageHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
-        except Exception:
+        except Exception as exc:
             is_successful = False
+            DownloadImageHandler.retry(exc=exc)
         else:
             update_image_info.image_url = image_url
             update_image_info.image_data = image_data
             update_image_info.mime = mime
             update_image_info.image_tobedone_key = image_tobedone_key
 #            call next step
-#            StoreImageInfoHandler.delay(update_image_info, update_article_info)
             StoreImageInfoHandler.delay(update_image_info,
                                         update_article_info,
                                         callback=subtask(UploadImageHandler,
@@ -59,7 +64,6 @@ class StoreImageInfoHandler(Task):
         else:
             update_image_info.image_instance_key = image_instance_key
 #            call next step
-#            UploadImageHandler.delay(update_image_info, update_article_info)
             subtask(callback).delay(update_image_info, update_article_info)
             
         return is_successful
@@ -69,6 +73,9 @@ class UploadImageHandler(Task):
     """
     upload image to s3
     """
+    
+    max_retries = UPLOAD_IMAGE_MAX_RETRIES
+    default_retry_delay = UPLOAD_IMAGE_DEFAULT_RETRY_DELAY
     
     def run(self, update_image_info, update_article_info, callback=None):
         is_successful = True
@@ -80,11 +87,11 @@ class UploadImageHandler(Task):
                                    update_image_info.image_instance_key,
                                    update_image_info.image_data,
                                    headers=headers)
-        except Exception:
+        except Exception as exc:
             is_successful = False
+            UploadImageHandler.retry(exc=exc)
         else:
 #            call next step
-#            CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
             subtask(callback).delay(update_image_info, update_article_info)
             
         return is_successful
