@@ -41,7 +41,8 @@ class PageFetchHandler(Task):
                                          callback=subtask(StoreArticleInfoHandler,
                                          callback=subtask(ImageUrlListHandler,
                                          callback=subtask(UploadArticleHandler,
-                                         callback=subtask(BulkImageDownloadHandler)))))
+                                         callback=subtask(BulkImageDownloadHandler,
+                                         callback=subtask(DownloadImageHandler))))))
             
         return is_successful
 
@@ -72,7 +73,6 @@ class ReadableArticleHandler(Task):
             update_article_info.article_title = article_title
             update_article_info.article_content = article_content
 #            call next step
-#            StoreArticleInfoHandler.delay(update_article_info)
             subtask(callback).delay(update_article_info)
             
         return is_successful
@@ -96,7 +96,6 @@ class StoreArticleInfoHandler(Task):
             update_article_info.article_id = article_id
             update_article_info.article_instance_key = article_instance_key
 #            call next step
-#            ImageUrlListHandler.delay(update_article_info)
             subtask(callback).delay(update_article_info)
             
         return is_successful
@@ -118,7 +117,6 @@ class ImageUrlListHandler(Task):
             update_article_info.image_url_list = image_url_list
             update_article_info.article_content = new_article_content
 #            call next step
-#            UploadArticleHandler.delay(update_article_info)
             subtask(callback).delay(update_article_info)
             
         return is_successful
@@ -144,7 +142,6 @@ class UploadArticleHandler(Task):
             raise
         else:
 #            call next step
-#            BulkImageDownloadHandler.delay(update_article_info)
             subtask(callback).delay(update_article_info)
             
         return is_successful
@@ -155,7 +152,7 @@ class BulkImageDownloadHandler(Task):
     start bulk image download
     """
     
-    def run(self, update_article_info):
+    def run(self, update_article_info, callback=None):
         is_successful = True
         try:
             image_tobedone_key = generate_image_tobedone_key(update_article_info.article_id)
@@ -166,6 +163,6 @@ class BulkImageDownloadHandler(Task):
         else:
 #            call next step
             for image_url in update_article_info.image_url_list:
-                DownloadImageHandler.delay(image_url, image_tobedone_key, update_article_info)
+                subtask(callback).delay(image_url, image_tobedone_key, update_article_info)
         
         return is_successful

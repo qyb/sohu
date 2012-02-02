@@ -8,6 +8,7 @@ from image.helper import generate_image_instance_key, \
     UpdateImageInfo
 from storage.helper import store_data_from_string
 from celery.task import Task
+from celery.task.sets import subtask
 import urllib2
 import logging
 
@@ -34,7 +35,11 @@ class DownloadImageHandler(Task):
             update_image_info.mime = mime
             update_image_info.image_tobedone_key = image_tobedone_key
 #            call next step
-            StoreImageInfoHandler.delay(update_image_info, update_article_info)
+#            StoreImageInfoHandler.delay(update_image_info, update_article_info)
+            StoreImageInfoHandler.delay(update_image_info,
+                                        update_article_info,
+                                        callback=subtask(UploadImageHandler,
+                                        callback=subtask(CheckImagetobedoneHandler)))
             
         return is_successful    
 
@@ -44,7 +49,7 @@ class StoreImageInfoHandler(Task):
     store image info to local db
     """
     
-    def run(self, update_image_info, update_article_info):
+    def run(self, update_image_info, update_article_info, callback=None):
         is_successful = True
         image_instance_key = generate_image_instance_key(update_article_info.article_id, update_image_info.image_url)
         try:
@@ -54,7 +59,8 @@ class StoreImageInfoHandler(Task):
         else:
             update_image_info.image_instance_key = image_instance_key
 #            call next step
-            UploadImageHandler.delay(update_image_info, update_article_info)
+#            UploadImageHandler.delay(update_image_info, update_article_info)
+            subtask(callback).delay(update_image_info, update_article_info)
             
         return is_successful
             
@@ -64,7 +70,7 @@ class UploadImageHandler(Task):
     upload image to s3
     """
     
-    def run(self, update_image_info, update_article_info):
+    def run(self, update_image_info, update_article_info, callback=None):
         is_successful = True
         try:
             headers = dict()
@@ -78,7 +84,8 @@ class UploadImageHandler(Task):
             is_successful = False
         else:
 #            call next step
-            CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
+#            CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
+            subtask(callback).delay(update_image_info, update_article_info)
             
         return is_successful
 
@@ -101,4 +108,3 @@ class CheckImagetobedoneHandler(Task):
                 is_successful = False
             
         return is_successful
-    
