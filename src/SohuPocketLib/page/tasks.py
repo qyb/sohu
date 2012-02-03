@@ -4,9 +4,10 @@ from article.helper import generate_article_instance_key, \
     create_myarticle_instance
 from celery.task import Task
 from celery.task.sets import subtask
-from constants import BUCKET_NAME_ARTICLE, \
-    PAGE_FETCH_MAX_RETRIES, PAGE_FETCH_DEFAULT_RETRY_DELAY, \
-    UPLOAD_ARTICLE_MAX_RETRIES, UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY
+from constants import BUCKET_NAME_ARTICLE, PAGE_FETCH_MAX_RETRIES, \
+    PAGE_FETCH_DEFAULT_RETRY_DELAY, UPLOAD_ARTICLE_MAX_RETRIES, \
+    UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY, PAGE_FETCH_TIME_LIMIT, \
+    UPLOAD_ARTICLE_TIME_LIMIT
 from image.helper import parse_and_replace_image_url_list, set_image_tobedone, \
     generate_image_tobedone_key
 from image.tasks import DownloadImageHandler
@@ -22,8 +23,10 @@ class PageFetchHandler(Task):
     fetch a single html page
     '''
     
+    time_limit = PAGE_FETCH_TIME_LIMIT
     max_retries = PAGE_FETCH_MAX_RETRIES
     default_retry_delay = PAGE_FETCH_DEFAULT_RETRY_DELAY
+    ignore_result = True
     
     def run(self, url, update_article_info):
         is_successful = True
@@ -57,6 +60,8 @@ class ReadableArticleHandler(Task):
     make html readable
     '''
     
+    ignore_result = True
+    
     def get_title(self, doc):
         
         return doc.short_title()
@@ -87,13 +92,15 @@ class StoreArticleInfoHandler(Task):
     store article info to local db
     """
     
+    ignore_result = True
+    
     def run(self, update_article_info, callback=None):
         is_successful =  True
         article_instance_key = generate_article_instance_key(update_article_info.url, update_article_info.user_id)
         try:
             article_instance = create_myarticle_instance(update_article_info.user_id, article_instance_key, update_article_info.article_title, update_article_info.url)
             article_id = article_instance.id
-        except Exception as exc:
+        except Exception:
             is_successful = False
         else:
             update_article_info.article_id = article_id
@@ -108,6 +115,8 @@ class ImageUrlListHandler(Task):
     """
     parse image url list and replace them with identification in s3
     """
+    
+    ignore_result = True
     
     def run(self, update_article_info, callback=None):
         is_successful = True
@@ -129,8 +138,10 @@ class UploadArticleHandler(Task):
     upload article html to s3
     """
     
+    time_limit = UPLOAD_ARTICLE_TIME_LIMIT
     max_retries = UPLOAD_ARTICLE_MAX_RETRIES
     default_retry_delay = UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY
+    ignore_result = True
     
     def run(self, update_article_info, callback=None):
         is_successful = True
@@ -156,6 +167,8 @@ class BulkImageDownloadHandler(Task):
     """
     start bulk image download
     """
+    
+    ignore_result = True
     
     def run(self, update_article_info, callback=None):
         is_successful = True

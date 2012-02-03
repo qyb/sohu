@@ -2,18 +2,18 @@
 
 from article.helper import choose_a_db
 from article.models import MyArticleInstance
-from constants import BUCKET_NAME_IMAGE, \
-    DOWNLOAD_IMAGE_MAX_RETRIES, DOWNLOAD_IMAGE_DEFAULT_RETRY_DELAY, \
-    UPLOAD_IMAGE_MAX_RETRIES, UPLOAD_IMAGE_DEFAULT_RETRY_DELAY
-from image.helper import generate_image_instance_key, \
-    decrease_image_tobedone, get_image_tobedone, create_myimage_instance, \
-    UpdateImageInfo
-from storage.helper import store_data_from_string
 from celery.task import Task
 from celery.task.sets import subtask
-import urllib2
-import logging
+from constants import BUCKET_NAME_IMAGE, DOWNLOAD_IMAGE_MAX_RETRIES, \
+    DOWNLOAD_IMAGE_DEFAULT_RETRY_DELAY, UPLOAD_IMAGE_MAX_RETRIES, \
+    UPLOAD_IMAGE_DEFAULT_RETRY_DELAY, DOWNLOAD_IMAGE_TIME_LIMIT, \
+    UPLOAD_IMAGE_TIME_LIMIT
+from image.helper import generate_image_instance_key, decrease_image_tobedone, \
+    get_image_tobedone, create_myimage_instance, UpdateImageInfo
+from storage.helper import store_data_from_string
 import celery
+import logging
+import urllib2
 
 
 class DownloadImageHandler(Task):
@@ -21,8 +21,10 @@ class DownloadImageHandler(Task):
     download image
     """
     
+    time_limit = DOWNLOAD_IMAGE_TIME_LIMIT
     max_retries = DOWNLOAD_IMAGE_MAX_RETRIES
     default_retry_delay = DOWNLOAD_IMAGE_DEFAULT_RETRY_DELAY
+    ignore_result = True
     
     def run(self, image_url, image_tobedone_key, update_article_info):
         is_successful = True
@@ -66,6 +68,8 @@ class StoreImageInfoHandler(Task):
     store image info to local db
     """
     
+    ignore_result = True
+    
     def run(self, update_image_info, update_article_info, callback=None, fail_callback=None):
         is_successful = True
         image_instance_key = generate_image_instance_key(update_article_info.article_id,
@@ -91,8 +95,10 @@ class UploadImageHandler(Task):
     upload image to s3
     """
     
+    time_limit = UPLOAD_IMAGE_TIME_LIMIT
     max_retries = UPLOAD_IMAGE_MAX_RETRIES
     default_retry_delay = UPLOAD_IMAGE_DEFAULT_RETRY_DELAY
+    ignore_result = True
     
     def run(self, update_image_info, update_article_info, callback=None, fail_callback=None):
         is_successful = True
@@ -125,6 +131,8 @@ class CheckImagetobedoneHandler(Task):
     """
     check whether to mark article as is_ready
     """
+    
+    ignore_result = True
     
     def run(self, update_image_info, update_article_info):
         is_successful = True

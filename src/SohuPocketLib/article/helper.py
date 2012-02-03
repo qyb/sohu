@@ -135,17 +135,17 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     download_url.text = get_data_url(BUCKET_NAME_ARTICLE, myarticle_instance.key)
     
     image_urls = etree.SubElement(article, 'image_urls')
-#    image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
-#                                for image_key in myarticle_instance.image_list])
-    for image_key in myarticle_instance.image_list:
-        image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
-        image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
+    image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
+                                for image_key in myarticle_instance.image_list])
+#    for image_key in myarticle_instance.image_list:
+#        image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
+#        image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
     
     is_read = etree.SubElement(article, 'is_read')
     is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
     
     cover = etree.SubElement(article, 'cover')
-    cover.text = myarticle_instance.cover
+    cover.text = myarticle_instance.cover or r'""'
     
     is_star = etree.SubElement(article, 'is_star')
     is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
