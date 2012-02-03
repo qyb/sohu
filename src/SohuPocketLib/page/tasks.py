@@ -16,7 +16,7 @@ from readability.readability import Document
 from storage.helper import store_data_from_string
 import logging
 import urllib2
-
+from celery.task.sets import TaskSet
 
 class PageFetchHandler(Task):
     '''
@@ -179,7 +179,13 @@ class BulkImageDownloadHandler(Task):
             is_successful = False
         else:
 #            call next step
+            tasks = []
             for image_url in update_article_info.image_url_list:
-                subtask(callback).delay(image_url, image_tobedone_key, update_article_info)
+                image_task = subtask(callback)
+#                hack into this subtask to change its 'args'
+                image_task['args'] = (image_url, image_tobedone_key, update_article_info)
+                tasks.append(image_task)
+            image_job = TaskSet(tasks=tasks)
+            image_job.apply_async()
         
         return is_successful
