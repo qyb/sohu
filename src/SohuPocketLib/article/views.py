@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from article.helper import get_myarticle_list_to_xml_etree, \
-    input_for_list_func, get_myarticle_instance_to_xml_etree, input_for_show_func, \
-    input_for_update_func, generate_single_xml_etree, input_for_destroy_func, \
-    input_for_modify_func, modify_or_destroy_myarticle_instance, UpdateArticleInfo
-from page.tasks import PageFetchHandler
-from user.helper import KanUser
+from article.helper import get_myarticle_list_to_xml_etree, input_for_list_func, \
+    get_myarticle_instance_to_xml_etree, input_for_show_func, input_for_update_func, \
+    generate_single_xml_etree, input_for_destroy_func, input_for_modify_func, \
+    modify_or_destroy_myarticle_instance, UpdateArticleInfo
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from lxml import etree
+from page.tasks import PageFetchHandler
+from user.helper import KanUser
 
 
 def list(request, format):

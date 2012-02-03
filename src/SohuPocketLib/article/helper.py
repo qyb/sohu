@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from article.models import MyArticleInstance
-from constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
-    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, \
-    TRUE_REPR, FALSE_REPR
+from constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, BUCKET_NAME_IMAGE, \
+    KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, FALSE_REPR
+from datetime import datetime
+from django.core.cache import cache
 from image.models import MyImageInstance
+from lxml import etree
 from storage.helper import get_data_url
 from user.helper import get_GET_dict, get_POST_dict
-from django.core.cache import cache
-from lxml import etree
 import hashlib
-from datetime import datetime
 import logging
 
 
@@ -35,9 +34,9 @@ class UpdateArticleInfo(object):
 def choose_a_db(user_id):
     if user_id <= LIMIT_USERS_ONE_DB:
         chosen_db = 'default'
-    elif user_id <= 2*LIMIT_USERS_ONE_DB:
+    elif user_id <= 2 * LIMIT_USERS_ONE_DB:
         chosen_db = 'second'
-    elif user_id <= 3*LIMIT_USERS_ONE_DB:
+    elif user_id <= 3 * LIMIT_USERS_ONE_DB:
         chosen_db = 'third'
 
     return chosen_db
@@ -158,7 +157,7 @@ def get_myarticle_list(user_id, offset, limit):
     chosen_db = choose_a_db(user_id)
     myarticle_list = MyArticleInstance.objects \
                                       .using(chosen_db) \
-                                      .filter(user_id = user_id, is_delete = False, is_ready = True) \
+                                      .filter(user_id=user_id, is_delete=False, is_ready=True) \
                                       .order_by('-id') \
                                       [offset : offset + limit]
     
@@ -191,42 +190,68 @@ def get_access_token(request, method):
 
 
 def input_for_list_func(request):
-    access_token = get_access_token(request, 'GET')
-    offset = get_GET_dict(request).get('offset', '')
-    try:
-        offset = int(offset)
-    except:
+    
+    if request.method == 'GET':
+        access_token_input = request.GET.get('access_token', '')
+        offset = request.GET.get('offset', '')
+        try:
+            offset = int(offset)
+        except:
+            offset = 0
+        limit = request.GET.get('limit', '')
+        try:
+            limit = int(limit)
+        except:
+            limit = DEFAULT_ARTICLE_LIST_LIMIT
+    else:
+        access_token_input = ''
         offset = 0
-    limit = get_GET_dict(request).get('limit', '')
-    try:
-        limit = int(limit)
-    except:
         limit = DEFAULT_ARTICLE_LIST_LIMIT
         
-    return access_token, offset, limit
+    return access_token_input, offset, limit
 
 
 def input_for_show_func(request):
     
-    return get_access_token(request, 'GET')
+    if request.method == 'GET':
+        access_token_input = request.GET.get('access_token', '')
+    else:
+        access_token_input = ''
+        
+    return access_token_input
 
 
 def input_for_update_func(request):
-    access_token = get_access_token(request, 'POST')
+    access_token_input = get_access_token(request, 'POST')
     url = get_POST_dict(request).get('url', '')
-    
-    return access_token, url
+
+    if request.method == 'POST':
+        access_token_input = request.POST.get('access_token', '')
+        url = request.POST.get('url', '')
+    else:
+        access_token_input = ''
+        url = ''
+        
+    return access_token_input, url
 
 
 def input_for_destroy_func(request):
-    
-    return get_access_token(request, 'POST')    
+    if request.method == 'POST':
+        access_token_input = request.POST.get('access_token', '')
+    else:
+        access_token_input = ''
+        
+    return access_token_input    
 
 def input_for_modify_func(request):
-    access_token = get_access_token(request, 'POST')
-    modify_info = dict()
-    args = ('is_delete', 'is_read', 'is_star')
-    for arg in args:
-        modify_info[arg] = get_POST_dict(request).get(arg, '')
+    if request.method == 'POST':
+        access_token_input = request.POST.get('access_token', '')
+        modify_info = dict()
+        args = ('is_delete', 'is_read', 'is_star')
+        for arg in args:
+            modify_info[arg] = get_POST_dict(request).get(arg, '')
+    else:
+        access_token_input = ''
+        modify_info = dict()
         
-    return access_token, modify_info
+    return access_token_input, modify_info
