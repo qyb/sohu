@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'image',
     'page',
     'user',
+    'south'
 )
 
 CACHE_BACKEND = 'db://cache?timeout=3600'

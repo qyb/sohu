@@ -3,7 +3,7 @@
 from article.helper import generate_article_instance_key, \
     create_myarticle_instance
 from celery.task import Task
-from celery.task.sets import subtask
+from celery.task.sets import TaskSet, subtask
 from constants import BUCKET_NAME_ARTICLE, PAGE_FETCH_MAX_RETRIES, \
     PAGE_FETCH_DEFAULT_RETRY_DELAY, UPLOAD_ARTICLE_MAX_RETRIES, \
     UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY, PAGE_FETCH_TIME_LIMIT, \
@@ -16,7 +16,6 @@ from readability.readability import Document
 from storage.helper import store_data_from_string
 import logging
 import urllib2
-from celery.task.sets import TaskSet
 
 class PageFetchHandler(Task):
     '''
