@@ -180,7 +180,6 @@ def generate_single_xml_etree(tag, text, **kwargs):
 
 
 def input_for_list_func(request):
-    
     if request.method == 'GET':
         access_token_input = request.GET.get('access_token', '')
         offset = request.GET.get('offset', '')
@@ -202,7 +201,6 @@ def input_for_list_func(request):
 
 
 def input_for_show_func(request):
-    
     if request.method == 'GET':
         access_token_input = request.GET.get('access_token', '')
     else:
@@ -212,9 +210,6 @@ def input_for_show_func(request):
 
 
 def input_for_update_func(request):
-    access_token_input = get_access_token(request, 'POST')
-    url = get_POST_dict(request).get('url', '')
-
     if request.method == 'POST':
         access_token_input = request.POST.get('access_token', '')
         url = request.POST.get('url', '')

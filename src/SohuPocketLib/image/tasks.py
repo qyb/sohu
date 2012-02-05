@@ -38,13 +38,14 @@ class DownloadImageHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
+            raise
         except Exception as exc:
             is_successful = False
             try:
                 DownloadImageHandler.retry(exc=exc)
 #            when RetryTaskError happens
-            except celery.exceptions.RetryTaskError:
-                pass
+            except celery.exceptions.RetryTaskError as exc:
+                raise exc
 #            when MaxRetriesExceeded or other exception happens
             except Exception:
                 subtask(fail_callback).delay(update_image_info, update_article_info)
@@ -115,8 +116,8 @@ class UploadImageHandler(Task):
             try:
                 UploadImageHandler.retry(exc=exc)
 #            when RetryTaskError happens
-            except celery.exceptions.RetryTaskError:
-                pass
+            except celery.exceptions.RetryTaskError as exc:
+                raise exc
 #            when MaxRetriesExceeded or other exception happens
             except Exception:
                 subtask(fail_callback).delay(update_image_info, update_article_info)
