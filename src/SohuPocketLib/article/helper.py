@@ -8,7 +8,6 @@ from django.core.cache import cache
 from image.models import MyImageInstance
 from lxml import etree
 from storage.helper import get_data_url
-from user.helper import get_GET_dict, get_POST_dict
 import hashlib
 import logging
 
@@ -180,15 +179,6 @@ def generate_single_xml_etree(tag, text, **kwargs):
     return element
 
 
-def get_access_token(request, method):
-    if method == 'GET':
-        access_token_input = get_GET_dict(request).get('access_token', '')
-    elif method == 'POST':
-        access_token_input = get_POST_dict(request).get('access_token', '')
-    
-    return access_token_input
-
-
 def input_for_list_func(request):
     
     if request.method == 'GET':
@@ -249,7 +239,7 @@ def input_for_modify_func(request):
         modify_info = dict()
         args = ('is_delete', 'is_read', 'is_star')
         for arg in args:
-            modify_info[arg] = get_POST_dict(request).get(arg, '')
+            modify_info[arg] = request.POST.get(arg, '')
     else:
         access_token_input = ''
         modify_info = dict()
