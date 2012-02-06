@@ -27,8 +27,6 @@ class DownloadImageHandler(Task):
     ignore_result = True
     
     def run(self, image_url, image_tobedone_key, update_article_info):
-        is_successful = True
-        fail_callback = subtask(CheckImagetobedoneHandler)
         update_image_info = UpdateImageInfo(image_url)
         update_image_info.image_tobedone_key = image_tobedone_key
         try:
@@ -38,17 +36,8 @@ class DownloadImageHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
-            raise
         except Exception as exc:
-            is_successful = False
-            try:
-                DownloadImageHandler.retry(exc=exc)
-#            when RetryTaskError happens
-            except celery.exceptions.RetryTaskError as exc:
-                raise exc
-#            when MaxRetriesExceeded or other exception happens
-            except Exception:
-                subtask(fail_callback).delay(update_image_info, update_article_info)
+            DownloadImageHandler.retry(exc=exc)
         else:
             update_image_info.image_url = image_url
             update_image_info.image_data = image_data
@@ -57,12 +46,16 @@ class DownloadImageHandler(Task):
             StoreImageInfoHandler.delay(update_image_info,
                                         update_article_info,
                                         callback=subtask(UploadImageHandler,
-                                        callback=subtask(CheckImagetobedoneHandler),
-                                        fail_callback=subtask(fail_callback)),
-                                        fail_callback=subtask(fail_callback))
+                                        callback=subtask(CheckImagetobedoneHandler)))
             
-        return is_successful    
-
+        return None
+    
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        image_url, image_tobedone_key, update_article_info = args
+        update_image_info = UpdateImageInfo(image_url)
+        update_image_info.image_tobedone_key = image_tobedone_key
+        CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
+    
 
 class StoreImageInfoHandler(Task):
     """
@@ -71,8 +64,7 @@ class StoreImageInfoHandler(Task):
     
     ignore_result = True
     
-    def run(self, update_image_info, update_article_info, callback=None, fail_callback=None):
-        is_successful = True
+    def run(self, update_image_info, update_article_info, callback=None):
         image_instance_key = generate_image_instance_key(update_article_info.article_id,
                                                          update_image_info.image_url)
         try:
@@ -81,14 +73,13 @@ class StoreImageInfoHandler(Task):
                                     update_image_info.image_url,
                                     update_article_info.article_id)
         except Exception:
-            is_successful = False
-            subtask(fail_callback).delay(update_image_info, update_article_info)
+            CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
         else:
             update_image_info.image_instance_key = image_instance_key
 #            call next step
             subtask(callback).delay(update_image_info, update_article_info)
             
-        return is_successful
+        return None
             
 
 class UploadImageHandler(Task):
@@ -100,9 +91,9 @@ class UploadImageHandler(Task):
     max_retries = UPLOAD_IMAGE_MAX_RETRIES
     default_retry_delay = UPLOAD_IMAGE_DEFAULT_RETRY_DELAY
     ignore_result = True
-    
-    def run(self, update_image_info, update_article_info, callback=None, fail_callback=None):
-        is_successful = True
+
+#    attention: 'callback' here must be called as 'kwargs', not 'args'    
+    def run(self, update_image_info, update_article_info, callback=None):
         try:
             headers = dict()
             if update_article_info.mime:
@@ -112,20 +103,16 @@ class UploadImageHandler(Task):
                                    update_image_info.image_data,
                                    headers=headers)
         except Exception as exc:
-            is_successful = False
-            try:
-                UploadImageHandler.retry(exc=exc)
-#            when RetryTaskError happens
-            except celery.exceptions.RetryTaskError as exc:
-                raise exc
-#            when MaxRetriesExceeded or other exception happens
-            except Exception:
-                subtask(fail_callback).delay(update_image_info, update_article_info)
+            UploadImageHandler.retry(exc=exc)
         else:
 #            call next step
             subtask(callback).delay(update_image_info, update_article_info)
             
-        return is_successful
+        return None
+    
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        update_image_info, update_article_info = args
+        CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
 
 
 class CheckImagetobedoneHandler(Task):
@@ -136,15 +123,16 @@ class CheckImagetobedoneHandler(Task):
     ignore_result = True
     
     def run(self, update_image_info, update_article_info):
-        is_successful = True
         decrease_image_tobedone(update_image_info.image_tobedone_key)
         if get_image_tobedone(update_image_info.image_tobedone_key) == 0:
             try:
                 chosen_db = choose_a_db(update_article_info.user_id)
-                article_instance = MyArticleInstance.objects.using(chosen_db).get(id = update_article_info.article_id)
+                article_instance = MyArticleInstance.objects \
+                                                    .using(chosen_db) \
+                                                    .get(id = update_article_info.article_id)
                 article_instance.is_ready = True
                 article_instance.save()
             except MyArticleInstance.DoesNotExist:
-                is_successful = False
+                pass
             
-        return is_successful
+        return None

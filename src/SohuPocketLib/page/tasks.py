@@ -28,7 +28,6 @@ class PageFetchHandler(Task):
     ignore_result = True
     
     def run(self, url, update_article_info):
-        is_successful = True
         try:
             resource = urllib2.urlopen(url)
             raw_html = resource.read() 
@@ -37,7 +36,6 @@ class PageFetchHandler(Task):
             except:
                 mime = None
         except Exception as exc:
-            is_successful = False
             PageFetchHandler.retry(exc=exc)
         else:
             update_article_info.url = url
@@ -51,7 +49,7 @@ class PageFetchHandler(Task):
                                          callback=subtask(BulkImageDownloadHandler,
                                          callback=subtask(DownloadImageHandler))))))
             
-        return is_successful
+        return None
 
 
 class ReadableArticleHandler(Task):
@@ -70,20 +68,19 @@ class ReadableArticleHandler(Task):
         return doc.summary()
     
     def run(self, raw_html, update_article_info, callback=None):
-        is_successful = True
         try:
             doc = Document(raw_html)
             article_title = self.get_title(doc)
             article_content = self.get_content(doc)
         except Exception:
-            is_successful = False
+            pass
         else:
             update_article_info.article_title = article_title
             update_article_info.article_content = article_content
 #            call next step
             subtask(callback).delay(update_article_info)
             
-        return is_successful
+        return None
 
 
 class StoreArticleInfoHandler(Task):
@@ -94,20 +91,19 @@ class StoreArticleInfoHandler(Task):
     ignore_result = True
     
     def run(self, update_article_info, callback=None):
-        is_successful =  True
         article_instance_key = generate_article_instance_key(update_article_info.url, update_article_info.user_id)
         try:
             article_instance = create_myarticle_instance(update_article_info.user_id, article_instance_key, update_article_info.article_title, update_article_info.url)
             article_id = article_instance.id
         except Exception:
-            is_successful = False
+            pass
         else:
             update_article_info.article_id = article_id
             update_article_info.article_instance_key = article_instance_key
 #            call next step
             subtask(callback).delay(update_article_info)
             
-        return is_successful
+        return None
 
 
 class ImageUrlListHandler(Task):
@@ -118,18 +114,17 @@ class ImageUrlListHandler(Task):
     ignore_result = True
     
     def run(self, update_article_info, callback=None):
-        is_successful = True
         try:
             image_url_list, new_article_content = parse_and_replace_image_url_list(update_article_info.url, update_article_info.article_content, update_article_info)
         except Exception:
-            is_successful = False
+            pass
         else:
             update_article_info.image_url_list = image_url_list
             update_article_info.article_content = new_article_content
 #            call next step
             subtask(callback).delay(update_article_info)
             
-        return is_successful
+        return None
 
 
 class UploadArticleHandler(Task):
@@ -143,7 +138,6 @@ class UploadArticleHandler(Task):
     ignore_result = True
     
     def run(self, update_article_info, callback=None):
-        is_successful = True
         try:
             headers = dict()
             if update_article_info.mime:
@@ -153,13 +147,12 @@ class UploadArticleHandler(Task):
                                    update_article_info.article_content,
                                    headers=headers)
         except Exception as exc:
-            is_successful = False
             UploadArticleHandler.retry(exc=exc)
         else:
 #            call next step
             subtask(callback).delay(update_article_info)
             
-        return is_successful
+        return None
     
     
 class BulkImageDownloadHandler(Task):
@@ -170,12 +163,11 @@ class BulkImageDownloadHandler(Task):
     ignore_result = True
     
     def run(self, update_article_info, callback=None):
-        is_successful = True
         try:
             image_tobedone_key = generate_image_tobedone_key(update_article_info.article_id)
             set_image_tobedone(image_tobedone_key, len(update_article_info.image_url_list))
         except Exception:
-            is_successful = False
+            pass
         else:
 #            call next step
             tasks = []
@@ -187,4 +179,4 @@ class BulkImageDownloadHandler(Task):
             image_job = TaskSet(tasks=tasks)
             image_job.apply_async()
         
-        return is_successful
+        return None
