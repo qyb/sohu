@@ -85,6 +85,19 @@ def get_myarticle_instance_with_image_list(user_id, key):
     
     return myarticle_instance
 
+
+def delete_myarticle_instance_in_db(user_id, key):
+    is_successful = True
+    chosen_db = choose_a_db(user_id)
+    try:
+        myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(key=key)
+    except MyArticleInstance.DoesNotExist:
+        is_successful = False
+    else:
+        myarticle_instance.delete()
+        
+    return is_successful
+
                                             
 def modify_or_destroy_myarticle_instance(user_id, key, modify_info):
     is_successful = True

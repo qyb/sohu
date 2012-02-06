@@ -9,7 +9,8 @@ from constants import BUCKET_NAME_IMAGE, DOWNLOAD_IMAGE_MAX_RETRIES, \
     UPLOAD_IMAGE_DEFAULT_RETRY_DELAY, DOWNLOAD_IMAGE_TIME_LIMIT, \
     UPLOAD_IMAGE_TIME_LIMIT
 from image.helper import generate_image_instance_key, decrease_image_tobedone, \
-    get_image_tobedone, create_myimage_instance, UpdateImageInfo
+    get_image_tobedone, create_myimage_instance, UpdateImageInfo, \
+    delete_myimage_instance_in_db
 from storage.helper import store_data_from_string
 import celery
 import logging
@@ -46,7 +47,7 @@ class DownloadImageHandler(Task):
             StoreImageInfoHandler.delay(update_image_info,
                                         update_article_info,
                                         callback=subtask(UploadImageHandler,
-                                        callback=subtask(CheckImagetobedoneHandler)))
+                                        callback=subtask(MarkImagetobedoneHandler)))
             
         return None
     
@@ -54,7 +55,9 @@ class DownloadImageHandler(Task):
         image_url, image_tobedone_key, update_article_info = args
         update_image_info = UpdateImageInfo(image_url)
         update_image_info.image_tobedone_key = image_tobedone_key
-        CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
+        MarkImagetobedoneHandler.delay(update_image_info, update_article_info)
+        
+        return None
     
 
 class StoreImageInfoHandler(Task):
@@ -73,14 +76,14 @@ class StoreImageInfoHandler(Task):
                                     update_image_info.image_url,
                                     update_article_info.article_id)
         except Exception:
-            CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
+            MarkImagetobedoneHandler.delay(update_image_info, update_article_info)
         else:
             update_image_info.image_instance_key = image_instance_key
 #            call next step
             subtask(callback).delay(update_image_info, update_article_info)
             
         return None
-            
+    
 
 class UploadImageHandler(Task):
     """
@@ -112,12 +115,14 @@ class UploadImageHandler(Task):
     
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         update_image_info, update_article_info = args
-        CheckImagetobedoneHandler.delay(update_image_info, update_article_info)
+        RollbackImageInDbHandler.delay(update_image_info, update_article_info)
+        
+        return None
 
 
-class CheckImagetobedoneHandler(Task):
+class MarkImagetobedoneHandler(Task):
     """
-    check whether to mark article as is_ready
+    mark 'image_tobedone_key' and check whether to mark article as is_ready
     """
     
     ignore_result = True
@@ -135,4 +140,19 @@ class CheckImagetobedoneHandler(Task):
             except MyArticleInstance.DoesNotExist:
                 pass
             
+        return None
+
+
+class RollbackImageInDbHandler(Task):
+    """
+    rollback image instance in db
+    """
+    
+    ignore_result = True
+    
+    def run(self, update_image_info, update_article_info):
+        delete_myimage_instance_in_db(update_article_info.user_id,
+                                      update_article_info.article_instance_key)
+        MarkImagetobedoneHandler.delay(update_image_info, update_article_info)
+        
         return None

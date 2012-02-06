@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from article.helper import generate_article_instance_key, \
-    create_myarticle_instance
+    create_myarticle_instance, delete_myarticle_instance_in_db
 from celery.task import Task
 from celery.task.sets import TaskSet, subtask
 from constants import BUCKET_NAME_ARTICLE, PAGE_FETCH_MAX_RETRIES, \
@@ -116,14 +116,20 @@ class ImageUrlListHandler(Task):
     def run(self, update_article_info, callback=None):
         try:
             image_url_list, new_article_content = parse_and_replace_image_url_list(update_article_info.url, update_article_info.article_content, update_article_info)
-        except Exception:
-            pass
+        except Exception as exc:
+            raise exc
         else:
             update_article_info.image_url_list = image_url_list
             update_article_info.article_content = new_article_content
 #            call next step
             subtask(callback).delay(update_article_info)
             
+        return None
+    
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        update_article_info, = args
+        RollbackArticleInDbHandler.delay(update_article_info)
+        
         return None
 
 
@@ -154,6 +160,12 @@ class UploadArticleHandler(Task):
             
         return None
     
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        update_article_info, = args
+        RollbackArticleInDbHandler.delay(update_article_info)
+        
+        return None
+    
     
 class BulkImageDownloadHandler(Task):
     """
@@ -178,5 +190,19 @@ class BulkImageDownloadHandler(Task):
                 tasks.append(image_task)
             image_job = TaskSet(tasks=tasks)
             image_job.apply_async()
+        
+        return None
+
+
+class RollbackArticleInDbHandler(Task):
+    """
+    rollback article instance in db
+    """
+    
+    ignore_result = True
+    
+    def run(self, update_article_info):
+        delete_myarticle_instance_in_db(update_article_info.user_id,
+                                        update_article_info.article_instance_key)
         
         return None
