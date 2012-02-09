@@ -141,4 +141,3 @@ def get_bucket_acl(bucket_name):
     bucket = get_or_create_bucket(bucket_name)
 
     return bucket.get_acl()
-    

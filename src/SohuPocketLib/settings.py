@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'image',
     'page',
     'user',
+    'south'
 )
 
 CACHE_BACKEND = 'db://cache?timeout=3600'
@@ -166,6 +167,8 @@ BROKER_PORT = 5672
 BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
+
+CELERY_DISABLE_RATE_LIMITS = True
 
 AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
 AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'

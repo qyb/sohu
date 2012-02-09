@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from article.models import MyArticleInstance
-from constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
-    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT
-from image.models import MyImageInstance
-from storage.helper import get_data_url
-from user.helper import get_GET_dict, get_POST_dict
+from constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, BUCKET_NAME_IMAGE, \
+    KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, FALSE_REPR
+from datetime import datetime
 from django.core.cache import cache
+from image.models import MyImageInstance
 from lxml import etree
+from storage.helper import get_data_url
 import hashlib
-import time
 import logging
 
 
@@ -23,6 +22,7 @@ class UpdateArticleInfo(object):
         self.url = None
         self.article_title = None
         self.article_content = None
+        self.mime = None
         self.article_id = None
         self.article_instance_key = None
         self.image_url_list = None
@@ -33,9 +33,9 @@ class UpdateArticleInfo(object):
 def choose_a_db(user_id):
     if user_id <= LIMIT_USERS_ONE_DB:
         chosen_db = 'default'
-    elif user_id <= 2*LIMIT_USERS_ONE_DB:
+    elif user_id <= 2 * LIMIT_USERS_ONE_DB:
         chosen_db = 'second'
-    elif user_id <= 3*LIMIT_USERS_ONE_DB:
+    elif user_id <= 3 * LIMIT_USERS_ONE_DB:
         chosen_db = 'third'
 
     return chosen_db
@@ -85,6 +85,19 @@ def get_myarticle_instance_with_image_list(user_id, key):
     
     return myarticle_instance
 
+
+def delete_myarticle_instance_in_db(user_id, key):
+    is_successful = True
+    chosen_db = choose_a_db(user_id)
+    try:
+        myarticle_instance = MyArticleInstance.objects.using(chosen_db).get(key=key)
+    except MyArticleInstance.DoesNotExist:
+        is_successful = False
+    else:
+        myarticle_instance.delete()
+        
+    return is_successful
+
                                             
 def modify_or_destroy_myarticle_instance(user_id, key, modify_info):
     is_successful = True
@@ -94,18 +107,18 @@ def modify_or_destroy_myarticle_instance(user_id, key, modify_info):
     except MyArticleInstance.DoesNotExist:
         is_successful = False
     else:
-        if modify_info['is_delete'] == 'True':
-            myarticle_instance.is_deleted = True
-            myarticle_instance.delete_time = time.time()
-        if modify_info['is_read'] == 'True':
+        if modify_info.get('is_delete', None) == TRUE_REPR:
+            myarticle_instance.is_delete = True
+            myarticle_instance.delete_time = datetime.now()
+        if modify_info.get('is_read', None) == TRUE_REPR:
             myarticle_instance.is_read = True
-            myarticle_instance.read_time = time.time()
-        if modify_info['is_read'] == 'False':
+            myarticle_instance.read_time = datetime.now()
+        elif modify_info.get('is_read', None) == FALSE_REPR:
             myarticle_instance.is_read = False
             myarticle_instance.read_time = None
-        if modify_info['is_star'] == 'True':
+        if modify_info.get('is_star', None) == TRUE_REPR:
             myarticle_instance.is_star = True
-        if modify_info['is_star'] == 'False':
+        elif modify_info.get('is_star', None) == FALSE_REPR:
             myarticle_instance.is_star = False
         myarticle_instance.save()
         
@@ -134,34 +147,29 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     download_url.text = get_data_url(BUCKET_NAME_ARTICLE, myarticle_instance.key)
     
     image_urls = etree.SubElement(article, 'image_urls')
-#    image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
-#                                for image_key in myarticle_instance.image_list])
-    for image_key in myarticle_instance.image_list:
-        image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
-        image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
+    image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
+                                for image_key in myarticle_instance.image_list])
+#    for image_key in myarticle_instance.image_list:
+#        image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
+#        image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
     
     is_read = etree.SubElement(article, 'is_read')
-    is_read.text = 'YES' if myarticle_instance.is_read else 'NO'
+    is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
     
     cover = etree.SubElement(article, 'cover')
-    cover.text = myarticle_instance.cover
+    cover.text = myarticle_instance.cover or r'""'
     
     is_star = etree.SubElement(article, 'is_star')
-    is_star.text = 'YES' if myarticle_instance.is_star else 'NO'
-    
-    is_ready = etree.SubElement(article, 'is_ready')
-    is_ready.text = 'YES' if myarticle_instance.is_ready else 'NO'
+    is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
     
     return article
 
 
 def get_myarticle_list(user_id, offset, limit):
     chosen_db = choose_a_db(user_id)
-    logging.warning(offset)
-    logging.warning(limit)
     myarticle_list = MyArticleInstance.objects \
                                       .using(chosen_db) \
-                                      .filter(user_id = user_id, is_delete = False) \
+                                      .filter(user_id=user_id, is_delete=False, is_ready=True) \
                                       .order_by('-id') \
                                       [offset : offset + limit]
     
@@ -184,52 +192,64 @@ def generate_single_xml_etree(tag, text, **kwargs):
     return element
 
 
-def get_access_token(request, method):
-    if method == 'GET':
-        access_token_input = get_GET_dict(request).get('access_token', '')
-    elif method == 'POST':
-        access_token_input = get_POST_dict(request).get('access_token', '')
-    
-    return access_token_input
-
-
 def input_for_list_func(request):
-    access_token = get_access_token(request, 'GET')
-    offset = get_GET_dict(request).get('offset', '')
-    try:
-        offset = int(offset)
-    except:
+    if request.method == 'GET':
+        access_token_input = request.GET.get('access_token', '')
+        offset = request.GET.get('offset', '')
+        try:
+            offset = int(offset)
+        except:
+            offset = 0
+        limit = request.GET.get('limit', '')
+        try:
+            limit = int(limit)
+        except:
+            limit = DEFAULT_ARTICLE_LIST_LIMIT
+    else:
+        access_token_input = ''
         offset = 0
-    limit = get_GET_dict(request).get('limit', '')
-    try:
-        limit = int(limit)
-    except:
         limit = DEFAULT_ARTICLE_LIST_LIMIT
         
-    return access_token, offset, limit
+    return access_token_input, offset, limit
 
 
 def input_for_show_func(request):
-    
-    return get_access_token(request, 'GET')
+    if request.method == 'GET':
+        access_token_input = request.GET.get('access_token', '')
+    else:
+        access_token_input = ''
+        
+    return access_token_input
 
 
 def input_for_update_func(request):
-    access_token = get_access_token(request, 'POST')
-    url = get_POST_dict(request).get('url', '')
-    
-    return access_token, url
+    if request.method == 'POST':
+        access_token_input = request.POST.get('access_token', '')
+        url = request.POST.get('url', '')
+    else:
+        access_token_input = ''
+        url = ''
+        
+    return access_token_input, url
 
 
 def input_for_destroy_func(request):
-    
-    return get_access_token(request, 'POST')    
+    if request.method == 'POST':
+        access_token_input = request.POST.get('access_token', '')
+    else:
+        access_token_input = ''
+        
+    return access_token_input    
 
 def input_for_modify_func(request):
-    access_token = get_access_token(request, 'POST')
-    modify_info = dict()
-    args = ('is_delete', 'is_read', 'is_star')
-    for arg in args:
-        modify_info[arg] = get_POST_dict(request).get(arg, '')
+    if request.method == 'POST':
+        access_token_input = request.POST.get('access_token', '')
+        modify_info = dict()
+        args = ('is_delete', 'is_read', 'is_star')
+        for arg in args:
+            modify_info[arg] = request.POST.get(arg, '')
+    else:
+        access_token_input = ''
+        modify_info = dict()
         
-    return access_token, modify_info
+    return access_token_input, modify_info

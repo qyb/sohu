@@ -20,6 +20,7 @@ class UpdateImageInfo(object):
     
     def __init__(self, image_url):
         self.image_url = image_url
+        self.mime = None
         self.image_date = None
         self.image_tobedone_key = None
         self.image_instance_key = None
@@ -127,3 +128,15 @@ def create_myimage_instance(user_id, key, url, myarticle_instance_id, title='', 
     myimage_instance.save()
     
     return myimage_instance
+
+def delete_myimage_instance_in_db(user_id, key):
+    is_successful = True
+    chosen_db = choose_a_db(user_id)
+    try:
+        myimage_instance = MyImageInstance.objects.using(chosen_db).get(key=key)
+    except MyImageInstance.DoesNotExist:
+        is_successful = False
+    else:
+        myimage_instance.delete()
+    
+    return is_successful
