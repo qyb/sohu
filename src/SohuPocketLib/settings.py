@@ -170,5 +170,29 @@ BROKER_VHOST = "/"
 
 CELERY_DISABLE_RATE_LIMITS = True
 
+#CELERY_QUEUES = {
+#                 "default": {
+#                             "exchange": "default",
+#                             "binding_key": "default"
+#                             },
+#                 "pages": {
+#                           "exchange": "media",
+#                           "binding_key": "media.page",
+#                           },
+#                 "images": {
+#                            "exchange": "media",
+#                            "binding_key": "media.image",
+#                            },
+#                 "videos": {
+#                            "exchange": "media",
+#                            "binding_key": "media.video",
+#                            },
+#                 }
+#
+#CELERY_DEFAULT_QUEUE = "default"
+#CELERY_DEFAULT_EXCHANGE = "default"
+#CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
+#CELERY_DEFAULT_ROUTING_KEY = "default"
+
 AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
 AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'
