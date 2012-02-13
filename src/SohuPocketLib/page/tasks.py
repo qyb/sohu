@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from article.helper import generate_article_instance_key, \
-    create_myarticle_instance, delete_myarticle_instance_in_db
+    create_myarticle_instance, delete_myarticle_instance_in_db, mark_article_as_done
 from celery.task import Task
 from celery.task.sets import TaskSet, subtask
 from constants import BUCKET_NAME_ARTICLE, PAGE_FETCH_MAX_RETRIES, \
@@ -182,14 +182,17 @@ class BulkImageDownloadHandler(Task):
             pass
         else:
 #            call next step
-            tasks = []
-            for image_url in update_article_info.image_url_list:
-                image_task = subtask(callback)
-#                hack into this subtask to change its 'args'
-                image_task['args'] = (image_url, image_tobedone_key, update_article_info)
-                tasks.append(image_task)
-            image_job = TaskSet(tasks=tasks)
-            image_job.apply_async()
+            if update_article_info.image_url_list:
+                tasks = []
+                for image_url in update_article_info.image_url_list:
+                    image_task = subtask(callback)
+#                    hack into this subtask to change its 'args'
+                    image_task['args'] = (image_url, image_tobedone_key, update_article_info)
+                    tasks.append(image_task)
+                image_job = TaskSet(tasks=tasks)
+                image_job.apply_async()
+            else:
+                mark_article_as_done(update_article_info)
         
         return None
 

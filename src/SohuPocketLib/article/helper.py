@@ -241,6 +241,7 @@ def input_for_destroy_func(request):
         
     return access_token_input    
 
+
 def input_for_modify_func(request):
     if request.method == 'POST':
         access_token_input = request.POST.get('access_token', '')
@@ -253,3 +254,18 @@ def input_for_modify_func(request):
         modify_info = dict()
         
     return access_token_input, modify_info
+
+
+def mark_article_as_done(update_article_info):
+    is_successful = True
+    try:
+        chosen_db = choose_a_db(update_article_info.user_id)
+        article_instance = MyArticleInstance.objects \
+                                            .using(chosen_db) \
+                                            .get(id=update_article_info.article_id)
+        article_instance.is_ready = True
+        article_instance.save()
+    except MyArticleInstance.DoesNotExist:
+        is_successful = False
+    
+    return is_successful
