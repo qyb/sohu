@@ -2,7 +2,7 @@
 
 from models import Access, User
 import hashlib
-import json
+import anyjson
 import time
 
 
