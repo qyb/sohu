@@ -37,7 +37,7 @@ class DownloadImageHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
-        except Exception as exc:
+        except Exception, exc:
             DownloadImageHandler.retry(exc=exc)
         else:
             update_image_info.image_url = image_url
@@ -105,7 +105,7 @@ class UploadImageHandler(Task):
                                    update_image_info.image_instance_key,
                                    update_image_info.image_data,
                                    headers=headers)
-        except Exception as exc:
+        except Exception, exc:
             UploadImageHandler.retry(exc=exc)
         else:
 #            call next step

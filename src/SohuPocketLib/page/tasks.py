@@ -35,7 +35,7 @@ class PageFetchHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
-        except Exception as exc:
+        except Exception, exc:
             PageFetchHandler.retry(exc=exc)
         else:
             update_article_info.url = url
@@ -116,7 +116,7 @@ class ImageUrlListHandler(Task):
     def run(self, update_article_info, callback=None):
         try:
             image_url_list, new_article_content = parse_and_replace_image_url_list(update_article_info.url, update_article_info.article_content, update_article_info)
-        except Exception as exc:
+        except Exception, exc:
             raise exc
         else:
             update_article_info.image_url_list = image_url_list
@@ -152,7 +152,7 @@ class UploadArticleHandler(Task):
                                    update_article_info.article_instance_key,
                                    update_article_info.article_content,
                                    headers=headers)
-        except Exception as exc:
+        except Exception, exc:
             UploadArticleHandler.retry(exc=exc)
         else:
 #            call next step
