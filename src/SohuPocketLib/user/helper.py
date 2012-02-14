@@ -126,7 +126,7 @@ class KanUser(object):
         
 def serialize(python_obj):
     try:
-        result = json.dumps(python_obj)
+        result = anyjson.dumps(python_obj)
     except TypeError:
         result = None
         
