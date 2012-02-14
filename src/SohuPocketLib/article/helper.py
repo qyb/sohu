@@ -157,7 +157,7 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
     
     cover = etree.SubElement(article, 'cover')
-    cover.text = myarticle_instance.cover or r'""'
+    cover.text = myarticle_instance.cover
     
     is_star = etree.SubElement(article, 'is_star')
     is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
