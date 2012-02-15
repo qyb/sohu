@@ -16,7 +16,7 @@ import com.sohu.wuhan.Constant.Error;
 
 
 /**
- * @author leon
+ * @author Leon
  *
  */
 public class HttpRead implements IReadable, INetwork {

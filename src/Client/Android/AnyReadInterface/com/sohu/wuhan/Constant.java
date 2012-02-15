@@ -6,7 +6,7 @@ package com.sohu.wuhan;
 
 /**
  * 
- * @author leon
+ * @author Leon
  *
  */
 public class Constant {
@@ -14,7 +14,8 @@ public class Constant {
 	public static int HTTP_TIMEOUT 			= 5000;		// 30 seconds to timeout, adjust whenever.
 	
 //	public static String DOMAIN 			= "http://10.7.4.8"; //"http://kan.sohu.com";
-	public static String DOMAIN 			= "http://10.7.4.7"; //"http://kan.sohu.com";
+//	public static String DOMAIN 			= "http://10.7.4.7"; //"http://kan.sohu.com";
+	public static String DOMAIN 			= "http://10.10.69.53"; //"http://kan.sohu.com";
 	
 	public static String ARTICLE_CREATE 	= "/article/add.xml/";
 	public static String ARTICLE_READ		= "/article/show/";

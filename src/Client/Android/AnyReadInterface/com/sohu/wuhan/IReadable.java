@@ -12,7 +12,7 @@ import android.os.Handler;
 import com.sohu.wuhan.Constant.Error;
 
 /**
- * @author leon
+ * @author Leon
  * 
  */
 public interface IReadable {
