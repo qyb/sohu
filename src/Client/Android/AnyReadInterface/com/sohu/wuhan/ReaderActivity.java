@@ -88,7 +88,6 @@ public class ReaderActivity extends Activity {
 				
 				public void onClick(View v) {
 					tv.setText("");
-					Button button = (Button)v;
 					String token = "2ca5b4f8e98702433f4f5aa4104844a6bf3b6c38";
 					String url = "key_article_instance_3_738ddf35b3a85a7a6ba7b232bd3d5f1e4d284ad1_v1";
 					
@@ -107,7 +106,6 @@ public class ReaderActivity extends Activity {
 				
 				public void onClick(View v) {
 					tv.setText("");
-					Button button = (Button)v;
 					String token = "2ca5b4f8e98702433f4f5aa4104844a6bf3b6c38";
 					String url = "key_article_instance_3_738ddf35b3a85a7a6ba7b232bd3d5f1e4d284ad1_v1";
 					
