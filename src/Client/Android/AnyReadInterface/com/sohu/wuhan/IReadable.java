@@ -34,18 +34,26 @@ public interface IReadable {
 	
 	/* article ======================================================================= */
 
-	boolean asyncCreateArticle(String __url, Handler handler);
+	boolean asyncCreateArticle(String __url, Handler __handler);
 
-	boolean asyncProbeArticle(Handler handler);
+	boolean asyncProbeArticle(Handler __handler);
 	
-	boolean asyncReadArticle(String key, Handler handler);
+	boolean asyncReadArticle(String key, Handler __handler);
 	
-	boolean asyncUpdateArticle(String key, Hashtable<String, String> args, Handler handler); 
+	boolean asyncUpdateArticle(String key, Hashtable<String, String> args, Handler __handler); 
 		
-	boolean asyncDeleteArticle(String key, Handler handler); 
+	boolean asyncDeleteArticle(String key, Handler __handler); 
 	
 	// 非article接口一律不再提供阻塞调用
 	/* category ======================================================================= */
+	boolean asyncReadCategory(Handler __handler);
+	boolean asyncDeleteCategory(String __category, Handler __handler);
+	boolean asyncCreateCategory(String __category, Handler __handler);
+	
+	/* image ======================================================================= */
+	
+	boolean asyncReadImage(String key, Handler __handler);
+	boolean asyncReadRawImage(String key, Handler __handler);
 	
 	
 }

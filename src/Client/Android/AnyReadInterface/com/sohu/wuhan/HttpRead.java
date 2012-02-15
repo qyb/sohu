@@ -261,6 +261,63 @@ public class HttpRead implements IReadable, INetwork {
 		async.postTask(new Task(url, Constant.POST, content, __handler));
 		return true;
 	}
+
+	@Override
+	public boolean asyncReadCategory(Handler __handler) {
+		String url = domain + Constant.CATEGORY_READ + "?access_token=" + accessToken;
+		async.postTask(new Task(url, null, null, __handler));
+		return true;
+	}
+
+	@Override
+	public boolean asyncDeleteCategory(String __category, Handler __handler) {
+		String content = null;
+		
+		if (null == __category) return false;
+		
+		try {
+			content = URLEncoder.encode("access_token", encoding) + "=" + URLEncoder.encode(accessToken, encoding); 
+			content += "&" + URLEncoder.encode("category", encoding) + "=" + URLEncoder.encode(__category, encoding);
+		} catch (Exception e) {
+			return false;
+		}
+		
+		String url = domain + Constant.CATEGORY_DELETE;
+		async.postTask(new Task(url, Constant.POST, content, __handler));
+		return true;
+	}
+
+	@Override
+	public boolean asyncCreateCategory(String __category, Handler __handler) {
+		String content = null;
+		
+		if (null == __category) return false;
+		
+		try {
+			content = URLEncoder.encode("access_token", encoding) + "=" + URLEncoder.encode(accessToken, encoding); 
+			content += "&" + URLEncoder.encode("category", encoding) + "=" + URLEncoder.encode(__category, encoding);
+		} catch (Exception e) {
+			return false;
+		}
+		
+		String url_arc = domain + Constant.CATEGORY_CREATE;
+		async.postTask(new Task(url_arc, Constant.POST, content, __handler));
+		return true;
+	}
+
+	@Override
+	public boolean asyncReadImage(String key, Handler __handler) {
+		String url = domain + Constant.IMAGE_READ + key + ".xml?access_token=" + accessToken;
+		async.postTask(new Task(url, null, null, __handler));
+		return true;
+	}
+
+	@Override
+	public boolean asyncReadRawImage(String key, Handler __handler) {
+		String url = domain + Constant.IMAGE_RAW_READ + key + ".xml?access_token=" + accessToken;
+		async.postTask(new Task(url, null, null, __handler));
+		return true;
+	}
 }
 
 
