@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import socket
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+    DEBUG = TEMPLATE_DEBUG = False
+else:
+    DEBUG = TEMPLATE_DEBUG = True
 
 ADMINS = (
     ('admin', 'admin@sohu-inc.com'),
