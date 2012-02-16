@@ -6,7 +6,7 @@
 
 import os, sys
 
-li = ['ReaderHandler', 'ReaderActivity', 'R$']
+li = ['ReaderHandler', 'ReaderActivity', 'R$', 'R.']
 
 
 def do_pack(path, pack_name, index):
