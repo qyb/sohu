@@ -46,6 +46,8 @@ public class AsyncTask extends Thread {
 						if (null != task) {
 							durl.error = Error.OK;
 							String ss = durl.call_url(task.getTarget(), task.getMethod(), task.getContent());
+    						if (bStop) break;
+                            
 							Message msg = new Message();
 							Bundle data = new Bundle();
 							data.putSerializable("error", durl.error);

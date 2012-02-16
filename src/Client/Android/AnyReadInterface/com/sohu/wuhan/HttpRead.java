@@ -186,6 +186,8 @@ public class HttpRead implements IReadable, INetwork {
 	
 	public void cancel() {
 		async.cancel();
+        // asyncTask cancel will set bStop flag, and start a wholly new thread.
+        async = new AsyncTask(this.durl);
 	}
 	
 	@Override
@@ -209,6 +211,7 @@ public class HttpRead implements IReadable, INetwork {
 	@Override
 	public boolean asyncProbeArticle(Handler __handler) {
 		String url_arp = domain + Constant.ARTICLE_PROBE + accessToken;
+        
 		
 		async.postTask(new Task(url_arp, null, null, __handler));
 		return true;

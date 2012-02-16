@@ -116,6 +116,19 @@ public class ReaderActivity extends Activity {
 					}
 				}
 			});
+            
+			
+			btn = (Button)findViewById(R.id.btn_login5);
+			btn.setOnClickListener(new Button.OnClickListener() {
+				
+				public void onClick(View v) {
+					tv.setText("");
+					
+					IReadable ir = HttpRead.instance();
+                    ir.cancel();
+					
+				}
+			});
 		}
     }
 }
