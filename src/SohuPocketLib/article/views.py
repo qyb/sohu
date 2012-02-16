@@ -11,6 +11,7 @@ from lxml import etree
 from page.tasks import PageFetchHandler
 from user.helper import KanUser
 import logging
+from constants import TRUE_REPR
 
 
 def list(request, format):
@@ -93,7 +94,7 @@ def destroy(request, key, format):
     access_token_input = input_for_destroy_func(request)
     logging.warning(str(request.POST))
     modify_info = dict()
-    modify_info['is_delete'] ='YES'
+    modify_info['is_delete'] = TRUE_REPR
     
     return modify_or_destroy_base(access_token_input, modify_info, key, format)
 
