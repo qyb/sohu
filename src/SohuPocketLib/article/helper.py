@@ -162,6 +162,9 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     is_star = etree.SubElement(article, 'is_star')
     is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
     
+    create_time = etree.SubElement(article, 'create_time')
+    create_time.text = unicode(myarticle_instance.create_time)
+    
     return article
 
 
