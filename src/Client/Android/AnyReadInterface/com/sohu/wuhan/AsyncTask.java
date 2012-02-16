@@ -14,22 +14,22 @@ import android.os.Message;
 import com.sohu.wuhan.Constant.Error;
 
 /**
- * @author Leon 
- *
+ * @author Leon
+ * 
  */
 
 public class AsyncTask extends Thread {
 	private DirectUrl durl = null;
 	private boolean bStop = false;
 	private Lock lock = new ReentrantLock(false);
-	private Condition condition = lock.newCondition();	
-		
+	private Condition condition = lock.newCondition();
+
 	private LinkedList<Task> taskList = new LinkedList<Task>();
-	
+
 	public AsyncTask(DirectUrl __durl) {
 		durl = __durl;
 	}
-	
+
 	@Override
 	public void run() {
 		while (!bStop) {
@@ -39,33 +39,36 @@ public class AsyncTask extends Thread {
 					try {
 						if (0 == taskList.size())
 							condition.await();
-						
-						if (bStop) break;
-						
+
+						if (bStop)
+							break;
+
 						Task task = taskList.removeFirst();
 						if (null != task) {
 							durl.error = Error.OK;
-							String ss = durl.call_url(task.getTarget(), task.getMethod(), task.getContent());
-    						if (bStop) break;
-                            
+							String ss = durl.call_url(task.getTarget(),
+									task.getMethod(), task.getContent());
+							if (bStop)
+								break;
+
 							Message msg = new Message();
 							Bundle data = new Bundle();
 							data.putSerializable("error", durl.error);
 							data.putString("result", ss);
 							msg.setData(data);
-							task.getHandler().sendMessage(msg); 
+							task.getHandler().sendMessage(msg);
 						}
 					} finally {
 						lock.unlock();
 					}
-					
+
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 	/* Only Used in internal call */
 	protected void postTask(Task __task) {
 		lock.lock();
@@ -76,14 +79,13 @@ public class AsyncTask extends Thread {
 			lock.unlock();
 		}
 	}
-	
+
 	/* Only take effective on Asynchronous call */
 	public void cancel() {
 		bStop = true;
 	}
-	
-	public boolean isRunning() { return (false == bStop); }
+
+	public boolean isRunning() {
+		return (false == bStop);
+	}
 }
-
-
-
