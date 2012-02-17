@@ -83,7 +83,7 @@ class StoreImageInfoHandler(Task):
             subtask(callback).delay(update_image_info, update_article_info)
             
         return None
-    
+
 
 class UploadImageHandler(Task):
     """
