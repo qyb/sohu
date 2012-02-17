@@ -3,7 +3,12 @@
  */
 package com.bfsapi.server.bucket;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.Buffer;
 
 import com.bfsapi.IAccessor;
 import com.bfsapi.Operation;
@@ -14,6 +19,8 @@ import com.bfsapi.server.APIResponseHeader;
 import com.bfsapi.server.CommonRequestHeader;
 import com.bfsapi.server.CommonResponseHeader;
 import com.bfsapi.server.Handler;
+
+import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
 
 /**
@@ -65,11 +72,19 @@ public class BucketResource extends Resource {
 			resp.Headers.put(CommonResponseHeader.CONTENT_LENGTH, "302");
 			resp.Headers.put(CommonRequestHeader.CONTENT_TYPE, "application/xml");
 			resp.Headers.put(APIResponseHeader.LOCATION, "/" + this.bucket);
-			File f = new File("./fakebfs/get_bucket.xml");
-			FileStream fs = new FileStream()
-			xml =     
-			resp.Repr = new StringRepresentation(bucket, null);
 			
+			try {
+				BufferedReader br = new BufferedReader(new FileReader("./fakebfs/get_bucket.xml"));
+				String line;
+				StringBuilder sb = new StringBuilder();
+				while (null != (line = br.readLine()) ) {
+					sb.append(line);
+				}
+				resp.Repr = new StringRepresentation(sb.toString(), MediaType.APPLICATION_ALL_XML);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		return result;
