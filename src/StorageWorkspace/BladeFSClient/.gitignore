@@ -1,0 +1,7 @@
+.metadata
+.settings
+.svn
+bin
+logs
+.project
+.pydevproject
