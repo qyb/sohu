@@ -49,9 +49,13 @@ def show(request, key, format):
     logging.warning(str(request.GET))
     if kan_user.is_logged_in():
         if format == 'xml':
-            myarticle_instance_etree = get_myarticle_instance_to_xml_etree(kan_user.get_user_id(), key)
-            response = etree.tostring(myarticle_instance_etree, xml_declaration=True, encoding='utf-8')
-            mimetype = 'text/xml'
+            myarticle_instance_etree = get_myarticle_instance_to_xml_etree(kan_user.get_user_id(),
+                                                                           key)
+            if myarticle_instance_etree:
+                response = etree.tostring(myarticle_instance_etree,
+                                          xml_declaration=True,
+                                          encoding='utf-8')
+                mimetype = 'text/xml'
             
     return HttpResponse(response, mimetype=mimetype)
     

@@ -57,7 +57,10 @@ def create_myarticle_instance(user_id, key, title, url):
 
 
 def get_myarticle_instance(user_id, key):
+    is_authorized = True
     myarticle_instance = cache.get(key, None)
+    if myarticle_instance and myarticle_instance.user_id != user_id:
+        is_authorized = False
     if myarticle_instance is None:
         chosen_db = choose_a_db(user_id)
         try:
@@ -65,9 +68,14 @@ def get_myarticle_instance(user_id, key):
         except MyArticleInstance.DoesNotExist:
             pass
         else:
-            myarticle_instance.update_cache()
-        
-    return myarticle_instance  
+            if myarticle_instance.user_id != user_id:
+                is_authorized = False
+            else:
+                myarticle_instance.update_cache()
+    if not is_authorized:
+        myarticle_instance = None
+
+    return myarticle_instance
 
 
 def get_myarticle_instance_with_image_list(user_id, key):
@@ -107,20 +115,23 @@ def modify_or_destroy_myarticle_instance(user_id, key, modify_info):
     except MyArticleInstance.DoesNotExist:
         is_successful = False
     else:
-        if modify_info.get('is_delete', None) == TRUE_REPR:
-            myarticle_instance.is_delete = True
-            myarticle_instance.delete_time = datetime.now()
-        if modify_info.get('is_read', None) == TRUE_REPR:
-            myarticle_instance.is_read = True
-            myarticle_instance.read_time = datetime.now()
-        elif modify_info.get('is_read', None) == FALSE_REPR:
-            myarticle_instance.is_read = False
-            myarticle_instance.read_time = None
-        if modify_info.get('is_star', None) == TRUE_REPR:
-            myarticle_instance.is_star = True
-        elif modify_info.get('is_star', None) == FALSE_REPR:
-            myarticle_instance.is_star = False
-        myarticle_instance.save()
+        if myarticle_instance.user_id != user_id:
+            is_successful = False
+        else:
+            if modify_info.get('is_delete', None) == TRUE_REPR:
+                myarticle_instance.is_delete = True
+                myarticle_instance.delete_time = datetime.now()
+            if modify_info.get('is_read', None) == TRUE_REPR:
+                myarticle_instance.is_read = True
+                myarticle_instance.read_time = datetime.now()
+            elif modify_info.get('is_read', None) == FALSE_REPR:
+                myarticle_instance.is_read = False
+                myarticle_instance.read_time = None
+            if modify_info.get('is_star', None) == TRUE_REPR:
+                myarticle_instance.is_star = True
+            elif modify_info.get('is_star', None) == FALSE_REPR:
+                myarticle_instance.is_star = False
+            myarticle_instance.save()
         
     return is_successful        
 
@@ -135,38 +146,39 @@ def generate_article_instance_key(url, user_id):
 
 def get_myarticle_instance_to_xml_etree(user_id, key):
     myarticle_instance = get_myarticle_instance_with_image_list(user_id, key)
-    article = etree.Element('article', key=key)
+    article = None
+    if myarticle_instance:
+        article = etree.Element('article', key=key)
+        if not myarticle_instance.is_delete:
     
-    if not myarticle_instance.is_delete:
-    
-        title = etree.SubElement(article, 'title')
-        title.text = myarticle_instance.title
+            title = etree.SubElement(article, 'title')
+            title.text = myarticle_instance.title
         
-        url = etree.SubElement(article, 'url')
-        url.text = myarticle_instance.url
+            url = etree.SubElement(article, 'url')
+            url.text = myarticle_instance.url
         
-        download_url = etree.SubElement(article, 'download_url')
-        download_url.text = get_data_url(BUCKET_NAME_ARTICLE, myarticle_instance.key)
+            download_url = etree.SubElement(article, 'download_url')
+            download_url.text = get_data_url(BUCKET_NAME_ARTICLE, myarticle_instance.key)
         
-        image_urls = etree.SubElement(article, 'image_urls')
-        image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
-                                for image_key in myarticle_instance.image_list])
+            image_urls = etree.SubElement(article, 'image_urls')
+            image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
+                                        for image_key in myarticle_instance.image_list])
         
-#        for image_key in myarticle_instance.image_list:
-#            image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
-#            image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
+#            for image_key in myarticle_instance.image_list:
+#                image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
+#                image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
             
-        cover = etree.SubElement(article, 'cover')
-        cover.text = myarticle_instance.cover
+            cover = etree.SubElement(article, 'cover')
+            cover.text = myarticle_instance.cover
         
-        is_star = etree.SubElement(article, 'is_star')
-        is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
+            is_star = etree.SubElement(article, 'is_star')
+            is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
         
-        is_read = etree.SubElement(article, 'is_read')
-        is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
+            is_read = etree.SubElement(article, 'is_read')
+            is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
         
-        create_time = etree.SubElement(article, 'create_time')
-        create_time.text = unicode(myarticle_instance.create_time)
+            create_time = etree.SubElement(article, 'create_time')
+            create_time.text = unicode(myarticle_instance.create_time)
         
     return article
 
@@ -186,7 +198,10 @@ def get_myarticle_list_to_xml_etree(user_id, offset, limit):
     myarticle_list = get_myarticle_list(user_id, offset, limit)
     articles = etree.Element('articles')
     for myarticle_instance in myarticle_list:
-        articles.append(get_myarticle_instance_to_xml_etree(user_id, myarticle_instance.key))
+        myarticle_instance_xml_etree = get_myarticle_instance_to_xml_etree(user_id,
+                                                                           myarticle_instance.key)
+        if myarticle_instance_xml_etree:
+            articles.append(myarticle_instance_xml_etree)
     
     return articles
 
