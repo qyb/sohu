@@ -1,0 +1,48 @@
+<?xml version="1.0" ?> 
+   <project name="bfsapi" default="jar">
+   <!--  base infomation of this project --> 
+   <property name="base.dir" location="." /> 
+   <property name="src.dir" location="${base.dir}/src" /> 
+   <property name="lib.dir" location="${base.dir}/lib" /> 
+   <property name="classes.dir" location="${base.dir}/bin" />
+   <property name="jar.dir"     value="jar"/>
+   <property name="name.project" value="BFS_API_V1.0" /> 
+   
+<path id="build.classpath">
+   <fileset dir="${lib.dir}">
+   <include name="**/*.jar" /> 
+   </fileset>   
+   <pathelement location="${classes.dir}" />    
+</path>
+   
+<target name="clean">
+   <delete dir="${classes.dir}" /> 
+</target>
+  
+<target name="init" depends="clean">
+   <tstamp /> 
+   <echo message="${ant.version}" /> 
+   <mkdir dir="${classes.dir}" /> 
+</target>
+  
+<target name="compile" depends="init">
+  <javac destdir="${classes.dir}" encoding="utf-8" source="1.5" target="1.5" debug="true">
+   <src path="${src.dir}" />
+   <classpath refid="build.classpath" /> 
+   </javac>
+   <copy todir="${classes.dir}">
+   <fileset dir="${src.dir}">
+   <include name="**/*.xml" /> 
+   <include name="**/*.properties" /> 
+   </fileset>
+   </copy>
+</target>
+  
+<target name="jar" depends="compile">
+     <delete file="bfsapi.jar"/>
+     <jar destfile="bfsapi.jar" 
+          basedir="${base.dir}"> 
+     </jar> 
+</target> 
+</project>
+

@@ -1,0 +1,52 @@
+8
+
+dir
+783
+http://10.10.72.203/svn/bladefs/trunk/client/java/BladeFSClient/conf
+http://10.10.72.203/svn/bladefs
+
+
+
+2011-10-27T00:38:06.401179Z
+553
+songpeng
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+d6115be0-0f34-4196-80c6-50717fed3412
+
+client.properties
+file
+
+
+
+
+2012-02-13T02:47:12.000000Z
+67d02f72a6821f2ef4e9fff7819a8a9b
+2011-10-27T00:38:06.401179Z
+553
+songpeng
+
+log4j.properties
+file
+
+
+
+
+2012-02-13T02:47:12.000000Z
+7a98e6e8c58801505850beecb8c4cfb8
+2011-09-14T09:59:33.137921Z
+453
+wanghaiyun
+
