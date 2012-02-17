@@ -4,12 +4,12 @@ LIMIT_USERS_ONE_DB = 1000000
 
 DEFAULT_ARTICLE_LIST_LIMIT = 20
 
-KEY_ARTICLE_INSTANCE = 'key_article_instance_%s_%s_v1' # require user_id, url_hash
-KEY_IMAGE_TOBEDONE = 'key_image_tobedone_%s_v1' # require article_id 
-KEY_IMAGE_INSTANCE = 'key_image_instance_%s_%s_v1' # require article_id, image_url_hash
+KEY_ARTICLE_INSTANCE = 'key-article-instance-%s-%s-v1' # require user_id, url_hash
+KEY_IMAGE_TOBEDONE = 'key-image-tobedone-%s-v1' # require article_id 
+KEY_IMAGE_INSTANCE = 'key-image-instance-%s-%s-v1' # require article_id, image_url_hash
 
-BUCKET_NAME_ARTICLE = 'bucket_sohukan_article_v1'
-BUCKET_NAME_IMAGE = 'bucket_sohukan_image_v1'
+BUCKET_NAME_ARTICLE = 'bucket-sohukan-article-v1'
+BUCKET_NAME_IMAGE = 'bucket-sohukan-image-v1'
 
 TRUE_REPR = '1'
 FALSE_REPR = '0'

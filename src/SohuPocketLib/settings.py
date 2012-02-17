@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import socket
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+    DEBUG = TEMPLATE_DEBUG = True
+else:
+    DEBUG = TEMPLATE_DEBUG = True
 
 ADMINS = (
     ('admin', 'admin@sohu-inc.com'),
@@ -133,8 +136,12 @@ INSTALLED_APPS = (
     'south'
 )
 
-CACHE_BACKEND = 'db://cache?timeout=3600'
-#CACHE_BACKEND = 'locmem:///?timeout=3600'
+if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+    CACHE_BACKEND = 'memcached://10.10.69.53:11211;10.10.69.54:11211/?timeout=60'
+else:
+#    CACHE_BACKEND = 'memcached://localhost/?timeout=60'
+    CACHE_BACKEND = 'db://cache?timeout=3600'
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

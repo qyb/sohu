@@ -137,31 +137,37 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
     myarticle_instance = get_myarticle_instance_with_image_list(user_id, key)
     article = etree.Element('article', key=key)
     
-    title = etree.SubElement(article, 'title')
-    title.text = myarticle_instance.title
+    if not myarticle_instance.is_delete:
     
-    url = etree.SubElement(article, 'url')
-    url.text = myarticle_instance.url
-    
-    download_url = etree.SubElement(article, 'download_url')
-    download_url.text = get_data_url(BUCKET_NAME_ARTICLE, myarticle_instance.key)
-    
-    image_urls = etree.SubElement(article, 'image_urls')
-    image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
+        title = etree.SubElement(article, 'title')
+        title.text = myarticle_instance.title
+        
+        url = etree.SubElement(article, 'url')
+        url.text = myarticle_instance.url
+        
+        download_url = etree.SubElement(article, 'download_url')
+        download_url.text = get_data_url(BUCKET_NAME_ARTICLE, myarticle_instance.key)
+        
+        image_urls = etree.SubElement(article, 'image_urls')
+        image_urls.text = '|'.join([get_data_url(BUCKET_NAME_IMAGE, image_key) \
                                 for image_key in myarticle_instance.image_list])
-#    for image_key in myarticle_instance.image_list:
-#        image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
-#        image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
-    
-    is_read = etree.SubElement(article, 'is_read')
-    is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
-    
-    cover = etree.SubElement(article, 'cover')
-    cover.text = myarticle_instance.cover
-    
-    is_star = etree.SubElement(article, 'is_star')
-    is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
-    
+        
+#        for image_key in myarticle_instance.image_list:
+#            image_url = etree.SubElement(image_urls, 'image_url', key=image_key)
+#            image_url.text = get_data_url(BUCKET_NAME_IMAGE, image_key)
+            
+        cover = etree.SubElement(article, 'cover')
+        cover.text = myarticle_instance.cover
+        
+        is_star = etree.SubElement(article, 'is_star')
+        is_star.text = TRUE_REPR if myarticle_instance.is_star else FALSE_REPR
+        
+        is_read = etree.SubElement(article, 'is_read')
+        is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
+        
+        create_time = etree.SubElement(article, 'create_time')
+        create_time.text = unicode(myarticle_instance.create_time)
+        
     return article
 
 
