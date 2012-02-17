@@ -64,7 +64,7 @@ public class BucketResource extends Resource {
 	protected OperationResult put_bucket(Operation op) {
 		OperationResult result = new OperationResult();
 		BucketResponse resp = new BucketResponse();
-		result.Value = BucketManager.getBucketObjects(this.bucket);
+		result.Value = BucketManager.createBucket(this.bucket);
 		if (null != result.Value) {
 			result.Succeed = true;
 			resp.Headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
@@ -93,7 +93,7 @@ public class BucketResource extends Resource {
 	protected OperationResult get_bucket(Operation op) {
 		OperationResult result = new OperationResult();
 		BucketResponse resp = new BucketResponse();
-		result.Value = BucketManager.createBucket(this.bucket);
+		result.Value = BucketManager.getBucketObjects(this.bucket);
 		if (null != result.Value) {
 			result.Succeed = true;
 			resp.Headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
