@@ -4,7 +4,7 @@ import os
 import socket
 
 if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
-    DEBUG = TEMPLATE_DEBUG = False
+    DEBUG = TEMPLATE_DEBUG = True
 else:
     DEBUG = TEMPLATE_DEBUG = True
 
