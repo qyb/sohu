@@ -11,6 +11,6 @@ package com.bfsapi;
  * @author Samuel
  *
  */
-public abstract class SubResource  implements IAccessable, IOperatable{
+public abstract class SubResource  implements IOperatable{
 
 }

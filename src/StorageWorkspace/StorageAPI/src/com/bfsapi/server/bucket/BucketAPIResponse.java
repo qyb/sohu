@@ -3,12 +3,12 @@
  */
 package com.bfsapi.server.bucket;
 
-import com.bfsapi.server.OpenAPI;
+import com.bfsapi.server.APIResponse;
 
 /**
  * @author Samuel
  *
  */
-public abstract class BucketAPI extends OpenAPI {
+public class BucketAPIResponse extends APIResponse {
 
 }

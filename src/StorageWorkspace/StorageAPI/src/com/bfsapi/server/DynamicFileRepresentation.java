@@ -16,6 +16,7 @@ import org.restlet.representation.OutputRepresentation;
  */
 public class DynamicFileRepresentation extends OutputRepresentation {
 
+	// TODO: this is sample code. Change it.
     private byte[] fileData;
 
     public DynamicFileRepresentation(byte[] fileData, long expectedSize, MediaType mediaType) {

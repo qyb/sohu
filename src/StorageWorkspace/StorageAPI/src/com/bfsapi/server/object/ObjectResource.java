@@ -23,14 +23,14 @@ public class ObjectResource extends Resource {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.IAccessable#CanRead(com.bfsapi.IAccessor)
+	 * @see com.bfsapi.IAccessable#CanAccess(com.bfsapi.Operation)
 	 */
 	@Override
-	public Boolean CanRead(IAccessor who) {
-		return false;
+	public Boolean CanAccess(Operation op) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
+
 
 	/* (non-Javadoc)
 	 * @see com.bfsapi.IOperatable#Operate(com.bfsapi.Operation)
@@ -40,4 +40,6 @@ public class ObjectResource extends Resource {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 }

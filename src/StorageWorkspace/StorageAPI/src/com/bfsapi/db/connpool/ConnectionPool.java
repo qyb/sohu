@@ -104,7 +104,7 @@ public class ConnectionPool implements Runnable, DataSource {
 			countThread, 60 * 2, TimeUnit.SECONDS,
 			new ArrayBlockingQueue<Runnable>(countThread + 1),
 			new ThreadPoolExecutor.DiscardOldestPolicy());;
-	private static final Logger logger = Logger.getLogger("ITMANAGER2/POOL",
+	private static final Logger logger = Logger.getLogger("scss/pool",
 			Logger.ALL, true);
 	private boolean lock = false;
 	private PrintWriter logWriter;

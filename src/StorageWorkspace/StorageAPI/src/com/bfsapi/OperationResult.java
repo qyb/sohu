@@ -9,7 +9,7 @@ package com.bfsapi;
  */
 public class OperationResult {
 	public Boolean Succeed = false;
-	public long ErrorCode = 0;
-	public String Error = "";
 	public Object Value = null;
+	public String ErrorCode = null;
+	public String ErrorMessage = null;
 }

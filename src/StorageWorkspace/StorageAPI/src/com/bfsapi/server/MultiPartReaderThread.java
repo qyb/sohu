@@ -14,6 +14,7 @@ import java.io.OutputStream;
  */
 public class MultiPartReaderThread extends Thread {
 
+	// TODO: this is sample code. Change it.
 	private OutputStream output;
 
 	public MultiPartReaderThread(OutputStream output) {

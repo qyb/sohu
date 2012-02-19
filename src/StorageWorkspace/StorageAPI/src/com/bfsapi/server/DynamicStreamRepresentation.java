@@ -17,6 +17,7 @@ import org.restlet.representation.OutputRepresentation;
  */
 public class DynamicStreamRepresentation extends OutputRepresentation {
 
+	// TODO: this is sample code. Change it.
     private InputStream data;
 
     public DynamicStreamRepresentation(InputStream data, MediaType mediaType) {

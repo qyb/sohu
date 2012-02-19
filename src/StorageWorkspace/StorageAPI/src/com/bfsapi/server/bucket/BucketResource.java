@@ -15,10 +15,12 @@ import com.bfsapi.Operation;
 import com.bfsapi.OperationResult;
 import com.bfsapi.Resource;
 import com.bfsapi.db.Bucket;
+import com.bfsapi.server.APIResponse;
 import com.bfsapi.server.APIResponseHeader;
 import com.bfsapi.server.CommonRequestHeader;
 import com.bfsapi.server.CommonResponseHeader;
 import com.bfsapi.server.Handler;
+import com.bfsapi.server.MediaTypes;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
@@ -35,75 +37,59 @@ public class BucketResource extends Resource {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.IAccessable#CanRead(com.bfsapi.IAccessor)
+	 * @see com.bfsapi.IAccessable#CanAccess(com.bfsapi.Operation)
 	 */
 	@Override
-	public Boolean CanRead(IAccessor who) {
-		return false;
-		// TODO Auto-generated method stub
+	public Boolean CanAccess(Operation op) {
+		assert(null != op);
+		assert(null != op.Request);
+		assert(null != op.Performer);
 		
+		// Route to check access per API
+		return op.Operator.CanInvoke(op.Request, op.Performer);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see com.bfsapi.IOperatable#Operate(com.bfsapi.Operation)
 	 */
 	@Override
 	public OperationResult Operate(Operation op) {
-		OperationResult result = null;
-		switch(op.Operator) {
-			case CREATE:
-				result = this.put_bucket(op);
-			case READ:
-				return this.get_bucket(op);
-			
-		}
+
+		assert(null != op);
+		assert(null != op.Operator);
+		assert(null != op.Performer);
+		assert(null != op.Request);
 		
-		return result;
-	}
-	
-	protected OperationResult put_bucket(Operation op) {
 		OperationResult result = new OperationResult();
-		BucketResponse resp = new BucketResponse();
-		result.Value = BucketManager.createBucket(this.bucket);
-		if (null != result.Value) {
-			result.Succeed = true;
-			resp.Headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
-			resp.Headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");				
-			resp.Headers.put(CommonResponseHeader.CONTENT_LENGTH, "302");
-			resp.Headers.put(CommonRequestHeader.CONTENT_TYPE, "application/xml");
-			resp.Headers.put(APIResponseHeader.LOCATION, "/" + this.bucket);
-			
-			try {
-				BufferedReader br = new BufferedReader(new FileReader("./fakebfs/get_bucket.xml"));
-				String line;
-				StringBuilder sb = new StringBuilder();
-				while (null != (line = br.readLine()) ) {
-					sb.append(line);
-				}
-				resp.Repr = new StringRepresentation(sb.toString(), MediaType.APPLICATION_ALL_XML);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		
-		return result;
-	}
-	
-	protected OperationResult get_bucket(Operation op) {
-		OperationResult result = new OperationResult();
-		BucketResponse resp = new BucketResponse();
-		result.Value = BucketManager.getBucketObjects(this.bucket);
-		if (null != result.Value) {
-			result.Succeed = true;
-			resp.Headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
-			resp.Headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");				
-			resp.Headers.put(APIResponseHeader.LOCATION, "/" + this.bucket);
-			resp.Repr = null;
+		// Access check
+		if (!this.CanAccess(op)) {
+			// No Access
+			ErrorResponse err_resp = ErrorResponse.AccessDenied(op.Request);
+			result.Succeed = false;
+			result.ErrorCode = err_resp.code;
+			result.ErrorMessage = err_resp.message;
+			result.Value = err_resp;
+			
+		} else {
+			
+			// Passed access check. Invoke API.
+			APIResponse resp = (APIResponse) op.Operator.Invoke(op.Request);
+		
+			if (ErrorResponse.class.isInstance(resp)) {
+				ErrorResponse err_resp = (ErrorResponse) resp;
+				result.Succeed = false;
+				result.ErrorCode = err_resp.code;
+				result.ErrorMessage = err_resp.message;
+			} else 
+				result.Succeed = true;
+		
 			result.Value = resp;
 		}
 		
+		
+		
 		return result;
-	}	
-	
+	}
+
 }

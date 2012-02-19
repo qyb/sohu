@@ -16,15 +16,6 @@ import com.bfsapi.SubResource;
 public class LocationSubRes extends SubResource {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.IAccessable#CanRead(com.bfsapi.IAccessor)
-	 */
-	@Override
-	public Boolean CanRead(IAccessor who) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see com.bfsapi.IOperatable#Operate(com.bfsapi.Operation)
 	 */
 	@Override

@@ -12,8 +12,19 @@ import org.restlet.representation.Representation;
  * @author Samuel
  *
  */
-public abstract class APIResponse {
-	public Map<String, String> Headers = new HashMap<String, String>();
+public class APIResponse {
+	
 	public Representation  Repr = null;
-	public String MediaType = "application/xml";
+	public String MediaType = MediaTypes.APPLICATION_XML;
+	
+	protected Map<String, String> headers = null;
+	
+	public Map<String, String> getHeaders() {
+		if (null == headers)
+			headers = new HashMap<String, String>();
+		return headers;
+	}
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
 }

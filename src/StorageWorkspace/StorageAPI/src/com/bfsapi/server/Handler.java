@@ -81,34 +81,36 @@ public class Handler extends ServerResource {
 	
 	@Post
 	public Representation RequestPOST() throws InvaildRequestException {
-		Request req = this.getRequest();
+		//Request request = this.getRequest();
+		APIRequest req = new APIRequest(this.getRequest());
 		
 		// TODO: Assign a monitor to monitor the tracfic, request times and so on.
 		// com.bfsapi.utility.Monitor montior = new com.bfsapi.utility.Monitor(req);
 		
+		
 		// header process
-		Map<String, String> headers = this.getRequestHeaders();
+		req.setHeaders(this.getRequestHeaders());
 		
 		// Authorize
-		User user = this.Authorize(headers);
-		if (null == user)
+		if (!this.Authorize(req))
 			System.out.printf(">> Fail to authorize.\n");
 		else
 			System.out.printf(">> Request authorized.\n");
+			// TODO: process to quit flow.
 		
 		// Operation
-		Operation op = this.getOperation(this.getMethod(), user);
-		
+		Operation op = Operation.create(req);
 		OperationResult result = op.perform();
+		
 		if (result.Succeed) {
 			APIResponse resp = (APIResponse)result.Value; 			
 			Form resp_headers = (Form)this.getResponse().getAttributes().get("org.restlet.http.headers");
 			if (resp_headers == null)  {  
 				resp_headers = new Form();  
 				getResponse().getAttributes().put("org.restlet.http.headers", resp_headers);  
-			}  
-			for (String key: resp.Headers.keySet()) {
-				resp_headers.set(key, resp.Headers.get(key));
+			} 
+			for (String key: resp.getHeaders().keySet()) {
+				resp_headers.set(key, resp.getHeaders().get(key));
 			}
 			return resp.Repr;
 		}
@@ -157,33 +159,24 @@ public class Handler extends ServerResource {
 	 * Authorize the request
 	 * TODO: convert to class or module
 	 */
-	protected User Authorize(Map<String, String> headers) {
-		System.out.printf("Access Key ID : %s\n", headers.get(CommonRequestHeader.AUTHORIZATION));
-		return User.EveryOne;
+	protected Boolean Authorize(APIRequest req) {
+		// TODO: to invoke Authorization system
+		System.out.printf("Access Key ID : %s\n", req.getHeaders().get(CommonRequestHeader.AUTHORIZATION));
+		req.setUser(User.EveryOne);
+		return true;
 	}
 	
-	/*
-	 * Compiled Regular Expression
-	 */
-	protected static class Regex {
-		public static final Pattern SplitUri = Pattern.compile("http?://(\\w*\\.)" + Const.HOST);
-		
-	}
 	
 	/*
 	 * Parse operation and target resource
 	 * TODO: convert to class or module
 	 */
-	protected Operation getOperation(Method method, User user) throws InvaildRequestException {
-		Request req = this.getRequest();
+	/*
+	protected Operation createOperation(APIRequest req) throws InvaildRequestException {
 		Operation op = new Operation();
-		
-		String path = req.getOriginalRef().getPath();
-		URI uri = req.getOriginalRef().toUri();
-		if (!uri.isAbsolute()) {
-			//TODO: try get absolute uri
-		}
-		System.out.printf("uri : \n", uri);
+
+		String path = null;
+		URI uri = req.URI;
 
 		String bucket_name = uri.getHost();
 		if (null != bucket_name) {
@@ -206,33 +199,33 @@ public class Handler extends ServerResource {
 		bucket_name = bucket_name.trim();
 		String object_key = path.trim();
 		
-		op.Performer = user;
+		op.Performer = req.getUser();
 		if (0 == bucket_name.length() && 1 >= object_key.length()) {
-			if (!Method.GET.equals(method)) 
+			if (!req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.GET)) 
 				throw new InvaildRequestException("GET SERVICE must use HTTP GET method.");
 			op.Target = null; // GET Service
 			op.Operator = EnumOperator.READ;
 			
 		} else if (1 >= object_key.length()) {
 			op.Target = new BucketResource(bucket_name);
-			if (Method.GET.equals(method))
+			if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.GET))
 				op.Operator = EnumOperator.READ;
-			else if (Method.PUT.equals(method))
+			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.PUT))
 				op.Operator = EnumOperator.CREATE;
-			else if (Method.DELETE.equals(method))
+			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.DELETE))
 				op.Operator = EnumOperator.DELETE;
 			else
 				throw new InvaildRequestException("Invaild HTTP method on bucket.");
 			
 		} else {
 			op.Target = new ObjectResource(object_key, bucket_name);
-			if (Method.GET.equals(method))
+			if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.GET))
 				op.Operator = EnumOperator.READ;
-			else if (Method.PUT.equals(method))
+			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.PUT))
 				op.Operator = EnumOperator.CREATE;
-			else if (Method.POST.equals(method))
-				op.Operator = EnumOperator.CREATE;
-			else if (Method.DELETE.equals(method))
+			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.POST))
+				op.Operator = EnumOperator.CREATE; // TODO: POST PUT all point to CREATE 
+			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.DELETE))
 				op.Operator = EnumOperator.DELETE;
 			else
 				throw new InvaildRequestException("Invaild HTTP method on object.");
@@ -240,4 +233,5 @@ public class Handler extends ServerResource {
 		
 		return op;
 	}
+	*/
 }

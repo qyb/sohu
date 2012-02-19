@@ -10,11 +10,5 @@ package com.bfsapi;
  *
  */
 public interface IAccessable {
-	Boolean CanRead(IAccessor who);
-//	Boolean CanWrite(IAccessor who);
-//	Boolean CanModify(IAccessor who);
-//	Boolean CanDelete(IAccessor who);
-//	Boolean CanChangeACL(IAccessor who);
-//	Boolean CanChangePolicy(IAccessor who);
-//	Boolean FullControl(IAccessor who);
+	Boolean CanAccess(Operation op);
 }

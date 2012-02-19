@@ -83,6 +83,6 @@ public class CommonRequestHeader {
 	 *            that are signed using temporary security credentials.
 	 * Required: Condition
 	 */
-	public static final String X_SOHU_SECURITY_TOKEN = "x-amz-security-token";
+	public static final String X_SOHU_SECURITY_TOKEN = "x-amz-security-token"; // TODO: change amz to s4 or scss.
 	
 }

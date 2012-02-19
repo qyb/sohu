@@ -19,6 +19,16 @@ public class CommonResponseHeader {
 	 * Default: None
 	 */
 	public static final String CONTENT_LENGTH = "Content-Length";
+
+	/*
+	 * The content type of the resource. Example: text/plain
+	 * 
+	 * Type: String
+	 * Default: None
+	 * Required: No
+	 */
+	public static final String CONTENT_TYPE = "Content-Type";
+	
 	
 	/*
 	 * specifies whether the connection to the server is open or closed.
@@ -90,14 +100,18 @@ public class CommonResponseHeader {
 	
 	/*
 	 * The version of the object.When you enable versioning, BFSAPI generates a
-random number for objects added to a bucket.The value is UTF-8 encoded and
-URL ready.When you PUT an object in a bucket where versioning has been
-suspended, the version ID is always null.
-Type: String
-Valid Values: null | any URL-ready, UTF-8 encoded string
-Default: null
+	 * random number for objects added to a bucket.The value is UTF-8 encoded and
+	 * URL ready.When you PUT an object in a bucket where versioning has been
+	 * suspended, the version ID is always null.
+	 * 
+	 * Type: String
+	 * Valid Values: null | any URL-ready, UTF-8 encoded string
+	 * Default: null
 	 * 
 	 */
 	public static final String X_SOHU_VERSION_ID = "x-amz-version-id";
+	
+	
+	public static final String STATUS = "Status";
 
 }

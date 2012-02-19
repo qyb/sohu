@@ -4,36 +4,32 @@
 package com.bfsapi.server.bucket;
 
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
-
-import javax.print.attribute.standard.DateTimeAtCompleted;
-import javax.swing.text.DateFormatter;
 
 import org.restlet.engine.util.DateUtils;
 
 import com.bfsapi.IAccessor;
-import com.bfsapi.db.Bucket;
+import com.bfsapi.db.User;
 import com.bfsapi.db.model.ScssBucket;
+import com.bfsapi.db.model.ScssObject;
 import com.bfsapi.db.service.DBServiceHelper;
 import com.bfsapi.server.APIRequest;
 import com.bfsapi.server.APIResponse;
 import com.bfsapi.server.APIResponseHeader;
-import com.bfsapi.server.CommonRequestHeader;
 import com.bfsapi.server.CommonResponseHeader;
 import com.bfsapi.server.MediaTypes;
+import com.bfsapi.utility.CommonUtilities;
 
 /**
  * @author Samuel
  *
  */
-public class PUT_BUCKET extends BucketAPI {
+public class GET_BUCKET extends BucketAPI {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#Invoke(java.lang.Object)
+	 * @see com.bfsapi.ICallable#Invoke(com.bfsapi.server.APIRequest)
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
@@ -47,6 +43,7 @@ public class PUT_BUCKET extends BucketAPI {
 		Date modifyTime = createTime;
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
+		//TODO: Check ACL
 		//TODO: Check whether Logging is enabled 
 				
 		String user_meta = this.getUserMeta(req);
@@ -55,10 +52,10 @@ public class PUT_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		ScssBucket bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
+		List<ScssObject> bucket_objects = DBServiceHelper.getBucket(req.getUser().getId(), req.BucketName);
 		
 		// set response headers
-		if (null != bucket) {
+		if (null != bucket_objects) {
 			APIResponse resp = new BucketAPIResponse();
 			Map<String, String> resp_headers = resp.getHeaders();
 			
@@ -77,17 +74,59 @@ public class PUT_BUCKET extends BucketAPI {
 			// user_meta key-value pair -> header
 			
 			// TODO: set system meta
-			resp_headers.put(CommonResponseHeader.DATE, DateFormat.getDateTimeInstance().format(bucket.getModifyTime()));
-			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // PUT_BUCKET has no content
+			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // GET_SERVICE has no content
 			
 			// generate representation
-			resp.Repr = new org.restlet.representation.EmptyRepresentation();
+			resp.Repr = new org.restlet.representation.StringRepresentation(this.getResponseText(req, bucket_objects));
 			resp.MediaType = MediaTypes.APPLICATION_XML;
 			return resp;
 		}
 
 		// TODO: return appropriate error response. DB access should return a value to determine status.
 		return ErrorResponse.NoSuchBucket(req);
+	}
+//	public static final String COMMON_PREFIXES = "CommonPrefixes";
+//	
+//	public static final String DELIMITER = "Delimiter";
+//	
+//	public static final String DISPLAY_NAME = "DisplayName";
+//	
+//	public static final String KEY = "Key";
+//	public static final String LAST_MODIFIED = "LastModified";
+//	public static final String MARKER = "Marker";
+//	public static final String MAX_KEYS = "MaxKeys";
+//	public static final String NAME = "Name";
+//	public static final String OWNER = "Owner";
+//	public static final String PREFIX = "Prefix";
+//	public static final String SIZE = "Size";
+//	public static final String STORAGE_CLASS = "StorageClass";
+	
+	private String getResponseText(APIRequest req, List<ScssObject> bucket_objects) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		// TODO: change xmlns
+		sb.append("<ListBucketResult xmlns=\"http://doc.s3.amazonaws.com/2006-03-01\">\n");
+		sb.append("  <Name>" + req.BucketName + "</Name>\n");
+		sb.append("  <Prefix />\n"); // TODO: Not implemented
+		sb.append("  <Marker />\n"); // TODO: Not implemented
+		sb.append("  <MaxKeys />\n"); // TODO: Not implemented
+		sb.append("  <IsTruncated />\n"); // TODO: Not implemented
+		
+		sb.append("  <Contents>\n");
+		for(ScssObject obj: bucket_objects){
+		    sb.append("    <Key>" + obj.getKey() + "</Key>\n");
+		    sb.append("    <LastModified>" + CommonUtilities.formatResponseDatetime(obj.getModifyTime())+ "</LastModified>\n");
+		    sb.append("    <ETag />"); // TODO: Not implemented
+		    sb.append("    <Size>" + obj.getSize().toString() + "</Size>\n");
+		    sb.append("    <StorageClass />"); // TODO: Not implemented
+			sb.append("    <Owner>\n");
+			sb.append("      <ID>" + req.getUser().getSohuId() + "</ID>\n");
+			sb.append("      <DisplayName>" + req.getUser().getSohuId() + "</DisplayName>\n");
+			sb.append("    </Owner>\n");		    
+		}
+		sb.append("  </Contents>\n");
+		sb.append("</ListBucketResult>");
+		return sb.toString();
 	}
 
 	/* (non-Javadoc)
@@ -98,6 +137,5 @@ public class PUT_BUCKET extends BucketAPI {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
 
 }

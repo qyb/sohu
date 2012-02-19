@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.bfsapi.db.Bucket;
 import com.bfsapi.db.connpool.ConnectionPool;
+import com.bfsapi.db.model.ScssBucket;
 import com.bfsapi.db.model.ScssGroup;
 import com.bfsapi.db.model.ScssObject;
 import com.bfsapi.db.model.ScssUser;
@@ -336,9 +338,15 @@ public class DBServiceHelper {
 		}
 	}
 
-	public static void putBucket(String name, Long ownerId,
+	public static ScssBucket putBucket(String name, Long ownerId,
 			Boolean exprirationEnabled, Boolean loggingEnabled, String meta,
 			Boolean deleted, Date createTime, Date modifyTime) {
+		// TODO: bucket ËøîÂõûÂØπË±°Ôºå‰ΩÜ‰∏çË¶ÅÂÜçÊ¨°Êü•ËØ¢„ÄÇ
+
+		ScssBucket bucket = new ScssBucket(name, ownerId, (byte)(exprirationEnabled?1:0), 
+				(byte)(loggingEnabled?1:0), meta, (byte)(deleted?1:0), createTime, modifyTime);
+		
+
 		Connection connection = null;
 		Statement stmt = null;
 		try {
@@ -357,6 +365,7 @@ public class DBServiceHelper {
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return null;
 		} finally {
 			try {
 				if (stmt != null && !stmt.isClosed()) {
@@ -367,12 +376,14 @@ public class DBServiceHelper {
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
+				return null;
 			}
 		}
+		return bucket;
 	}
 
-	public static void putBucket(String name, Long ownerId, String meta) {
-		putBucket(name, ownerId, false, true, meta, true, new Date(),
+	public static ScssBucket putBucket(String name, Long ownerId, String meta) {
+		return putBucket(name, ownerId, false, true, meta, true, new Date(),
 				new Date());
 	}
 
@@ -431,6 +442,111 @@ public class DBServiceHelper {
 		return result;
 	}
 
+	public static List<ScssObject> getBucket(long Owner_ID, String name) {
+		Connection connection = null;
+		Statement stmt = null;
+		List<ScssObject> result = new ArrayList<ScssObject>();
+		try {
+			connection = connPool.getConnection();
+			String sql = "select `ID`, `Key`, `BFS_File`, `Owner_ID`, `Bucket_ID`, "
+					+ "`Meta`, `Size`, `Media_Type`, "
+					+ "`Version_enabled`, `Version`, "
+					+ "`Deleted`, `Expiration_time`, `Create_time`, `Modify_time` "
+					+ "from `bfsapi`.`scss_object` as object ,`bfsapi`.`scss_object` as bucket "
+					+ "where bucket.name='"
+					+ name
+					+ "' and object.Owner_ID="
+					+ Owner_ID + " and object.Bucket_ID= bucket.id";
+			stmt = connection.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				ScssObject so = new ScssObject();
+				so.setBfsFile(rs.getLong("BFS_File"));
+				so.setId(rs.getLong("ID"));
+				so.setKey(rs.getString("Key"));
+				so.setOwnerId(rs.getLong("Owner_ID"));
+				so.setBucketId(rs.getLong("Bucket_ID"));
+				so.setMeta(rs.getString("Meta"));
+				so.setSize(rs.getLong("Size"));
+				so.setMediaType(rs.getString("Media_Type"));
+				so.setVersionEnabled(rs.getBoolean("Version_enabled"));
+				so.setVersion(rs.getString("Version"));
+				so.setDeleted(rs.getBoolean("Deleted"));
+				so.setExpirationTime(rs.getDate("Expiration_time"));
+				so.setCreateTime(rs.getDate("Create_time"));
+				so.setModifyTime(rs.getDate("Modify_time"));
+				result.add(so);
+			}
+
+			rs.close();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (stmt != null && !stmt.isClosed()) {
+					stmt.close();
+				}
+				if (connection != null && !connection.isClosed()) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public static List<ScssBucket> getBucketsByUserID(long Owner_ID) {
+		Connection connection = null;
+		Statement stmt = null;
+		List<ScssBucket> result = new ArrayList<ScssBucket>();
+		try {
+			connection = connPool.getConnection();
+			String sql = "select `ID`, `Key`, `BFS_File`, `Owner_ID`, `Bucket_ID`, "
+					+ "`Meta`, `Size`, `Media_Type`, "
+					+ "`Version_enabled`, `Version`, "
+					+ "`Deleted`, `Expiration_time`, `Create_time`, `Modify_time` "
+					+ "from `bfsapi`.`scss_object` as object ,`bfsapi`.`scss_object` as bucket "
+					+ "where object.Owner_ID="
+					+ Owner_ID + " and object.Bucket_ID= bucket.id";
+			stmt = connection.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				ScssBucket bo = new ScssBucket();
+				bo.setId(rs.getLong("ID"));
+				bo.setName(rs.getString("Name"));
+				bo.setOwnerId(rs.getLong("Owner_ID"));
+				bo.setExprirationEnabled(rs.getByte("ExprirationEnabled"));
+				bo.setCreateTime(rs.getDate("Create_time"));
+				bo.setModifyTime(rs.getDate("Modify_time"));
+				bo.setDeleted(rs.getByte("Deleted"));
+				bo.setLoggingEnabled(rs.getByte("LoggingEnabled"));
+				bo.setMeta(rs.getString("Meta"));
+				result.add(bo);
+			}
+
+			rs.close();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (stmt != null && !stmt.isClosed()) {
+					stmt.close();
+				}
+				if (connection != null && !connection.isClosed()) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
 	public static void putUser(String sohuId, String access_key) {
 		Connection connection = null;
 		Statement stmt = null;
@@ -794,17 +910,17 @@ public class DBServiceHelper {
 		ScssObject object = DBServiceHelper.getObject(12345l);
 		ScssObject object2 = DBServiceHelper.getObjectByKey("123", 123l);
 		// DBServiceHelper.deleteObject("123", 123l, 1234l);
-		DBServiceHelper.putBucket("ÃÂ”˝", 123l, "Meta");
+		DBServiceHelper.putBucket("abcd", 123l, "Meta");
 		List<ScssObject> buckets = DBServiceHelper.getBucket(123l, 1l);
 		DBServiceHelper.putUser("sohu.com.jack", "uuid+sohu.xxxxxxxxx");
 		DBServiceHelper.putUser("sohu.com.jack2", "uuid+sohu.xxxxxxxxx");
 		ScssUser user = DBServiceHelper
 				.getUserByAccessKey("uuid+sohu.xxxxxxxxx");
 		ScssUser user2 = DBServiceHelper.getUserBySohuId("sohu.com.jack2");
-		DBServiceHelper.putGroup("∆’Õ®”√ªß◊È");
-		ScssGroup sg = DBServiceHelper.getGroupByName("∆’Õ®”√ªß◊È");
+		DBServiceHelper.putGroup("grp1");
+		ScssGroup sg = DBServiceHelper.getGroupByName("grp1");
 		DBServiceHelper.putUserIdsToGroup("123", sg);
-		DBServiceHelper.deleteGroup("∆’Õ®”√ªß◊È");
+		DBServiceHelper.deleteGroup("grp1");
 		// DBServiceHelper.d
 
 	}
