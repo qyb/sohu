@@ -14,10 +14,11 @@ import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
+import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.MediaTypes;
+import com.scss.db.BucketBussiness;
 import com.scss.db.model.ScssObject;
-import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 
 /**
@@ -52,7 +53,11 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		List<ScssObject> bucket_objects = DBServiceHelper.getBucket(req.getUser().getId(), req.BucketName);
+		String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
+			
+	    String access_key= authorization.split(":")[0];
+			
+		List<ScssObject> bucket_objects = BucketBussiness.getBucket(access_key, req.BucketName);
 		
 		// set response headers
 		if (null != bucket_objects) {

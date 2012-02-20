@@ -10,8 +10,10 @@ import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
+import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.MediaTypes;
+import com.scss.db.BucketBussiness;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -43,15 +45,17 @@ public class PUT_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		ScssBucket bucket = null;
-		try{
-			bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
-		} catch ( ) {
-			
-		}
+		
+        String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
+		
+		String access_key= authorization.split(":")[0];
+		
+	    boolean putBucketflag = BucketBussiness.putBucket(req.BucketName, access_key,user_meta);
+	    
+		
 		
 		// set response headers
-		if (null != bucket) {
+		if (putBucketflag) {
 			APIResponse resp = new BucketAPIResponse();
 			Map<String, String> resp_headers = resp.getHeaders();
 			

@@ -3,14 +3,14 @@
  */
 package com.scss.core;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.net.URI;
 
 import org.restlet.Request;
 
 import com.scss.Const;
-import com.scss.db.User;
+import com.scss.db.model.ScssUser;
 
 /**
  * @author Samuel
