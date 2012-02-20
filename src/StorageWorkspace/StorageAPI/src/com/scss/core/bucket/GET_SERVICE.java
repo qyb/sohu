@@ -3,12 +3,9 @@
  */
 package com.scss.core.bucket;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.restlet.engine.util.DateUtils;
 
 import com.scss.Const;
 import com.scss.IAccessor;
@@ -17,9 +14,7 @@ import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.MediaTypes;
-import com.scss.db.User;
 import com.scss.db.model.ScssBucket;
-import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 

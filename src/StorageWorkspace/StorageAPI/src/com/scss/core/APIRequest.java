@@ -3,14 +3,15 @@
  */
 package com.scss.core;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.net.URI;
 
 import org.restlet.Request;
+import org.restlet.security.User;
 
 import com.scss.Const;
-import com.scss.db.User;
+import com.scss.db.model.ScssUser;
 
 /**
  * @author Samuel
@@ -18,7 +19,7 @@ import com.scss.db.User;
  */
 public class APIRequest {
 	protected Map<String, String> headers = null;
-	protected User user = null;
+	protected ScssUser user = null;
 	public String BucketName = null;
 	public String ObjectKey = null;
 	public URI URI = null;
@@ -72,10 +73,10 @@ public class APIRequest {
 		this.headers = headers;
 	}
 	
-	public User getUser() {
+	public ScssUser getUser() {
 		return user;
 	}
-	public void setUser(User user) {
+	public void setUser(ScssUser user) {
 		this.user = user;
 	}
 }

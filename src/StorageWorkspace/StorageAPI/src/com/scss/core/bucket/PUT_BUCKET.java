@@ -46,7 +46,7 @@ public class PUT_BUCKET extends BucketAPI {
 		ScssBucket bucket = null;
 		try{
 			bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
-		} catch ( ) {
+		} catch (SameNameDirException e) {
 			
 		}
 		

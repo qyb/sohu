@@ -5,34 +5,22 @@
  */
 package com.scss.core;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.Map;
-import java.util.regex.*;
 
 import org.restlet.Request;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.FileRepresentation;
+import org.restlet.data.Form;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Product;
-import org.restlet.data.Method;
+import org.restlet.security.User;
 
-import com.scss.Const;
-import com.scss.EnumOperator;
 import com.scss.Operation;
 import com.scss.OperationResult;
-import com.scss.Resource;
-import com.scss.core.bucket.BucketResource;
-import com.scss.core.object.ObjectResource;
-import com.scss.db.User;
+import com.scss.db.model.ScssUser;
+import com.scss.db.service.DBServiceHelper;
 
 
 /**
@@ -164,8 +152,11 @@ public class Handler extends ServerResource {
 	 */
 	protected Boolean Authorize(APIRequest req) {
 		// TODO: to invoke Authorization system
-		System.out.printf("Access Key ID : %s\n", req.getHeaders().get(CommonRequestHeader.AUTHORIZATION));
-		req.setUser(User.EveryOne);
+		String auth_str = req.getHeaders().get(CommonRequestHeader.AUTHORIZATION);
+		String[] keys = auth_str.split(":");
+		System.out.printf("Access Key ID : %s - %s\n", keys[0], keys[1]);
+		ScssUser user = DBServiceHelper.getUserByAccessKey(keys[0]);
+		req.setUser(user);
 		return true;
 	}
 	
