@@ -3,9 +3,17 @@
  */
 package com.scss.core.bucket;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Map;
+
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
+import com.scss.core.CommonRequestHeader;
+import com.scss.core.CommonResponseHeader;
+import com.scss.core.MediaTypes;
+import com.scss.db.BucketBussiness;
 
 /**
  * @author Samuel
@@ -18,8 +26,43 @@ public class DELETE_BUCKET extends BucketAPI {
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
-		// TODO Auto-generated method stub
-		return null;
+		
+        Map<String, String> req_headers = req.getHeaders();
+		
+		String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
+		
+		String access_key= authorization.split(":")[0];
+		
+		BucketBussiness.deleteBucket(req.BucketName, access_key);
+		
+		APIResponse resp = new BucketAPIResponse();
+		
+		Map<String, String> resp_headers = resp.getHeaders();
+		
+		// set common response header
+		// TODO: change the temporary values
+		resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
+		
+		resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");	
+		
+		resp_headers.put(CommonResponseHeader.CONTENT_TYPE, MediaTypes.APPLICATION_XML);
+		
+		resp_headers.put(CommonResponseHeader.CONNECTION, "close");
+		
+		resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
+		
+		//TODO: set user meta
+		// user_meta key-value pair -> header
+		
+		// TODO: set system meta
+		resp_headers.put(CommonResponseHeader.DATE, DateFormat.getDateTimeInstance().format(new Date()));
+		
+		// generate representation
+		resp.Repr = new org.restlet.representation.EmptyRepresentation();
+		
+		resp.MediaType = MediaTypes.APPLICATION_XML;
+		
+		return resp;
 	}
 
 	/* (non-Javadoc)

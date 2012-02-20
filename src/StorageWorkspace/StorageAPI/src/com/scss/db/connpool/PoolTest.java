@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
-import com.scss.utility.Logger;
+import com.bfsapi.utility.Logger;
 
 public class PoolTest implements Runnable {
 	private long time = 1000;

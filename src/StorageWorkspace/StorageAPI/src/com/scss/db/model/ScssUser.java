@@ -1,4 +1,4 @@
-package com.scss.db.model;
+package com.bfsapi.db.model;
 
 /**
  * ScssUser entity.
