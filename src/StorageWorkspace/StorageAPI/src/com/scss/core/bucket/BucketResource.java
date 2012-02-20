@@ -3,27 +3,10 @@
  */
 package com.scss.core.bucket;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.Buffer;
-
-import com.scss.IAccessor;
 import com.scss.Operation;
 import com.scss.OperationResult;
 import com.scss.Resource;
 import com.scss.core.APIResponse;
-import com.scss.core.APIResponseHeader;
-import com.scss.core.CommonRequestHeader;
-import com.scss.core.CommonResponseHeader;
-import com.scss.core.Handler;
-import com.scss.core.MediaTypes;
-import com.scss.db.Bucket;
-
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
 
 /**
  * @author Samuel

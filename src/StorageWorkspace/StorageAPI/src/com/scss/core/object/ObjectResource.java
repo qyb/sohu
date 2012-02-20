@@ -3,11 +3,9 @@
  */
 package com.scss.core.object;
 
-import com.scss.IAccessor;
 import com.scss.Operation;
 import com.scss.OperationResult;
 import com.scss.Resource;
-import com.scss.db.Object;
 
 /**
  * @author Samuel

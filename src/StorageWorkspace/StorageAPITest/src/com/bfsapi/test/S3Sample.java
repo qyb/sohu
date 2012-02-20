@@ -69,8 +69,8 @@ public class S3Sample {
 
         //String bucketName = "my-first-s3-bucket-" + UUID.randomUUID();
         //String key = "MyObjectKey";
-        String bucketName = "boto-test";
-        String key = "sam_test";
+        String bucketName = "sdk-test";
+        String key = "sdk_test";
 
         System.out.println("===========================================");
         System.out.println("Getting Started with Amazon S3");
@@ -88,7 +88,7 @@ public class S3Sample {
             System.out.println("Creating bucket " + bucketName + "\n");
             Bucket b = s3.createBucket(bucketName);
             if (b != null) {
-            	System.out.printf("bucket <%s> created\n", b.getName());
+            	System.out.printf("bucket <%s> created or existed\n", b.getName());
             }
             
             /*

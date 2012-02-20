@@ -59,7 +59,8 @@ public class Operation {
 			// operation for service
 			if (!req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.GET)) 
 				throw new InvaildRequestException("Request 'GET SERVICE' must be with HTTP GET method.");
-			op.Target = null; 
+			// TODO: consider to use individual ServiceResource
+			op.Target = new BucketResource(bucket_name) ; 
 			op.Operator = OpenAPI.GET_SERVICE;
 			
 		} else if (1 >= object_key.length()) {

@@ -3,23 +3,22 @@
  */
 package com.scss.core.bucket;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.restlet.engine.util.DateUtils;
 
+import com.scss.Const;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
+import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.MediaTypes;
-import com.scss.db.User;
-import com.scss.db.model.ScssBucket;
+import com.scss.db.BucketBussiness;
 import com.scss.db.model.ScssObject;
-import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 
 /**
@@ -54,7 +53,11 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		List<ScssObject> bucket_objects = DBServiceHelper.getBucket(req.getUser().getId(), req.BucketName);
+		String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
+			
+	    String access_key= authorization.split(":")[0];
+			
+		List<ScssObject> bucket_objects = BucketBussiness.getBucket(access_key, req.BucketName);
 		
 		// set response headers
 		if (null != bucket_objects) {
@@ -89,11 +92,10 @@ public class GET_BUCKET extends BucketAPI {
 	}
 	
 	private String getResponseText(APIRequest req, List<ScssObject> bucket_objects) {
-		// TODO: Use template?
+		// TODO: Use template? or make the string static
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		// TODO: change xmlns
-		sb.append("<ListBucketResult xmlns=\"http://doc.s3.amazonaws.com/2006-03-01\">\n");
+		sb.append("<ListBucketResult xmlns=\"" + Const.XMLNS + "\">\n");
 		sb.append("  <Name>" + req.BucketName + "</Name>\n");
 		sb.append("  <Prefix />\n"); // TODO: Not implemented
 		sb.append("  <Marker />\n"); // TODO: Not implemented
@@ -103,7 +105,7 @@ public class GET_BUCKET extends BucketAPI {
 		sb.append("  <Contents>\n");
 		for(ScssObject obj: bucket_objects){
 		    sb.append("    <Key>" + obj.getKey() + "</Key>\n");
-		    sb.append("    <LastModified>" + CommonUtilities.formatResponseDatetime(obj.getModifyTime())+ "</LastModified>\n");
+		    sb.append("    <LastModified>" + CommonUtilities.formatResponseTextDate(obj.getModifyTime())+ "</LastModified>\n");
 		    sb.append("    <ETag />"); // TODO: Not implemented
 		    sb.append("    <Size>" + obj.getSize().toString() + "</Size>\n");
 		    sb.append("    <StorageClass />"); // TODO: Not implemented

@@ -3,17 +3,8 @@
  */
 package com.scss.core.bucket;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-
-import javax.print.attribute.standard.DateTimeAtCompleted;
-import javax.swing.text.DateFormatter;
-
-import org.restlet.engine.util.DateUtils;
 
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
@@ -22,9 +13,10 @@ import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.MediaTypes;
-import com.scss.db.Bucket;
+import com.scss.db.BucketBussiness;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
+import com.scss.utility.CommonUtilities;
 
 /**
  * @author Samuel
@@ -41,9 +33,7 @@ public class PUT_BUCKET extends BucketAPI {
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
-		//Date createTime = CommonUtilities.parseHeaderDatetime(req_headers.get(CommonResponseHeader.DATE));
-		Date createTime = new Date();
-		createTime = DateUtils.parse(req_headers.get(CommonResponseHeader.DATE));
+		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
@@ -55,10 +45,16 @@ public class PUT_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		ScssBucket bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
+		
+        String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
+		
+		String access_key= authorization.split(":")[0];
+		
+	    boolean putBucketflag = BucketBussiness.putBucket(req.BucketName, access_key,user_meta);
+	    		
 		
 		// set response headers
-		if (null != bucket) {
+		if (putBucketflag) {
 			APIResponse resp = new BucketAPIResponse();
 			Map<String, String> resp_headers = resp.getHeaders();
 			
@@ -77,7 +73,7 @@ public class PUT_BUCKET extends BucketAPI {
 			// user_meta key-value pair -> header
 			
 			// TODO: set system meta
-			resp_headers.put(CommonResponseHeader.DATE, DateFormat.getDateTimeInstance().format(bucket.getModifyTime()));
+			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(bucket.getModifyTime()));
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // PUT_BUCKET has no content
 			
 			// generate representation
