@@ -18,7 +18,7 @@ import com.scss.db.User;
  */
 public class APIRequest {
 	protected Map<String, String> headers = null;
-	protected User user = null;
+	protected ScssUser user = null;
 	public String BucketName = null;
 	public String ObjectKey = null;
 	public URI URI = null;
@@ -72,10 +72,10 @@ public class APIRequest {
 		this.headers = headers;
 	}
 	
-	public User getUser() {
+	public ScssUser getUser() {
 		return user;
 	}
-	public void setUser(User user) {
+	public void setUser(ScssUser user) {
 		this.user = user;
 	}
 }
