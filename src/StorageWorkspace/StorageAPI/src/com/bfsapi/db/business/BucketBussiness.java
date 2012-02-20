@@ -1,5 +1,6 @@
 package com.bfsapi.db.business;
 
+import com.bfsapi.db.model.ScssBucket;
 import com.bfsapi.db.model.ScssUser;
 import com.bfsapi.db.service.DBServiceHelper;
 
@@ -26,12 +27,23 @@ public class BucketBussiness {
 		
 	}
 	
-	
-	
-	
-	
-	
-	
+	/**
+	 * 用户存入一个bucket
+	 * @param name
+	 * @param access_key
+	 * @param meta
+	 * @return
+	 */
+	public static ScssBucket putBucket(String name,String access_key, String meta)
+	{
+		
+		ScssUser scssUser = DBServiceHelper.getUserByAccessKey(access_key);
+		
+		ScssBucket bucket = (ScssBucket)DBServiceHelper.putBucket(name, scssUser.getId(), meta);
+		
+		return bucket;
+		
+	}
 	
 	
 	

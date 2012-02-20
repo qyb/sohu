@@ -17,6 +17,7 @@ import org.restlet.engine.util.DateUtils;
 
 import com.bfsapi.IAccessor;
 import com.bfsapi.db.Bucket;
+import com.bfsapi.db.business.BucketBussiness;
 import com.bfsapi.db.model.ScssBucket;
 import com.bfsapi.db.service.DBServiceHelper;
 import com.bfsapi.server.APIRequest;
@@ -55,7 +56,12 @@ public class PUT_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		ScssBucket bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
+		
+		String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
+		
+		String access_key= authorization.split(":")[0];
+		
+		ScssBucket bucket = (ScssBucket)BucketBussiness.putBucket(req.BucketName, access_key,user_meta);
 		
 		// set response headers
 		if (null != bucket) {

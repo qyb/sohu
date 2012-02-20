@@ -37,6 +37,7 @@ public class DELETE_BUCKET extends BucketAPI {
 		BucketBussiness.deleteBucket(req.BucketName, access_key);
 		
 		APIResponse resp = new BucketAPIResponse();
+		
 		Map<String, String> resp_headers = resp.getHeaders();
 		
 		// set common response header
