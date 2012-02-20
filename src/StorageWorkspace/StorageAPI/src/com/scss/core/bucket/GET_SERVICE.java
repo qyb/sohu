@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.restlet.engine.util.DateUtils;
 
+import com.scss.Const;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
@@ -85,10 +86,10 @@ public class GET_SERVICE extends BucketAPI {
 	}
 
 	private String getResponseText(APIRequest req, List<ScssBucket> buckets) {
+		// TODO: make the string static
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		// TODO: change xmlns
-		sb.append("<ListAllMyBucketsResult xmlns=\"http://doc.s3.amazonaws.com/2006-03-01\">\n");
+		sb.append("<ListAllMyBucketsResult xmlns=\"" + Const.XMLNS + "\">\n");
 		sb.append("  <Owner>\n");
 		sb.append("    <ID>" + req.getUser().getSohuId() + "</ID>\n");
 		sb.append("    <DisplayName>" + req.getUser().getSohuId() + "</DisplayName>\n");
@@ -99,7 +100,7 @@ public class GET_SERVICE extends BucketAPI {
 		for(ScssBucket bucket: buckets){
 			sb.append("    <Bucket>\n");
 		    sb.append("      <Name>" + bucket.getName() + "</Name>\n");
-		    sb.append("      <CreationDate>" + CommonUtilities.formatResponseDatetime(bucket.getCreateTime()) + "</CreationDate>\n");
+		    sb.append("      <CreationDate>" + CommonUtilities.formatResponseTextDate(bucket.getCreateTime()) + "</CreationDate>\n");
 		    sb.append("    </Bucket>\n");
 		}
 		sb.append("  </Buckets>\n");

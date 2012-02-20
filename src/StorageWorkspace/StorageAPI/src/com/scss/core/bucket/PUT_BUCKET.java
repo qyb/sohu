@@ -76,7 +76,7 @@ public class PUT_BUCKET extends BucketAPI {
 			// user_meta key-value pair -> header
 			
 			// TODO: set system meta
-			resp_headers.put(CommonResponseHeader.DATE, DateFormat.getDateTimeInstance().format(bucket.getModifyTime()));
+			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(bucket.getModifyTime()));
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // PUT_BUCKET has no content
 			
 			// generate representation

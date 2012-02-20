@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.restlet.engine.util.DateUtils;
 
+import com.scss.Const;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
@@ -89,11 +90,10 @@ public class GET_BUCKET extends BucketAPI {
 	}
 	
 	private String getResponseText(APIRequest req, List<ScssObject> bucket_objects) {
-		// TODO: Use template?
+		// TODO: Use template? or make the string static
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		// TODO: change xmlns
-		sb.append("<ListBucketResult xmlns=\"http://doc.s3.amazonaws.com/2006-03-01\">\n");
+		sb.append("<ListBucketResult xmlns=\"" + Const.XMLNS + "\">\n");
 		sb.append("  <Name>" + req.BucketName + "</Name>\n");
 		sb.append("  <Prefix />\n"); // TODO: Not implemented
 		sb.append("  <Marker />\n"); // TODO: Not implemented
@@ -103,7 +103,7 @@ public class GET_BUCKET extends BucketAPI {
 		sb.append("  <Contents>\n");
 		for(ScssObject obj: bucket_objects){
 		    sb.append("    <Key>" + obj.getKey() + "</Key>\n");
-		    sb.append("    <LastModified>" + CommonUtilities.formatResponseDatetime(obj.getModifyTime())+ "</LastModified>\n");
+		    sb.append("    <LastModified>" + CommonUtilities.formatResponseTextDate(obj.getModifyTime())+ "</LastModified>\n");
 		    sb.append("    <ETag />"); // TODO: Not implemented
 		    sb.append("    <Size>" + obj.getSize().toString() + "</Size>\n");
 		    sb.append("    <StorageClass />"); // TODO: Not implemented

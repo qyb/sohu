@@ -104,7 +104,7 @@ public class DBServiceHelper {
 					+ "`Meta`, `Size`, `Media_Type`, "
 					+ "`Version_enabled`, `Version`, "
 					+ "`Deleted`, `Expiration_time`, `Create_time`, `Modify_time` "
-					+ "from `bfsapi`.`scss_object` as object"
+					+ "from `scss_object` as object"
 					+ " where object.BFS_File=" + BFS_File + "";
 			stmt = connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -155,7 +155,7 @@ public class DBServiceHelper {
 					+ "`Meta`, `Size`, `Media_Type`, "
 					+ "`Version_enabled`, `Version`, "
 					+ "`Deleted`, `Expiration_time`, `Create_time`, `Modify_time` "
-					+ "from `bfsapi`.`scss_object` as object "
+					+ "from `scss_object` as object "
 					+ "where object.key='"
 					+ key
 					+ "' and object.Owner_ID="
@@ -397,7 +397,7 @@ public class DBServiceHelper {
 					+ "`Meta`, `Size`, `Media_Type`, "
 					+ "`Version_enabled`, `Version`, "
 					+ "`Deleted`, `Expiration_time`, `Create_time`, `Modify_time` "
-					+ "from `bfsapi`.`scss_object` as object "
+					+ "from `scss_object` as object "
 					+ "where object.Bucket_ID="
 					+ Bucket_ID
 					+ " and object.Owner_ID=" + Owner_ID;
@@ -448,11 +448,11 @@ public class DBServiceHelper {
 		List<ScssObject> result = new ArrayList<ScssObject>();
 		try {
 			connection = connPool.getConnection();
-			String sql = "select `ID`, `Key`, `BFS_File`, `Owner_ID`, `Bucket_ID`, "
-					+ "`Meta`, `Size`, `Media_Type`, "
-					+ "`Version_enabled`, `Version`, "
-					+ "`Deleted`, `Expiration_time`, `Create_time`, `Modify_time` "
-					+ "from `bfsapi`.`scss_object` as object ,`bfsapi`.`scss_object` as bucket "
+			String sql = "select `object`.`ID`, `object`.`Key`, `object`.`BFS_File`, `object`.`Owner_ID`, `object`.`Bucket_ID`, "
+					+ "`object`.`Meta`, `object`.`Size`, `object`.`Media_Type`, "
+					+ "`object`.`Version_enabled`, `object`.`Version`, "
+					+ "`object`.`Deleted`, `object`.`Expiration_time`, `object`.`Create_time`, `object`.`Modify_time` "
+					+ "from `scss_object` as object ,`scss_bucket` as bucket "
 					+ "where bucket.name='"
 					+ name
 					+ "' and object.Owner_ID="
@@ -504,13 +504,9 @@ public class DBServiceHelper {
 		List<ScssBucket> result = new ArrayList<ScssBucket>();
 		try {
 			connection = connPool.getConnection();
-			String sql = "select `ID`, `Key`, `BFS_File`, `Owner_ID`, `Bucket_ID`, "
-					+ "`Meta`, `Size`, `Media_Type`, "
-					+ "`Version_enabled`, `Version`, "
-					+ "`Deleted`, `Expiration_time`, `Create_time`, `Modify_time` "
-					+ "from `bfsapi`.`scss_object` as object ,`bfsapi`.`scss_object` as bucket "
-					+ "where object.Owner_ID="
-					+ Owner_ID + " and object.Bucket_ID= bucket.id";
+			String sql = "select bucket.* "
+					+ "from `scss_bucket` as bucket "
+					+ "where bucket.Owner_ID=" + Owner_ID;
 			stmt = connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
@@ -518,11 +514,11 @@ public class DBServiceHelper {
 				bo.setId(rs.getLong("ID"));
 				bo.setName(rs.getString("Name"));
 				bo.setOwnerId(rs.getLong("Owner_ID"));
-				bo.setExprirationEnabled(rs.getByte("ExprirationEnabled"));
+				bo.setExprirationEnabled(rs.getByte("Expriration_Enabled"));
 				bo.setCreateTime(rs.getDate("Create_time"));
 				bo.setModifyTime(rs.getDate("Modify_time"));
 				bo.setDeleted(rs.getByte("Deleted"));
-				bo.setLoggingEnabled(rs.getByte("LoggingEnabled"));
+				bo.setLoggingEnabled(rs.getByte("Logging_Enabled"));
 				bo.setMeta(rs.getString("Meta"));
 				result.add(bo);
 			}
@@ -581,7 +577,7 @@ public class DBServiceHelper {
 		try {
 			connection = connPool.getConnection();
 			String sql = "select `id`,`Sohu_ID`," + "`access_key`,"
-					+ "`status` from `bfsapi`.`scss_user` as user "
+					+ "`status` from `scss_user` as user "
 					+ "where user.Sohu_ID='" + sohuId + "'";
 			stmt = connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -617,7 +613,7 @@ public class DBServiceHelper {
 		try {
 			connection = connPool.getConnection();
 			String sql = "select `id`,`Sohu_ID`," + "`access_key`,"
-					+ "`status` from `bfsapi`.`scss_user` as user "
+					+ "`status` from `scss_user` as user "
 					+ "where user.access_key='" + access_key + "'";
 			stmt = connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -671,7 +667,7 @@ public class DBServiceHelper {
 		try {
 			connection = connPool.getConnection();
 			String sql = "select `id`,`Sohu_ID`," + "`access_key`,"
-					+ "`status` from `bfsapi`.`scss_user` as user"
+					+ "`status` from `scss_user` as user"
 					+ "where user.id=" + id + "";
 			stmt = connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -734,7 +730,7 @@ public class DBServiceHelper {
 		try {
 			connection = connPool.getConnection();
 			String sql = "select `ID`," + "`name`," + "`user_ids` "
-					+ "from `bfsapi`.`scss_group` " + "where ID=" + id + "";
+					+ "from `scss_group` " + "where ID=" + id + "";
 			stmt = connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			if (rs.next()) {
@@ -768,7 +764,7 @@ public class DBServiceHelper {
 		try {
 			connection = connPool.getConnection();
 			String sql = "select `ID`," + "`name`," + "`user_ids` "
-					+ "from `bfsapi`.`scss_group` " + "where name='" + name
+					+ "from `scss_group` " + "where name='" + name
 					+ "'";
 
 			stmt = connection.prepareStatement(sql);
