@@ -40,7 +40,9 @@ public class APIRequest {
 		// parse bucket name and object key
 		String bucket_name = uri.getHost();
 		if (null != bucket_name) {
-			bucket_name = bucket_name.replace("." + Const.HOST, "");
+			bucket_name = bucket_name.replace(Const.HOST, "");
+			if (bucket_name.endsWith("."))
+				bucket_name = bucket_name.substring(0, bucket_name.length()-1);
 		}
 		
 		if (null == bucket_name || 0 == bucket_name.trim().length()) {

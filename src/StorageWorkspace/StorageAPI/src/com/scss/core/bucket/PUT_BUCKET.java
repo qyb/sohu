@@ -25,6 +25,7 @@ import com.scss.core.MediaTypes;
 import com.scss.db.Bucket;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
+import com.scss.utility.CommonUtilities;
 
 /**
  * @author Samuel
@@ -41,9 +42,7 @@ public class PUT_BUCKET extends BucketAPI {
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
-		//Date createTime = CommonUtilities.parseHeaderDatetime(req_headers.get(CommonResponseHeader.DATE));
-		Date createTime = new Date();
-		createTime = DateUtils.parse(req_headers.get(CommonResponseHeader.DATE));
+		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
