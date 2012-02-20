@@ -807,7 +807,7 @@ public class DBServiceHelper {
 	public static void main(String[] args) {
 		ScssUser user2;
 		try {
-			putBucket("ÌåÓý", Long.valueOf(123L), "xxxxxxxxx");
+			putBucket("ï¿½ï¿½ï¿½ï¿½", Long.valueOf(123L), "xxxxxxxxx");
 			putUser("sohu.com.jack", "uuid+sohu.xxxxxxxxx");
 			putGroup("");
 			getBucketsByUserID(123L);

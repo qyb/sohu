@@ -13,6 +13,7 @@ import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonResponseHeader;
+import com.scss.core.ErrorResponse;
 import com.scss.core.MediaTypes;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;

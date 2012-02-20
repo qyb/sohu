@@ -11,7 +11,9 @@ import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonResponseHeader;
+import com.scss.core.ErrorResponse;
 import com.scss.core.MediaTypes;
+import com.scss.db.exception.SameNameDirException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -43,12 +45,14 @@ public class PUT_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		ScssBucket bucket = null;
+		
 		try{
-			bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
+			DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
 		} catch (SameNameDirException e) {
-			
+			return ErrorResponse.BucketAlreadyExists(req);
 		}
+		
+		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
 		
 		// set response headers
 		if (null != bucket) {

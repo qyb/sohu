@@ -3,15 +3,17 @@
  */
 package com.scss.core;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.restlet.Request;
-import org.restlet.security.User;
+import org.restlet.representation.Representation;
 
 import com.scss.Const;
-import com.scss.db.model.ScssUser;
+import com.scss.db.User;
 
 /**
  * @author Samuel
@@ -19,13 +21,15 @@ import com.scss.db.model.ScssUser;
  */
 public class APIRequest {
 	protected Map<String, String> headers = null;
-	protected ScssUser user = null;
+	protected User user = null;
 	public String BucketName = null;
 	public String ObjectKey = null;
+	public InputStream ContentStream = null;
 	public URI URI = null;
 	public String Path = null;
 	public String Method = "GET";
 	public String RequestID = null; // TODO: how to get?
+	private long ContentSize = -1;
 	
 	public APIRequest(Request request) throws InvaildRequestException {
 		this.Method = request.getMethod().getName();
@@ -62,6 +66,16 @@ public class APIRequest {
 		this.BucketName = bucket_name.trim();
 		this.ObjectKey = path.trim();
 		
+		// get content
+		Representation repr = request.getEntity();
+		try {
+			this.ContentStream = repr.getStream();
+			this.ContentSize  = repr.getAvailableSize();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public Map<String, String> getHeaders() {
@@ -73,10 +87,10 @@ public class APIRequest {
 		this.headers = headers;
 	}
 	
-	public ScssUser getUser() {
+	public User getUser() {
 		return user;
 	}
-	public void setUser(ScssUser user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 }

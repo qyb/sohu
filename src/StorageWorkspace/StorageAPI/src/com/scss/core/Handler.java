@@ -15,10 +15,10 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
-import org.restlet.security.User;
 
 import com.scss.Operation;
 import com.scss.OperationResult;
+import com.scss.db.User;
 import com.scss.db.model.ScssUser;
 import com.scss.db.service.DBServiceHelper;
 
@@ -153,10 +153,10 @@ public class Handler extends ServerResource {
 	protected Boolean Authorize(APIRequest req) {
 		// TODO: to invoke Authorization system
 		String auth_str = req.getHeaders().get(CommonRequestHeader.AUTHORIZATION);
-		String[] keys = auth_str.split(":");
-		System.out.printf("Access Key ID : %s - %s\n", keys[0], keys[1]);
-		ScssUser user = DBServiceHelper.getUserByAccessKey(keys[0]);
-		req.setUser(user);
+		//String[] keys = auth_str.split(":");
+		//System.out.printf("Access Key ID : %s - %s\n", keys[0], keys[1]);
+		//User user = new User(DBServiceHelper.getUserByAccessKey(keys[0]));
+		req.setUser(User.EveryOne);
 		return true;
 	}
 	
