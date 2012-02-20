@@ -54,7 +54,12 @@ public class PUT_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		ScssBucket bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
+		ScssBucket bucket = null;
+		try{
+			bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
+		} catch () {
+			
+		}
 		
 		// set response headers
 		if (null != bucket) {

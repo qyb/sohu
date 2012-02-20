@@ -1,9 +1,9 @@
-package com.scss.db.model;
+package com.bfsapi.db.model;
 
 /**
  * ScssGroup entity.
  * 
- * @author MyEclipse Persistence Tools
+ * @author Jack.wu.xu
  */
 
 public class ScssGroup implements java.io.Serializable {

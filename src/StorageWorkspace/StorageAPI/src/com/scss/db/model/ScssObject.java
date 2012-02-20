@@ -1,11 +1,11 @@
-package com.scss.db.model;
+package com.bfsapi.db.model;
 
 import java.util.Date;
 
 /**
  * ScssObject entity.
  * 
- * @author MyEclipse Persistence Tools
+ * @author Jack.wu.xu
  */
 
 public class ScssObject implements java.io.Serializable {
