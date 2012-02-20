@@ -20,6 +20,7 @@ import com.scss.core.ErrorResponse;
 import com.scss.core.MediaTypes;
 import com.scss.db.BucketBussiness;
 import com.scss.db.model.ScssObject;
+import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 
 /**
@@ -37,11 +38,7 @@ public class GET_BUCKET extends BucketAPI {
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
-		//Date createTime = CommonUtilities.parseHeaderDatetime(req_headers.get(CommonResponseHeader.DATE));
-		Date createTime = new Date();
-		String date_str = req_headers.get(CommonResponseHeader.DATE);
-		if (null != date_str) 
-			createTime = DateUtils.parse(date_str);
+		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
@@ -54,11 +51,8 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
 			
-	    String access_key= authorization.split(":")[0];
-			
-		List<ScssObject> bucket_objects = BucketBussiness.getBucket(access_key, req.BucketName);
+		List<ScssObject> bucket_objects = (List<ScssObject>) DBServiceHelper.getBucket(req.getUser().getId(), req.BucketName);
 		
 		// set response headers
 		if (null != bucket_objects) {

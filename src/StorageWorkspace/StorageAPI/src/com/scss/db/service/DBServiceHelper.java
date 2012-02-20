@@ -109,7 +109,7 @@ public class DBServiceHelper {
 					+ "where object.BFS_File=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, BFS_File);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				so.setBfsFile(BFS_File);
 				so.setId(Long.valueOf(rs.getLong("ID")));
@@ -162,7 +162,7 @@ public class DBServiceHelper {
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, key);
 			stmt.setLong(2, owner_ID);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				so.setBfsFile(Long.valueOf(rs.getLong("BFS_File")));
 				so.setId(Long.valueOf(rs.getLong("ID")));
@@ -403,7 +403,7 @@ public class DBServiceHelper {
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, Bucket_ID);
 			stmt.setLong(2, owner_ID);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				ScssObject so = new ScssObject();
 				so.setBfsFile(Long.valueOf(rs.getLong("BFS_File")));
@@ -494,7 +494,7 @@ public class DBServiceHelper {
 			String sql = "select `id`,`Sohu_ID`,`access_key`,`status` from `scss_user` as user where user.Sohu_ID=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, sohuId);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				user.setId(Long.valueOf(rs.getLong("ID")));
 				user.setAccessKey(rs.getString("access_key"));
@@ -529,7 +529,7 @@ public class DBServiceHelper {
 					+ "from `scss_user` as user where user.access_key=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, access_key);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				user.setId(Long.valueOf(rs.getLong("ID")));
 				user.setAccessKey(rs.getString("access_key"));
@@ -582,7 +582,7 @@ public class DBServiceHelper {
 					+ "from `scss_user` as userwhere user.id=?";
 			stmt.setLong(1, id);
 			stmt = connection.prepareStatement(sql);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				user.setId(Long.valueOf(rs.getLong("id")));
 				user.setAccessKey(rs.getString("access_key"));
@@ -642,7 +642,7 @@ public class DBServiceHelper {
 			String sql = "select `ID`,`name`,`user_ids` from `scss_group` where ID=?";
 			stmt.setLong(1, id);
 			stmt = connection.prepareStatement(sql);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				g.setId(Long.valueOf(rs.getLong("ID")));
 				g.setName(rs.getString("name"));
@@ -675,7 +675,7 @@ public class DBServiceHelper {
 			String sql = "select `ID`,`name`,`user_ids` from `scss_group` where name=?";
 			stmt.setString(1, name);
 			stmt = connection.prepareStatement(sql);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				g.setId(Long.valueOf(rs.getLong("ID")));
 				g.setName(rs.getString("name"));
@@ -831,7 +831,7 @@ public class DBServiceHelper {
 					+ "where  bucket.owner_ID=user.id and user.Sohu_ID=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, name);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				ScssBucket so = new ScssBucket();
 				so.setId(Long.valueOf(rs.getLong("ID")));
@@ -875,11 +875,11 @@ public class DBServiceHelper {
 			String sql = "select `id`,`name`,`owner_ID`,`expriration_enabled`,"
 					+ "`Logging_enabled`,`Meta`,`deleted`,`create_time`,"
 					+ "`Modify_time` "
-					+ "from `scss_bucket` as bucket,`scss_user` as user  "
-					+ "where  bucket.owner_ID=user.id and user.ID=?";
+					+ "from `scss_bucket` as bucket "
+					+ "where  bucket.owner_ID=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, ID);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				ScssBucket so = new ScssBucket();
 				so.setId(Long.valueOf(rs.getLong("ID")));
@@ -920,17 +920,17 @@ public class DBServiceHelper {
 		List result = new ArrayList();
 		try {
 			connection = connPool.getConnection();
-			String sql = "select object.`ID`, `Key`, `BFS_File`, "
-					+ "`owner_ID`, `Bucket_ID`, `Meta`, `Size`, "
-					+ "`Media_Type`, `Version_enabled`, `Version`, "
-					+ "`Deleted`, `Expiration_time`, `Create_time`, "
-					+ "`Modify_time` from `scss_object` as object ,"
+			String sql = "select object.`ID`, object.`Key`, object.`BFS_File`, "
+					+ "object.`owner_ID`, object.`Bucket_ID`, object.`Meta`, object.`Size`, "
+					+ "object.`Media_Type`, object.`Version_enabled`, object.`Version`, "
+					+ "object.`Deleted`, object.`Expiration_time`, object.`Create_time`, "
+					+ "object.`Modify_time` from `scss_object` as object ,"
 					+ "`scss_bucket` as bucket where bucket.name=?"
 					+ " and object.owner_ID=? and object.Bucket_ID= bucket.id";
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, name);
 			stmt.setLong(2, owner_ID);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				ScssObject so = new ScssObject();
 				so.setBfsFile(Long.valueOf(rs.getLong("BFS_File")));
@@ -983,7 +983,7 @@ public class DBServiceHelper {
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, userId);
 			stmt.setString(2, bucketName);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 
 				so.setId(Long.valueOf(rs.getLong("ID")));
