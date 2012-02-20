@@ -53,6 +53,7 @@ public class PUT_OBJECT extends ObjectAPI {
 		
 		BfsClientResult rt = BfsClientWrapper.putFromStream(req.ContentStream);
 		if (rt.FileNumber > 0)
+			System.out.printf("BFS file no : %d (size=%d)\n", rt.FileNumber, rt.Size);
 			try{
 				ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
 				assert(null != bucket);

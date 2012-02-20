@@ -123,9 +123,9 @@ public class DBServiceHelper {
 						.getBoolean("Version_enabled")));
 				so.setVersion(rs.getString("Version"));
 				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
-				so.setExpirationTime(rs.getDate("Expiration_time"));
-				so.setCreateTime(rs.getDate("Create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 			}
 
 			rs.close();
@@ -176,9 +176,9 @@ public class DBServiceHelper {
 						.getBoolean("Version_enabled")));
 				so.setVersion(rs.getString("Version"));
 				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
-				so.setExpirationTime(rs.getDate("Expiration_time"));
-				so.setCreateTime(rs.getDate("Create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 			}
 
 			rs.close();
@@ -359,9 +359,13 @@ public class DBServiceHelper {
 			stmt.setBoolean(6, deleted);
 			stmt.setDate(7, new java.sql.Date(createTime.getTime()));
 			stmt.setDate(8, new java.sql.Date(modifyTime.getTime()));
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+				SameNameDirException ename = new SameNameDirException(
+						"name and user", "Duplicate entry name and user");
+				throw ename;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			String message = e.getMessage();
@@ -418,9 +422,9 @@ public class DBServiceHelper {
 						.getBoolean("Version_enabled")));
 				so.setVersion(rs.getString("Version"));
 				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
-				so.setExpirationTime(rs.getDate("Expiration_time"));
-				so.setCreateTime(rs.getDate("Create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				result.add(so);
 			}
 
@@ -837,8 +841,8 @@ public class DBServiceHelper {
 				so.setId(Long.valueOf(rs.getLong("ID")));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
-				so.setCreateTime(rs.getDate("create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setCreateTime(rs.getTimestamp("create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
 				so.setExprirationEnabled(Byte.valueOf(rs
 						.getByte("expriration_enabled")));
@@ -883,10 +887,11 @@ public class DBServiceHelper {
 			while (rs.next()) {
 				ScssBucket so = new ScssBucket();
 				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setName(rs.getString("Name"));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
-				so.setCreateTime(rs.getDate("create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setCreateTime(rs.getTimestamp("create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
 				so.setExprirationEnabled(Byte.valueOf(rs
 						.getByte("expriration_enabled")));
@@ -945,9 +950,9 @@ public class DBServiceHelper {
 						.getBoolean("Version_enabled")));
 				so.setVersion(rs.getString("Version"));
 				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
-				so.setExpirationTime(rs.getDate("Expiration_time"));
-				so.setCreateTime(rs.getDate("Create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				result.add(so);
 			}
 
@@ -989,8 +994,8 @@ public class DBServiceHelper {
 				so.setId(Long.valueOf(rs.getLong("ID")));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
-				so.setCreateTime(rs.getDate("create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setCreateTime(rs.getTimestamp("create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
 				so.setExprirationEnabled(Byte.valueOf(rs
 						.getByte("expriration_enabled")));
