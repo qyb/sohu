@@ -3,26 +3,15 @@
  */
 package com.scss.core.bucket;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-
-import javax.print.attribute.standard.DateTimeAtCompleted;
-import javax.swing.text.DateFormatter;
-
-import org.restlet.engine.util.DateUtils;
 
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
-import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.MediaTypes;
-import com.scss.db.Bucket;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -57,7 +46,7 @@ public class PUT_BUCKET extends BucketAPI {
 		ScssBucket bucket = null;
 		try{
 			bucket = (ScssBucket)DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
-		} catch () {
+		} catch ( ) {
 			
 		}
 		
