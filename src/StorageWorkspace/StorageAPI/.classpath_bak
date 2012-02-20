@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="sample"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit-4.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.restlet.ext.jaxrs.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.restlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="E:/Libs/restlet-jse-2.0.11/lib"/>
+	<classpathentry kind="lib" path="lib/BladeFSClient.jar"/>
+	<classpathentry kind="var" path="JRE_LIB"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
