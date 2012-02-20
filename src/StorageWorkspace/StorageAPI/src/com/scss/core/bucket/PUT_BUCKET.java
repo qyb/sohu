@@ -51,8 +51,7 @@ public class PUT_BUCKET extends BucketAPI {
 		String access_key= authorization.split(":")[0];
 		
 	    boolean putBucketflag = BucketBussiness.putBucket(req.BucketName, access_key,user_meta);
-	    
-		
+	    		
 		
 		// set response headers
 		if (putBucketflag) {
