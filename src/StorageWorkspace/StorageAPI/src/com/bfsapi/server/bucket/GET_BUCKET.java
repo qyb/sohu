@@ -3,7 +3,6 @@
  */
 package com.bfsapi.server.bucket;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +10,12 @@ import java.util.Map;
 import org.restlet.engine.util.DateUtils;
 
 import com.bfsapi.IAccessor;
-import com.bfsapi.db.User;
-import com.bfsapi.db.model.ScssBucket;
+import com.bfsapi.db.BucketBussiness;
 import com.bfsapi.db.model.ScssObject;
-import com.bfsapi.db.service.DBServiceHelper;
 import com.bfsapi.server.APIRequest;
 import com.bfsapi.server.APIResponse;
 import com.bfsapi.server.APIResponseHeader;
+import com.bfsapi.server.CommonRequestHeader;
 import com.bfsapi.server.CommonResponseHeader;
 import com.bfsapi.server.MediaTypes;
 import com.bfsapi.utility.CommonUtilities;
@@ -52,7 +50,11 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		List<ScssObject> bucket_objects = DBServiceHelper.getBucket(req.getUser().getId(), req.BucketName);
+        String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
+		
+		String access_key= authorization.split(":")[0];
+		
+		List<ScssObject> bucket_objects = BucketBussiness.getBucket(access_key, req.BucketName);
 		
 		// set response headers
 		if (null != bucket_objects) {
