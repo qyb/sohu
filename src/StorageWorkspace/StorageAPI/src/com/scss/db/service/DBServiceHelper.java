@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.bfsapi.db.connpool.ConnectionPool;
-import com.bfsapi.db.model.ScssBucket;
-import com.bfsapi.db.model.ScssGroup;
-import com.bfsapi.db.model.ScssObject;
-import com.bfsapi.db.model.ScssUser;
-import com.bfsapi.utility.Logger;
+import com.scss.db.connpool.ConnectionPool;
 import com.scss.db.exception.SameNameDirException;
+import com.scss.db.model.ScssBucket;
+import com.scss.db.model.ScssGroup;
+import com.scss.db.model.ScssObject;
+import com.scss.db.model.ScssUser;
+import com.scss.utility.Logger;
 
 public class DBServiceHelper {
 	private static ConnectionPool connPool;
@@ -805,7 +805,7 @@ public class DBServiceHelper {
 		}
 	}
 
-	private static List<ScssBucket> getBucketsByUserName(String name) {
+	public static List<ScssBucket> getBucketsByUserName(String name) {
 		Connection connection = null;
 		Statement stmt = null;
 		List result = new ArrayList();
@@ -849,7 +849,7 @@ public class DBServiceHelper {
 		return result;
 	}
 
-	private static List<ScssBucket> getBucketsByUserID(long ID) {
+	public static List<ScssBucket> getBucketsByUserID(long ID) {
 		Connection connection = null;
 		Statement stmt = null;
 		List result = new ArrayList();
@@ -893,7 +893,7 @@ public class DBServiceHelper {
 		return result;
 	}
 
-	private static List<ScssObject> getBucket(long Owner_ID, String name) {
+	public static List<ScssObject> getBucket(long Owner_ID, String name) {
 		Connection connection = null;
 		Statement stmt = null;
 		List result = new ArrayList();
@@ -946,5 +946,48 @@ public class DBServiceHelper {
 			}
 		}
 		return result;
+	}
+
+	public static ScssBucket getBucketByName(String bucketName, Long userId) {
+		Connection connection = null;
+		Statement stmt = null;
+		ScssBucket so = new ScssBucket();
+		try {
+			connection = connPool.getConnection();
+			String sql = "select bucket.`id`,`name`,`Owner_id`,`expriration_enabled`,`Logging_enabled`,`Meta`,`deleted`,`create_time`,`Modify_time` from `scss_bucket` as bucket,`scss_user` as user  where  bucket.Owner_id=user.id and user.ID="
+					+ userId + " and bucket.name='" + bucketName + "'";
+			stmt = connection.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+
+				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setOwnerId(Long.valueOf(rs.getLong("Owner_ID")));
+				so.setMeta(rs.getString("Meta"));
+				so.setCreateTime(rs.getDate("create_time"));
+				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
+				so.setExprirationEnabled(Byte.valueOf(rs
+						.getByte("expriration_enabled")));
+				so.setLoggingEnabled(Byte
+						.valueOf(rs.getByte("Logging_enabled")));
+			}
+
+			rs.close();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return so;
 	}
 }
