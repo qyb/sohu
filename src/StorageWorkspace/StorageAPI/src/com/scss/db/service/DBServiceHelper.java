@@ -162,9 +162,9 @@ public class DBServiceHelper {
 						.getBoolean("Version_enabled")));
 				so.setVersion(rs.getString("Version"));
 				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
-				so.setExpirationTime(rs.getDate("Expiration_time"));
-				so.setCreateTime(rs.getDate("Create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 			}
 
 			rs.close();
@@ -215,9 +215,9 @@ public class DBServiceHelper {
 						.getBoolean("Version_enabled")));
 				so.setVersion(rs.getString("Version"));
 				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
-				so.setExpirationTime(rs.getDate("Expiration_time"));
-				so.setCreateTime(rs.getDate("Create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 			}
 
 			rs.close();
@@ -415,6 +415,10 @@ public class DBServiceHelper {
 			}
 			stmt.close();
 			connection.close();
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+				SameNameException ename = new SameNameException(
+						"BucketExists", "Bucket name is exists");
+				throw ename;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			String message = e.getMessage();
@@ -473,9 +477,9 @@ public class DBServiceHelper {
 						.getBoolean("Version_enabled")));
 				so.setVersion(rs.getString("Version"));
 				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
-				so.setExpirationTime(rs.getDate("Expiration_time"));
-				so.setCreateTime(rs.getDate("Create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				result.add(so);
 			}
 
@@ -749,7 +753,7 @@ public class DBServiceHelper {
 			String sql = "select `ID`,`name`,`user_ids` from `scss_group` where name=?";
 			stmt.setString(1, name);
 			stmt = connection.prepareStatement(sql);
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				g.setId(Long.valueOf(rs.getLong("ID")));
 				g.setName(rs.getString("name"));
@@ -896,8 +900,8 @@ public class DBServiceHelper {
 				so.setId(Long.valueOf(rs.getLong("ID")));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
-				so.setCreateTime(rs.getDate("create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setCreateTime(rs.getTimestamp("create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
 				so.setExprirationEnabled(Byte.valueOf(rs
 						.getByte("expriration_enabled")));
@@ -934,18 +938,19 @@ public class DBServiceHelper {
 			String sql = "select `id`,`name`,`owner_ID`,`expriration_enabled`,"
 					+ "`Logging_enabled`,`Meta`,`deleted`,`create_time`,"
 					+ "`Modify_time` "
-					+ "from `scss_bucket` as bucket,`scss_user` as user  "
-					+ "where  bucket.owner_ID=user.id and user.ID=?";
+					+ "from `scss_bucket` as bucket "
+					+ "where  bucket.owner_ID=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, ID);
 			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				ScssBucket so = new ScssBucket();
 				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setName(rs.getString("Name"));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
-				so.setCreateTime(rs.getDate("create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setCreateTime(rs.getTimestamp("create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
 				so.setExprirationEnabled(Byte.valueOf(rs
 						.getByte("expriration_enabled")));
@@ -979,11 +984,11 @@ public class DBServiceHelper {
 		List result = new ArrayList();
 		try {
 			connection = connPool.getConnection();
-			String sql = "select object.`ID`, `Key`, `BFS_File`, "
-					+ "`owner_ID`, `Bucket_ID`, `Meta`, `Size`, "
-					+ "`Media_Type`, `Version_enabled`, `Version`, "
-					+ "`Deleted`, `Expiration_time`, `Create_time`, "
-					+ "`Modify_time` from `scss_object` as object ,"
+			String sql = "select object.`ID`, object.`Key`, object.`BFS_File`, "
+					+ "object.`owner_ID`, object.`Bucket_ID`, object.`Meta`, object.`Size`, "
+					+ "object.`Media_Type`, object.`Version_enabled`, object.`Version`, "
+					+ "object.`Deleted`, object.`Expiration_time`, object.`Create_time`, "
+					+ "object.`Modify_time` from `scss_object` as object ,"
 					+ "`scss_bucket` as bucket where bucket.name=?"
 					+ " and object.owner_ID=? and object.Bucket_ID= bucket.id";
 			stmt = connection.prepareStatement(sql);
@@ -1004,9 +1009,9 @@ public class DBServiceHelper {
 						.getBoolean("Version_enabled")));
 				so.setVersion(rs.getString("Version"));
 				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
-				so.setExpirationTime(rs.getDate("Expiration_time"));
-				so.setCreateTime(rs.getDate("Create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				result.add(so);
 			}
 
@@ -1048,8 +1053,8 @@ public class DBServiceHelper {
 				so.setId(Long.valueOf(rs.getLong("ID")));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
-				so.setCreateTime(rs.getDate("create_time"));
-				so.setModifyTime(rs.getDate("Modify_time"));
+				so.setCreateTime(rs.getTimestamp("create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
 				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
 				so.setExprirationEnabled(Byte.valueOf(rs
 						.getByte("expriration_enabled")));

@@ -10,10 +10,10 @@ import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
-import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
-import com.scss.core.MediaTypes;
-import com.scss.db.BucketBussiness;
+import com.scss.core.ErrorResponse;
+import com.scss.core.Mimetypes;
+import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -46,15 +46,16 @@ public class PUT_BUCKET extends BucketAPI {
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
 		
-        String authorization = req_headers.get(CommonRequestHeader.AUTHORIZATION);
+		try{
+			DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
+		} catch (SameNameException e) {
+			return ErrorResponse.BucketAlreadyExists(req);
+		}
 		
-		String access_key= authorization.split(":")[0];
-		
-	    boolean putBucketflag = BucketBussiness.putBucket(req.BucketName, access_key,user_meta);
-	    		
+		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
 		
 		// set response headers
-		if (putBucketflag) {
+		if (null != bucket) {
 			APIResponse resp = new BucketAPIResponse();
 			Map<String, String> resp_headers = resp.getHeaders();
 			
@@ -62,7 +63,7 @@ public class PUT_BUCKET extends BucketAPI {
 			// TODO: change the temporary values
 			resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
 			resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");				
-			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, MediaTypes.APPLICATION_XML);
+			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.APPLICATION_XML);
 			resp_headers.put(CommonResponseHeader.CONNECTION, "close");
 			resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
 			
@@ -78,7 +79,7 @@ public class PUT_BUCKET extends BucketAPI {
 			
 			// generate representation
 			resp.Repr = new org.restlet.representation.EmptyRepresentation();
-			resp.MediaType = MediaTypes.APPLICATION_XML;
+			resp.MediaType = Mimetypes.APPLICATION_XML;
 			return resp;
 		}
 

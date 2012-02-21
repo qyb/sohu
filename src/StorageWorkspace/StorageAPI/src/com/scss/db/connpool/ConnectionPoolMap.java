@@ -17,7 +17,7 @@ import com.scss.utility.Logger;
  */
 public class ConnectionPoolMap {
 	private static ConcurrentHashMap<String, ConnectionPool> queue = new ConcurrentHashMap<String, ConnectionPool>();
-	private static final Logger logger = Logger.getLogger("ITMANAGER2/POOLMAP",
+	private static final Logger logger = Logger.getLogger("scss/POOLMAP",
 			Logger.ALL, true);
 
 	public static Connection getConnection(String driver, String url,

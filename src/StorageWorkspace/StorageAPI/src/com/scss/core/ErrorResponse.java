@@ -1,14 +1,10 @@
 /**
  * Copyright Sohu Inc. 2012
  */
-package com.scss.core.bucket;
+package com.scss.core;
 
 import org.restlet.representation.StringRepresentation;
 
-import com.scss.core.APIRequest;
-import com.scss.core.APIResponse;
-import com.scss.core.CommonResponseHeader;
-import com.scss.core.MediaTypes;
 
 /**
  * @author Samuel
@@ -24,29 +20,39 @@ public class ErrorResponse extends APIResponse{
 	// TODO: use annotation or functional programming to make the error responses look like field
 
 	public static ErrorResponse AccessDenied(APIRequest req) {
-		//String text = ErrorResponse.getErrorResponseText("NoSuchBucket", "The specified bucket does not exist.", req.Path, req.RequestID);
 		ErrorResponse resp = new ErrorResponse("AccessDenied", "Access Denied", req.Path, req.RequestID);
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
-		resp.MediaType = MediaTypes.APPLICATION_XML;
+		resp.MediaType = Mimetypes.APPLICATION_XML;
 		return resp;
 	}
-
+	
+	public static ErrorResponse BucketAlreadyExists(APIRequest req) {
+		ErrorResponse resp = new ErrorResponse("BucketAlreadyExists", 
+				"The requested bucket name is not" +
+				"available.The bucket namespace is" +
+				"shared by all users of the system." +
+				"Please select a different name and try" +
+				"again.", req.Path, req.RequestID);
+		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
+		resp.Repr = new StringRepresentation(resp.getResponseText());
+		resp.MediaType = Mimetypes.APPLICATION_XML;
+		return resp;
+	}	
+	
 	public static ErrorResponse NoSuchBucket(APIRequest req) {
-		//String text = ErrorResponse.getErrorResponseText("NoSuchBucket", "The specified bucket does not exist.", req.Path, req.RequestID);
 		ErrorResponse resp = new ErrorResponse("NoSuchBucket", "The specified bucket does not exist.", req.Path, req.RequestID);
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
-		resp.MediaType = MediaTypes.APPLICATION_XML;
+		resp.MediaType = Mimetypes.APPLICATION_XML;
 		return resp;
 	}
 	
 	public static ErrorResponse createErrorResponse(APIRequest req, String code, String message, String status) {
-		//String text = ErrorResponse.getErrorResponseText("NoSuchBucket", "The specified bucket does not exist.", req.Path, req.RequestID);
 		ErrorResponse resp = new ErrorResponse(code, message, req.Path, req.RequestID);
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
-		resp.MediaType = MediaTypes.APPLICATION_XML;
+		resp.MediaType = Mimetypes.APPLICATION_XML;
 		return resp;
 	}
 	

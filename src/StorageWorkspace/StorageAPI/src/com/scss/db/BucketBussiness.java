@@ -2,7 +2,7 @@ package com.scss.db;
 
 import java.util.List;
 
-import com.scss.db.exception.SameNameDirException;
+import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssObject;
 import com.scss.db.model.ScssUser;
 import com.scss.db.service.DBServiceHelper;
@@ -11,7 +11,7 @@ public class BucketBussiness {
 	
 	
 	 /**
-     * 用户删除一个bucket
+     * delete a Bucket
      * @param Name
      * @param access_key
      */
@@ -29,7 +29,7 @@ public class BucketBussiness {
 	}
 	
 	/**
-	 * 用户存入一个bucket
+	 * create a bucket
 	 * @param name
 	 * @param access_key
 	 * @param meta
@@ -45,7 +45,7 @@ public class BucketBussiness {
 			try {
 				
 				DBServiceHelper.putBucket(name, scssUser.getId(), meta);
-			} catch (SameNameDirException e) {
+			} catch (SameNameException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return false;
@@ -58,7 +58,7 @@ public class BucketBussiness {
 	}
 	
 	/**
-	 * 根绝accesskey得到一个bucket
+	 * retrieve a object list belongs to a bucket
 	 * @param access_key
 	 * @param name
 	 * @return
