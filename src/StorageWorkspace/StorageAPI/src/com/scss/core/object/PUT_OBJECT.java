@@ -14,7 +14,7 @@ import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
-import com.scss.db.exception.SameNameDirException;
+import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -59,7 +59,7 @@ public class PUT_OBJECT extends ObjectAPI {
 				assert(null != bucket);
 				DBServiceHelper.putObject(req.ObjectKey, rt.FileNumber, req.getUser().getId(), 
 						bucket.getId(), user_meta, rt.Size, media_type);
-			} catch (SameNameDirException e) {
+			} catch (SameNameException e) {
 				return ErrorResponse.BucketAlreadyExists(req);
 			}
 		

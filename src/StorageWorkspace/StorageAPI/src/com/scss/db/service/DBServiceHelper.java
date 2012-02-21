@@ -389,21 +389,17 @@ public class DBServiceHelper {
 			stmt.setDate(7, new java.sql.Date(createTime.getTime()));
 			sb.setCreateTime(createTime);
 			stmt.setDate(8, new java.sql.Date(modifyTime.getTime()));
-<<<<<<< HEAD
-			stmt.executeUpdate();
-=======
 			sb.setModifyTime(modifyTime);
 			stmt.executeUpdate();
 			ResultSet ids = stmt.getGeneratedKeys();
 			if (ids.next()) {
 				sb.setId(ids.getLong(1));
 			}
->>>>>>> b4691dab6552d06f9f56b08a2e3e3320a69696cd
 			stmt.close();
 			connection.close();
 		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
-				SameNameDirException ename = new SameNameDirException(
-						"name and user", "Duplicate entry name and user");
+				SameNameException ename = new SameNameException(
+						"BucketExists", "Bucket name is exists");
 				throw ename;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -868,24 +864,6 @@ public class DBServiceHelper {
 		}
 	}
 
-<<<<<<< HEAD
-	public static void main(String[] args) {
-		ScssUser user2;
-		try {
-			putBucket("����", Long.valueOf(123L), "xxxxxxxxx");
-			putUser("sohu.com.jack", "uuid+sohu.xxxxxxxxx");
-			putGroup("");
-			getBucketsByUserID(123L);
-			getBucketsByUserName("");
-			ScssUser user = getUserByAccessKey("uuid+sohu.xxxxxxxxx");
-			user2 = getUserBySohuId("sohu.com.jack2");
-		} catch (SameNameDirException e) {
-			e.printStackTrace();
-		}
-	}
-
-=======
->>>>>>> b4691dab6552d06f9f56b08a2e3e3320a69696cd
 	public static List<ScssBucket> getBucketsByUserName(String name) {
 		Connection connection = null;
 		PreparedStatement stmt = null;

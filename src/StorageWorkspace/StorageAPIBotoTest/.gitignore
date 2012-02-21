@@ -4,3 +4,4 @@
 bin
 logs
 *.class
+*.pyc

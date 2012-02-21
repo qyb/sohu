@@ -13,7 +13,7 @@ import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
-import com.scss.db.exception.SameNameDirException;
+import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -48,7 +48,7 @@ public class PUT_BUCKET extends BucketAPI {
 		
 		try{
 			DBServiceHelper.putBucket(req.BucketName, req.getUser().getId(), user_meta);
-		} catch (SameNameDirException e) {
+		} catch (SameNameException e) {
 			return ErrorResponse.BucketAlreadyExists(req);
 		}
 		
