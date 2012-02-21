@@ -4,8 +4,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.bfsapi.utility.Logger;
+import com.scss.utility.Logger;
 
+/**
+ * @Title:连接池Map:适用于多数据库的情况。跨数据库的事务交给第三方框架去处理。<br>
+ * @Description: 根据驱动、URL、用户名、密码，取出不同的数据库连接<br>
+ * @Deprecated ：
+ * 
+ * @author Jack.wu.xu 2011-10-10
+ * @version 1.0
+ * 
+ */
 public class ConnectionPoolMap {
 	private static ConcurrentHashMap<String, ConnectionPool> queue = new ConcurrentHashMap<String, ConnectionPool>();
 	private static final Logger logger = Logger.getLogger("ITMANAGER2/POOLMAP",

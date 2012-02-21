@@ -5,12 +5,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
-import com.bfsapi.utility.Logger;
+import com.scss.utility.Logger;
 
 public class PoolTest implements Runnable {
 	private long time = 1000;
 	private ConnectionPool connectionPool;
-	private static final Logger logger = Logger.getLogger("JCSSV2/TEST",
+	private static final Logger logger = Logger.getLogger("ConnPool/TEST",
 			Logger.ALL, true);
 	private String name;
 
