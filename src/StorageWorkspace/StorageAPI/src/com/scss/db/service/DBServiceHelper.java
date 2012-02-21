@@ -32,6 +32,24 @@ public class DBServiceHelper {
 			connPool = new ConnectionPool("/db.properties");
 	}
 
+	/**
+	 * 
+	 * @param key
+	 * @param bfs_File
+	 * @param owner_ID
+	 * @param bucket_ID
+	 * @param meta
+	 * @param size
+	 * @param mediaType：
+	 * @param version_enabled：版本是否启用<br>
+	 * @param version：版本信息<br>
+	 * @param deleted：是否允许删除<br>
+	 * @param expirationTime：过期时间<br>
+	 * @param createTime：对象的创建时间<br>
+	 * @param modifyTime：最新的修改时间<br>
+	 * @return ScssObject :返回刚创建好的Object<br>
+	 * @throws SameNameException
+	 */
 	public static ScssObject putObject(String key, Long BFS_File,
 			Long owner_ID, Long Bucket_ID, String meta, Long size,
 			String mediaType, boolean version_enabled, String version,
