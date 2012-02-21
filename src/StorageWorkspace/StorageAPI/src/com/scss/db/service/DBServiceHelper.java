@@ -33,20 +33,34 @@ public class DBServiceHelper {
 	}
 
 	/**
+	 * 创建一个Object
 	 * 
-	 * @param key
-	 * @param bfs_File
-	 * @param owner_ID
-	 * @param bucket_ID
-	 * @param meta
-	 * @param size
-	 * @param mediaType：
-	 * @param version_enabled：版本是否启用<br>
-	 * @param version：版本信息<br>
-	 * @param deleted：是否允许删除<br>
-	 * @param expirationTime：过期时间<br>
-	 * @param createTime：对象的创建时间<br>
-	 * @param modifyTime：最新的修改时间<br>
+	 * @param key:Object
+	 *            name.<br>
+	 * @param bfs_File：BFS-Key
+	 *            <br>
+	 * @param owner_ID：用户ID
+	 *            <br>
+	 * @param bucket_ID：bucket
+	 *            name<br>
+	 * @param meta:元数据
+	 *            <br>
+	 * @param size:Object
+	 *            `length<br>
+	 * @param mediaType：媒体类型
+	 *            <br>
+	 * @param version_enabled：版本是否启用
+	 *            <br>
+	 * @param version：版本信息
+	 *            <br>
+	 * @param deleted：是否允许删除
+	 *            <br>
+	 * @param expirationTime：过期时间
+	 *            <br>
+	 * @param createTime：对象的创建时间
+	 *            <br>
+	 * @param modifyTime：最新的修改时间
+	 *            <br>
 	 * @return ScssObject :返回刚创建好的Object<br>
 	 * @throws SameNameException
 	 */
@@ -103,8 +117,12 @@ public class DBServiceHelper {
 			}
 			stmt.close();
 			connection.close();
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+			SameNameException ename = new SameNameException("ObjectExists",
+					"Object is exists in  the bucket Which id is " + Bucket_ID
+							+ "");
+			throw ename;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			String message = e.getMessage();
 			logger.debugT(message);
 			if (message.indexOf("Duplicate entry") != -1) {
@@ -126,6 +144,27 @@ public class DBServiceHelper {
 		return so;
 	}
 
+	/**
+	 * 创建一个Object
+	 * 
+	 * @param key:Object
+	 *            name.<br>
+	 * @param bfs_File：BFS-Key
+	 *            <br>
+	 * @param owner_ID：用户ID
+	 *            <br>
+	 * @param bucket_ID：bucket
+	 *            name<br>
+	 * @param meta:元数据
+	 *            <br>
+	 * @param size:Object
+	 *            `length<br>
+	 * @param mediaType：媒体类型
+	 *            <br>
+	 * @return ScssObject :返回刚创建好的Object<br>
+	 * @deprecated：Object 其他信息采用默认值<br>
+	 * @throws SameNameException
+	 */
 	public static ScssObject putObject(String key, Long BFS_File,
 			Long owner_ID, Long Bucket_ID, String Meta, Long Size,
 			String Media_Type) throws SameNameException {
@@ -135,6 +174,15 @@ public class DBServiceHelper {
 				new Date());
 	}
 
+	/**
+	 * 取出一个Object
+	 * 
+	 * @param bfs_File：BFS-Key
+	 *            <br>
+	 * @return ScssObject :返回刚创建好的Object<br>
+	 * @deprecated：Object 其他信息采用默认值<br>
+	 * @throws SameNameException
+	 */
 	public static ScssObject getObject(Long BFS_File) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
@@ -416,11 +464,10 @@ public class DBServiceHelper {
 			stmt.close();
 			connection.close();
 		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
-				SameNameException ename = new SameNameException(
-						"BucketExists", "Bucket name is exists");
-				throw ename;
+			SameNameException ename = new SameNameException("BucketExists",
+					"Bucket name is exists");
+			throw ename;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			String message = e.getMessage();
 			if ((message.indexOf("Duplicate entry") != -1)
 					&& (message.indexOf("'name'") != -1)) {
@@ -524,8 +571,11 @@ public class DBServiceHelper {
 			}
 			stmt.close();
 			connection.close();
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+			SameNameException ename = new SameNameException("UserExists",
+					"User name or User`accesskey is exists");
+			throw ename;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			String message = e.getMessage();
 			logger.debugT(message);
 			if (message.indexOf("Duplicate entry") != -1) {
@@ -676,7 +726,7 @@ public class DBServiceHelper {
 		return user;
 	}
 
-	public static ScssGroup putGroup(String groupName) {
+	public static ScssGroup putGroup(String groupName) throws SameNameException {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		ScssGroup sg = new ScssGroup();
@@ -695,6 +745,10 @@ public class DBServiceHelper {
 			}
 			stmt.close();
 			connection.close();
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+			SameNameException ename = new SameNameException("GroupExists",
+					"Group is exists");
+			throw ename;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -885,7 +939,7 @@ public class DBServiceHelper {
 	public static List<ScssBucket> getBucketsByUserName(String name) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
-		List result = new ArrayList();
+		List<ScssBucket> result = new ArrayList<ScssBucket>();
 		try {
 			connection = connPool.getConnection();
 			String sql = "select `id`,`name`,`owner_ID`,`expriration_enabled`,`Logging_enabled`,"
@@ -932,13 +986,12 @@ public class DBServiceHelper {
 	public static List<ScssBucket> getBucketsByUserID(long ID) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
-		List result = new ArrayList();
+		List<ScssBucket> result = new ArrayList<ScssBucket>();
 		try {
 			connection = connPool.getConnection();
 			String sql = "select `id`,`name`,`owner_ID`,`expriration_enabled`,"
 					+ "`Logging_enabled`,`Meta`,`deleted`,`create_time`,"
-					+ "`Modify_time` "
-					+ "from `scss_bucket` as bucket "
+					+ "`Modify_time` " + "from `scss_bucket` as bucket "
 					+ "where  bucket.owner_ID=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, ID);
@@ -1079,5 +1132,30 @@ public class DBServiceHelper {
 			}
 		}
 		return so;
+	}
+
+	public static void deleteBucket(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void modifyBucket(ScssBucket putBucket) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void modifyObject(ScssObject scssObject) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void modifyUser(ScssUser scssUser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void modifyGroup(ScssGroup scssGroup) {
+		// TODO Auto-generated method stub
+		
 	}
 }

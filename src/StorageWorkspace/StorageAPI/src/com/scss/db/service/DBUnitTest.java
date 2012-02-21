@@ -5,6 +5,7 @@ import java.util.Date;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssGroup;
+import com.scss.db.model.ScssObject;
 import com.scss.db.model.ScssUser;
 
 public class DBUnitTest {
@@ -15,7 +16,11 @@ public class DBUnitTest {
 
 			// Bucket test
 			ScssBucket putBucket = DBServiceHelper.putBucket("娱乐", 1232l, "");
-			DBServiceHelper.deleteBucket("娱乐", 1232l);
+			DBServiceHelper.deleteBucket("娱乐");
+			DBServiceHelper.modifyBucket(putBucket);
+			DBServiceHelper.modifyObject(new ScssObject());
+			DBServiceHelper.modifyUser(new ScssUser());
+			DBServiceHelper.modifyGroup(new ScssGroup());
 
 			ScssBucket bucket = DBServiceHelper.putBucket("娱乐", 12322l, true,
 					true, "meta", true, new Date(), new Date());
@@ -34,6 +39,9 @@ public class DBUnitTest {
 			ScssGroup putGroup = DBServiceHelper.putGroup("createGroup");
 			DBServiceHelper.putUserToGroup(user, putGroup);
 			DBServiceHelper.deleteGroup(putGroup.getId());
+			
+			// ScssGroup test
+			ScssObject object = DBServiceHelper.putObject("ks", 1234l, 123l, 1234l, "meta", 12l, "images" );
 			
 
 			System.out.println();
