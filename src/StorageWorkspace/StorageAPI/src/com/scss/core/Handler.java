@@ -5,11 +5,18 @@
  */
 package com.scss.core;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.restlet.Request;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -19,8 +26,6 @@ import org.restlet.resource.ServerResource;
 import com.scss.Operation;
 import com.scss.OperationResult;
 import com.scss.db.User;
-import com.scss.db.model.ScssUser;
-import com.scss.db.service.DBServiceHelper;
 
 
 /**
@@ -30,10 +35,16 @@ import com.scss.db.service.DBServiceHelper;
  *
  */
 public class Handler extends ServerResource {
+	
+	public Handler() {
+		super();
+		// TODO: move per resource in the future when use real restlet resource
+		this.Init();
+	}
 
 	@Get
 	public Representation RequestGET() throws InvaildRequestException{
-		return this.RequestPUT();
+		return this.Process();
 		
 		/*
 		Request req = this.getRequest();
@@ -68,8 +79,29 @@ public class Handler extends ServerResource {
 	
 	
 	@Post
-	public Representation RequestPOST() throws InvaildRequestException {
-		//Request request = this.getRequest();
+	public Representation RequestPOST(Representation entity) throws InvaildRequestException{
+		return this.Process();
+	}
+	
+	@Put
+	public Representation RequestPUT(Representation entity) throws InvaildRequestException {
+		this.getVariants().add(new VariantInfo(MediaType.APPLICATION_OCTET_STREAM));
+		return this.Process();
+		
+	}
+	
+	@Delete
+	public Representation RequestDELETE() throws InvaildRequestException {
+		return this.Process();
+	}
+	
+	
+	
+	/*
+	 * TODO: override handle() later.
+	 */
+	protected Representation Process() throws InvaildRequestException {
+		
 		APIRequest req = new APIRequest(this.getRequest());
 		
 		// TODO: Assign a monitor to monitor the tracfic, request times and so on.
@@ -87,7 +119,7 @@ public class Handler extends ServerResource {
 			// TODO: process to quit flow.
 		
 		// Operation
-		Operation op = Operation.create(req);
+		Operation op =  Operation.create(req);
 		OperationResult result = op.perform();
 		
 		if (null != result && result.Succeed) {
@@ -107,18 +139,8 @@ public class Handler extends ServerResource {
 		}
 		
 		return null;
-		
 	}
 	
-	@Put
-	public Representation RequestPUT() throws InvaildRequestException {
-		return this.RequestPOST();
-	}
-	
-	@Delete
-	public Representation RequestDELETE() {
-		return null;
-	}
 	
 	/*
 	 * collect required request headers
@@ -160,72 +182,20 @@ public class Handler extends ServerResource {
 		return true;
 	}
 	
-	
 	/*
-	 * Parse operation and target resource
-	 * TODO: convert to class or module
+	 * Add supported methods and media types 
+	 * TODO : Promote per resource.
 	 */
-	/*
-	protected Operation createOperation(APIRequest req) throws InvaildRequestException {
-		Operation op = new Operation();
-
-		String path = null;
-		URI uri = req.URI;
-
-		String bucket_name = uri.getHost();
-		if (null != bucket_name) {
-			bucket_name = bucket_name.replace("." + Const.HOST, "");
-		}
+	protected void Init () {
+		Set<Method> allowedMethods = new HashSet<Method>();
+		allowedMethods.add(Method.GET);
+		allowedMethods.add(Method.PUT);
+		allowedMethods.add(Method.POST);
+		allowedMethods.add(Method.DELETE);
+		allowedMethods.add(Method.HEAD);
+		this.setAllowedMethods(new CopyOnWriteArraySet<Method>(allowedMethods));
 		
-		if (null == bucket_name || 0 == bucket_name.trim().length()) {
-			String[] pathes = path.split("/", 3);
-			if (3 == pathes.length) {
-				bucket_name = pathes[1];
-				path = "/" + pathes[2];
-			} else if (2 == pathes.length){
-				bucket_name = pathes[1];
-				path = "/";
-			} else {
-				throw new InvaildRequestException("Invaild reqeust uri.");
-			}
-		}
-		
-		bucket_name = bucket_name.trim();
-		String object_key = path.trim();
-		
-		op.Performer = req.getUser();
-		if (0 == bucket_name.length() && 1 >= object_key.length()) {
-			if (!req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.GET)) 
-				throw new InvaildRequestException("GET SERVICE must use HTTP GET method.");
-			op.Target = null; // GET Service
-			op.Operator = EnumOperator.READ;
-			
-		} else if (1 >= object_key.length()) {
-			op.Target = new BucketResource(bucket_name);
-			if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.GET))
-				op.Operator = EnumOperator.READ;
-			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.PUT))
-				op.Operator = EnumOperator.CREATE;
-			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.DELETE))
-				op.Operator = EnumOperator.DELETE;
-			else
-				throw new InvaildRequestException("Invaild HTTP method on bucket.");
-			
-		} else {
-			op.Target = new ObjectResource(object_key, bucket_name);
-			if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.GET))
-				op.Operator = EnumOperator.READ;
-			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.PUT))
-				op.Operator = EnumOperator.CREATE;
-			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.POST))
-				op.Operator = EnumOperator.CREATE; // TODO: POST PUT all point to CREATE 
-			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.DELETE))
-				op.Operator = EnumOperator.DELETE;
-			else
-				throw new InvaildRequestException("Invaild HTTP method on object.");
-		}
-		
-		return op;
 	}
-	*/
+	
+	
 }

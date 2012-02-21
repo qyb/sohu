@@ -69,7 +69,7 @@ public class S3Sample {
 
         //String bucketName = "my-first-s3-bucket-" + UUID.randomUUID();
         //String key = "MyObjectKey";
-        String bucketName = "sdk-test";
+        String bucketName = "boto-test";
         String key = "sdk_test";
 
         System.out.println("===========================================");
@@ -85,20 +85,24 @@ public class S3Sample {
              * You can optionally specify a location for your bucket if you want to
              * keep your data closer to your applications or users.
              */
-            System.out.println("Creating bucket " + bucketName + "\n");
-            Bucket b = s3.createBucket(bucketName);
-            if (b != null) {
-            	System.out.printf("bucket <%s> created or existed\n", b.getName());
-            }
+//            System.out.println("Creating bucket " + bucketName + "\n");
+//            Bucket b = s3.createBucket(bucketName);
+//            if (b != null) {
+//            	System.out.printf("bucket <%s> created or existed\n", b.getName());
+//            }
             
             /*
              * List the buckets in your account
              */
-            System.out.println("Listing buckets");
-            for (Bucket bucket : s3.listBuckets()) {
-                System.out.println(" - " + bucket.getName());
-            }
-            System.out.println();
+//            try {
+//            System.out.println("Listing buckets");
+//            for (Bucket bucket : s3.listBuckets()) {
+//                System.out.println(" - " + bucket.getName());
+//            }
+//            System.out.println();
+//            } catch (Exception e) {
+//            	e.printStackTrace();
+//            }
 
             /*
              * Upload an object to your bucket - You can easily upload a file to

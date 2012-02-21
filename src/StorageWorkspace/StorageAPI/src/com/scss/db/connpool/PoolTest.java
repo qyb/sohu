@@ -10,7 +10,7 @@ import com.scss.utility.Logger;
 public class PoolTest implements Runnable {
 	private long time = 1000;
 	private ConnectionPool connectionPool;
-	private static final Logger logger = Logger.getLogger("JCSSV2/TEST",
+	private static final Logger logger = Logger.getLogger("ConnPool/TEST",
 			Logger.ALL, true);
 	private String name;
 

@@ -14,7 +14,7 @@ import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
-import com.scss.core.MediaTypes;
+import com.scss.core.Mimetypes;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -58,7 +58,7 @@ public class GET_SERVICE extends BucketAPI {
 			// TODO: change the temporary values
 			resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
 			resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");				
-			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, MediaTypes.APPLICATION_XML);
+			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.APPLICATION_XML);
 			resp_headers.put(CommonResponseHeader.CONNECTION, "close");
 			resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
 			
@@ -73,7 +73,7 @@ public class GET_SERVICE extends BucketAPI {
 			
 			// generate representation
 			resp.Repr = new org.restlet.representation.StringRepresentation(this.getResponseText(req, buckets));
-			resp.MediaType = MediaTypes.APPLICATION_XML;
+			resp.MediaType = Mimetypes.APPLICATION_XML;
 			return resp;
 		}
 

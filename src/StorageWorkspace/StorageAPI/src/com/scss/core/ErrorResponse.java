@@ -23,7 +23,7 @@ public class ErrorResponse extends APIResponse{
 		ErrorResponse resp = new ErrorResponse("AccessDenied", "Access Denied", req.Path, req.RequestID);
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
-		resp.MediaType = MediaTypes.APPLICATION_XML;
+		resp.MediaType = Mimetypes.APPLICATION_XML;
 		return resp;
 	}
 	
@@ -36,7 +36,7 @@ public class ErrorResponse extends APIResponse{
 				"again.", req.Path, req.RequestID);
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
-		resp.MediaType = MediaTypes.APPLICATION_XML;
+		resp.MediaType = Mimetypes.APPLICATION_XML;
 		return resp;
 	}	
 	
@@ -44,7 +44,7 @@ public class ErrorResponse extends APIResponse{
 		ErrorResponse resp = new ErrorResponse("NoSuchBucket", "The specified bucket does not exist.", req.Path, req.RequestID);
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
-		resp.MediaType = MediaTypes.APPLICATION_XML;
+		resp.MediaType = Mimetypes.APPLICATION_XML;
 		return resp;
 	}
 	
@@ -52,7 +52,7 @@ public class ErrorResponse extends APIResponse{
 		ErrorResponse resp = new ErrorResponse(code, message, req.Path, req.RequestID);
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
-		resp.MediaType = MediaTypes.APPLICATION_XML;
+		resp.MediaType = Mimetypes.APPLICATION_XML;
 		return resp;
 	}
 	

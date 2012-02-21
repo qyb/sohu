@@ -12,7 +12,7 @@ import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
-import com.scss.core.MediaTypes;
+import com.scss.core.Mimetypes;
 import com.scss.db.BucketBussiness;
 
 /**
@@ -45,7 +45,7 @@ public class DELETE_BUCKET extends BucketAPI {
 		
 		resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");	
 		
-		resp_headers.put(CommonResponseHeader.CONTENT_TYPE, MediaTypes.APPLICATION_XML);
+		resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.APPLICATION_XML);
 		
 		resp_headers.put(CommonResponseHeader.CONNECTION, "close");
 		
@@ -60,7 +60,7 @@ public class DELETE_BUCKET extends BucketAPI {
 		// generate representation
 		resp.Repr = new org.restlet.representation.EmptyRepresentation();
 		
-		resp.MediaType = MediaTypes.APPLICATION_XML;
+		resp.MediaType = Mimetypes.APPLICATION_XML;
 		
 		return resp;
 	}

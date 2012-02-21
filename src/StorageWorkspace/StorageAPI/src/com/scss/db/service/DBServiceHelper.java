@@ -4,13 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.scss.db.connpool.ConnectionPool;
-import com.scss.db.exception.SameNameDirException;
+import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssObject;
@@ -31,13 +32,14 @@ public class DBServiceHelper {
 			connPool = new ConnectionPool("/db.properties");
 	}
 
-	public static void putObject(String key, Long BFS_File, Long owner_ID,
-			Long Bucket_ID, String Meta, Long Size, String Media_Type,
-			boolean Version_enabled, String Version, boolean Deleted,
-			Date Expiration_time, Date Create_time, Date Modify_time)
-			throws SameNameDirException {
+	public static ScssObject putObject(String key, Long BFS_File,
+			Long owner_ID, Long Bucket_ID, String meta, Long size,
+			String mediaType, boolean version_enabled, String version,
+			boolean deleted, Date expirationTime, Date createTime,
+			Date modifyTime) throws SameNameException {
 		Connection connection = null;
 		PreparedStatement stmt = null;
+		ScssObject so = new ScssObject();
 		try {
 			connection = connPool.getConnection();
 
@@ -48,21 +50,39 @@ public class DBServiceHelper {
 					+ "`Create_time`,`Modify_time`) "
 					+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-			stmt = connection.prepareStatement(sql);
+			stmt = connection.prepareStatement(sql,
+					Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, key);
 			stmt.setLong(2, BFS_File);
 			stmt.setLong(3, owner_ID);
 			stmt.setLong(4, Bucket_ID);
-			stmt.setString(5, Meta);
-			stmt.setLong(6, Size);
-			stmt.setString(7, Media_Type);
-			stmt.setBoolean(8, Version_enabled);
-			stmt.setString(9, Version);
-			stmt.setBoolean(10, Deleted);
-			stmt.setDate(11, new java.sql.Date(Expiration_time.getTime()));
-			stmt.setDate(12, new java.sql.Date(Create_time.getTime()));
-			stmt.setDate(13, new java.sql.Date(Modify_time.getTime()));
-			stmt.executeUpdate(sql);
+			stmt.setString(5, meta);
+			stmt.setLong(6, size);
+			stmt.setString(7, mediaType);
+			stmt.setBoolean(8, version_enabled);
+			stmt.setString(9, version);
+			stmt.setBoolean(10, deleted);
+			stmt.setDate(11, new java.sql.Date(expirationTime.getTime()));
+			stmt.setDate(12, new java.sql.Date(createTime.getTime()));
+			stmt.setDate(13, new java.sql.Date(modifyTime.getTime()));
+			so.setKey(key);
+			so.setBfsFile(BFS_File);
+			so.setOwnerId(owner_ID);
+			so.setBucketId(Bucket_ID);
+			so.setMeta(meta);
+			so.setSize(size);
+			so.setMediaType(mediaType);
+			so.setVersionEnabled(version_enabled);
+			so.setVersion(version);
+			so.setDeleted(deleted);
+			so.setExpirationTime(expirationTime);
+			so.setCreateTime(createTime);
+			so.setModifyTime(modifyTime);
+			stmt.executeUpdate();
+			ResultSet ids = stmt.getGeneratedKeys();
+			if (ids.next()) {
+				so.setId(ids.getLong(1));
+			}
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -70,7 +90,7 @@ public class DBServiceHelper {
 			String message = e.getMessage();
 			logger.debugT(message);
 			if (message.indexOf("Duplicate entry") != -1) {
-				SameNameDirException ename = new SameNameDirException(
+				SameNameException ename = new SameNameException(
 						"key,user and BucketName", "Duplicate entry");
 				throw ename;
 			}
@@ -85,12 +105,13 @@ public class DBServiceHelper {
 				e.printStackTrace();
 			}
 		}
+		return so;
 	}
 
-	public static void putObject(String key, Long BFS_File, Long owner_ID,
-			Long Bucket_ID, String Meta, Long Size, String Media_Type)
-			throws SameNameDirException {
-		putObject(key, BFS_File, owner_ID, Bucket_ID, "Meta", Long
+	public static ScssObject putObject(String key, Long BFS_File,
+			Long owner_ID, Long Bucket_ID, String Meta, Long Size,
+			String Media_Type) throws SameNameException {
+		return putObject(key, BFS_File, owner_ID, Bucket_ID, "Meta", Long
 				.valueOf(1024L), Media_Type, false, "v1.0", true, new Date(
 				System.currentTimeMillis() + 604800000L), new Date(),
 				new Date());
@@ -210,7 +231,7 @@ public class DBServiceHelper {
 			stmt.setString(1, key);
 			stmt.setLong(2, owner_ID);
 			stmt.setLong(3, Bucket_ID);
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -241,7 +262,7 @@ public class DBServiceHelper {
 
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, name);
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -267,7 +288,7 @@ public class DBServiceHelper {
 			String sql = "delete from scss_group where `id`=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, gid);
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -290,11 +311,11 @@ public class DBServiceHelper {
 		PreparedStatement stmt = null;
 		try {
 			connection = connPool.getConnection();
-			String sql = "delete from scss_bucket where `name`=? and owner_ID=?";
+			String sql = "delete from scss_bucket where `name`=? and owner_id=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, name);
 			stmt.setLong(2, ownerID);
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -312,15 +333,15 @@ public class DBServiceHelper {
 		}
 	}
 
-	public static void deleteBucketById(Long bucket_ID) {
+	public static void deleteBucketById(Long bucket_id) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		try {
 			connection = connPool.getConnection();
 			String sql = "delete from scss_bucket where `id`=?";
 			stmt = connection.prepareStatement(sql);
-			stmt.setLong(1, bucket_ID);
-			stmt.executeUpdate(sql);
+			stmt.setLong(1, bucket_id);
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -338,28 +359,46 @@ public class DBServiceHelper {
 		}
 	}
 
-	public static void putBucket(String name, Long ownerId,
+	public static ScssBucket putBucket(String name, Long ownerId,
 			Boolean exprirationEnabled, Boolean loggingEnabled, String meta,
 			Boolean deleted, Date createTime, Date modifyTime)
-			throws SameNameDirException {
+			throws SameNameException {
 		Connection connection = null;
 		PreparedStatement stmt = null;
+		ScssBucket sb = new ScssBucket();
 		try {
 			connection = connPool.getConnection();
 			String sql = "insert into " + "scss_bucket(`name`,`owner_ID`,"
 					+ "`expriration_enabled`," + "`Logging_enabled`,`Meta`,"
 					+ "`deleted`,`create_time`," + "`Modify_time` ) "
-					+ "values (?,?,?,?,?,?,?,?)";
-			stmt = connection.prepareStatement(sql);
+					+ "values(?,?,?,?,?,?,?,?)";
+			stmt = connection.prepareStatement(sql,
+					Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, name);
+			sb.setName(name);
 			stmt.setLong(2, ownerId);
+			sb.setOwnerId(ownerId);
 			stmt.setBoolean(3, exprirationEnabled);
+			sb.setExprirationEnabled((byte) (exprirationEnabled ? 1 : 0));
 			stmt.setBoolean(4, loggingEnabled);
+			sb.setLoggingEnabled((byte) (loggingEnabled ? 1 : 0));
 			stmt.setString(5, meta);
+			sb.setMeta(meta);
 			stmt.setBoolean(6, deleted);
+			sb.setDeleted((byte) (loggingEnabled ? 1 : 0));
 			stmt.setDate(7, new java.sql.Date(createTime.getTime()));
+			sb.setCreateTime(createTime);
 			stmt.setDate(8, new java.sql.Date(modifyTime.getTime()));
+<<<<<<< HEAD
 			stmt.executeUpdate();
+=======
+			sb.setModifyTime(modifyTime);
+			stmt.executeUpdate();
+			ResultSet ids = stmt.getGeneratedKeys();
+			if (ids.next()) {
+				sb.setId(ids.getLong(1));
+			}
+>>>>>>> b4691dab6552d06f9f56b08a2e3e3320a69696cd
 			stmt.close();
 			connection.close();
 		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
@@ -371,7 +410,7 @@ public class DBServiceHelper {
 			String message = e.getMessage();
 			if ((message.indexOf("Duplicate entry") != -1)
 					&& (message.indexOf("'name'") != -1)) {
-				SameNameDirException ename = new SameNameDirException(
+				SameNameException ename = new SameNameException(
 						"name and user", "Duplicate entry name and user");
 				throw ename;
 			}
@@ -386,12 +425,14 @@ public class DBServiceHelper {
 				e.printStackTrace();
 			}
 		}
+		return sb;
 	}
 
-	public static void putBucket(String name, Long ownerId, String meta)
-			throws SameNameDirException {
-		putBucket(name, ownerId, Boolean.valueOf(false), Boolean.valueOf(true),
-				meta, Boolean.valueOf(true), new Date(), new Date());
+	public static ScssBucket putBucket(String name, Long ownerId, String meta)
+			throws SameNameException {
+		return putBucket(name, ownerId, Boolean.valueOf(false), Boolean
+				.valueOf(true), meta, Boolean.valueOf(true), new Date(),
+				new Date());
 	}
 
 	public static List<ScssObject> getBucket(Long owner_ID, Long Bucket_ID) {
@@ -447,17 +488,26 @@ public class DBServiceHelper {
 		return result;
 	}
 
-	public static void putUser(String sohuId, String access_key)
-			throws SameNameDirException {
+	public static ScssUser putUser(String sohuId, String access_key)
+			throws SameNameException {
 		Connection connection = null;
 		PreparedStatement stmt = null;
+		ScssUser user = new ScssUser();
 		try {
 			connection = connPool.getConnection();
 			String sql = "insert into scss_user(`Sohu_ID`,`access_key`) values (?,?)";
-			stmt = connection.prepareStatement(sql);
+			stmt = connection.prepareStatement(sql,
+					Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, sohuId);
 			stmt.setString(2, access_key);
-			stmt.executeUpdate(sql);
+			user.setSohuId(sohuId);
+			user.setAccessKey(access_key);
+			user.setStatus("B");
+			stmt.executeUpdate();
+			ResultSet ids = stmt.getGeneratedKeys();
+			if (ids.next()) {
+				user.setId(ids.getLong(1));
+			}
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -466,13 +516,13 @@ public class DBServiceHelper {
 			logger.debugT(message);
 			if (message.indexOf("Duplicate entry") != -1) {
 				if (message.indexOf("access_key") != -1) {
-					SameNameDirException ename = new SameNameDirException(
+					SameNameException ename = new SameNameException(
 							"access_key", message);
 					throw ename;
 				}
 				if (message.indexOf("Sohu_ID") != -1) {
-					SameNameDirException ename = new SameNameDirException(
-							"Sohu_ID", message);
+					SameNameException ename = new SameNameException("Sohu_ID",
+							message);
 					throw ename;
 				}
 			}
@@ -487,6 +537,7 @@ public class DBServiceHelper {
 				e.printStackTrace();
 			}
 		}
+		return user;
 	}
 
 	public static ScssUser getUserBySohuId(String sohuId) {
@@ -611,15 +662,23 @@ public class DBServiceHelper {
 		return user;
 	}
 
-	public static void putGroup(String groupName) {
+	public static ScssGroup putGroup(String groupName) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
+		ScssGroup sg = new ScssGroup();
 		try {
 			connection = connPool.getConnection();
-			String sql = "insert into scss_group(`name`,`user_ids`) values ('?',',')";
+			String sql = "insert into scss_group(`name`,`user_ids`) values (?,',')";
+			stmt = connection.prepareStatement(sql,
+					Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, groupName);
-			stmt = connection.prepareStatement(sql);
-			stmt.executeUpdate(sql);
+			sg.setName(groupName);
+			sg.setUserIds(",");
+			stmt.executeUpdate();
+			ResultSet ids = stmt.getGeneratedKeys();
+			if (ids.next()) {
+				sg.setId(ids.getLong(1));
+			}
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -635,6 +694,7 @@ public class DBServiceHelper {
 				e.printStackTrace();
 			}
 		}
+		return sg;
 	}
 
 	public static ScssGroup getGroupById(Long id) {
@@ -713,9 +773,9 @@ public class DBServiceHelper {
 		try {
 			connection = connPool.getConnection();
 			String sql = "delete from scss_user where `id`=?";
-			stmt.setLong(1, user.getId());
 			stmt = connection.prepareStatement(sql);
-			stmt.executeUpdate(sql);
+			stmt.setLong(1, user.getId());
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -746,7 +806,7 @@ public class DBServiceHelper {
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, userIds);
 			stmt.setLong(2, sg.getId());
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -790,7 +850,7 @@ public class DBServiceHelper {
 			stmt = connection.prepareStatement(sql);
 			stmt.setString(1, newIds);
 			stmt.setLong(2, sg.getId());
-			stmt.executeUpdate(sql);
+			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -808,6 +868,7 @@ public class DBServiceHelper {
 		}
 	}
 
+<<<<<<< HEAD
 	public static void main(String[] args) {
 		ScssUser user2;
 		try {
@@ -823,6 +884,8 @@ public class DBServiceHelper {
 		}
 	}
 
+=======
+>>>>>>> b4691dab6552d06f9f56b08a2e3e3320a69696cd
 	public static List<ScssBucket> getBucketsByUserName(String name) {
 		Connection connection = null;
 		PreparedStatement stmt = null;

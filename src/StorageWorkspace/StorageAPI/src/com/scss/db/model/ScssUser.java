@@ -1,5 +1,8 @@
 package com.scss.db.model;
+<<<<<<< HEAD
 
+=======
+>>>>>>> b4691dab6552d06f9f56b08a2e3e3320a69696cd
 
 /**
  * ScssUser entity.
