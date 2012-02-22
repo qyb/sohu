@@ -1,0 +1,5 @@
+.settings
+bin
+logs
+fakebfs
+*.class

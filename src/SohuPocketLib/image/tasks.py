@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from article.helper import choose_a_db
+from article.helper import choose_a_db, mark_article_as_done
 from article.models import MyArticleInstance
 from celery.task import Task
 from celery.task.sets import subtask
@@ -37,7 +37,7 @@ class DownloadImageHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
-        except Exception as exc:
+        except Exception, exc:
             DownloadImageHandler.retry(exc=exc)
         else:
             update_image_info.image_url = image_url
@@ -83,7 +83,7 @@ class StoreImageInfoHandler(Task):
             subtask(callback).delay(update_image_info, update_article_info)
             
         return None
-    
+
 
 class UploadImageHandler(Task):
     """
@@ -105,7 +105,7 @@ class UploadImageHandler(Task):
                                    update_image_info.image_instance_key,
                                    update_image_info.image_data,
                                    headers=headers)
-        except Exception as exc:
+        except Exception, exc:
             UploadImageHandler.retry(exc=exc)
         else:
 #            call next step
@@ -122,7 +122,7 @@ class UploadImageHandler(Task):
 
 class MarkImagetobedoneHandler(Task):
     """
-    mark 'image_tobedone_key' and check whether to mark article as is_ready
+    alter 'image_tobedone_key' and check whether to mark article as is_ready
     """
     
     ignore_result = True
@@ -130,15 +130,7 @@ class MarkImagetobedoneHandler(Task):
     def run(self, update_image_info, update_article_info):
         decrease_image_tobedone(update_image_info.image_tobedone_key)
         if get_image_tobedone(update_image_info.image_tobedone_key) == 0:
-            try:
-                chosen_db = choose_a_db(update_article_info.user_id)
-                article_instance = MyArticleInstance.objects \
-                                                    .using(chosen_db) \
-                                                    .get(id = update_article_info.article_id)
-                article_instance.is_ready = True
-                article_instance.save()
-            except MyArticleInstance.DoesNotExist:
-                pass
+            mark_article_as_done(update_article_info)
             
         return None
 

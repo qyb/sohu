@@ -21,18 +21,18 @@ urlpatterns = patterns('',
     (r'^user/update\.json/$', 'SohuPocketLib.user.views.update'),
     (r'^user/update\.json/test/$', 'SohuPocketLib.user.views.update_test'),
     
-    (r'^article/update\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.update'),
-    (r'^article/update\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.update_test'),
+    (r'^article/add\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.update'),
+    (r'^article/add\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.update_test'),
     
     (r'^article/list\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.list'),
     (r'^article/list\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.list_test'),
     
-    (r'^article/show/(?P<key>\w+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.show'),
-    (r'^article/show/(?P<key>\w+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.show_test'),
+    (r'^article/show/(?P<key>[\w-]+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.show'),
+    (r'^article/show/(?P<key>[\w-]+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.show_test'),
     
-    (r'^article/modify/(?P<key>\w+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.modify'),
-    (r'^article/modify/(?P<key>\w+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.modify_test'),
+    (r'^article/modify/(?P<key>[\w-]+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.modify'),
+    (r'^article/modify/(?P<key>[\w-]+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.modify_test'),
     
-    (r'^article/destroy/(?P<key>\w+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.destroy'),
-    (r'^article/destroy/(?P<key>\w+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.destroy_test'),
+    (r'^article/delete/(?P<key>[\w-]+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.destroy'),
+    (r'^article/delete/(?P<key>[\w-]+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.destroy_test'),
 )

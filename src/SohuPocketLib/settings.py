@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import socket
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+    DEBUG = TEMPLATE_DEBUG = True
+else:
+    DEBUG = TEMPLATE_DEBUG = True
 
 ADMINS = (
     ('admin', 'admin@sohu-inc.com'),
@@ -133,8 +136,12 @@ INSTALLED_APPS = (
     'south'
 )
 
-CACHE_BACKEND = 'db://cache?timeout=3600'
-#CACHE_BACKEND = 'locmem:///?timeout=3600'
+if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+    CACHE_BACKEND = 'memcached://10.10.69.53:11211;10.10.69.54:11211/?timeout=60'
+else:
+#    CACHE_BACKEND = 'memcached://localhost/?timeout=60'
+    CACHE_BACKEND = 'db://cache?timeout=3600'
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -169,6 +176,30 @@ BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
 
 CELERY_DISABLE_RATE_LIMITS = True
+
+#CELERY_QUEUES = {
+#                 "default": {
+#                             "exchange": "default",
+#                             "binding_key": "default"
+#                             },
+#                 "pages": {
+#                           "exchange": "media",
+#                           "binding_key": "media.page",
+#                           },
+#                 "images": {
+#                            "exchange": "media",
+#                            "binding_key": "media.image",
+#                            },
+#                 "videos": {
+#                            "exchange": "media",
+#                            "binding_key": "media.video",
+#                            },
+#                 }
+#
+#CELERY_DEFAULT_QUEUE = "default"
+#CELERY_DEFAULT_EXCHANGE = "default"
+#CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
+#CELERY_DEFAULT_ROUTING_KEY = "default"
 
 AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
 AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'

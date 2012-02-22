@@ -1,0 +1,6 @@
+.metadata
+.settings
+.svn
+bin
+logs
+*.class
