@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<config>
+    <network>
+        <ip>0.0.0.0</ip>
+        <port>8181</port>
+    </network>
+    <access>
+        <allow>whitelist</allow>
+        <forbid>blacklist</forbid>
+        <order>0</order>
+    </access>
+    
+    <virtuals>
+        <host>
+            <id>1</id>
+            <domain>go.com</domain>
+            <port>.*</port>
+        </host>
+        
+        <host>
+            <id>2</id>
+            <domain>test.com</domain>
+            <port>.*</port>
+        </host>
+    </virtuals>
+    
+    <components>
+        <application>
+            <vid>1</vid>
+            <uri>/scss</uri>
+            <class>com.scss.server.apps.ScssApplication</class>
+            <resource>com.scss.server.resources.ScssResource</resource>
+        </application>
+         <application>
+            <vid>1</vid>
+            <uri>/admin</uri>
+            <class>com.scss.server.apps.AdminApplication</class>
+            <resource>com.scss.server.resources.ScssResource</resource>
+        </application>
+        <application>
+            <vid>2</vid>
+            <uri>/test</uri>
+            <class>com.scss.server.apps.TestApplication</class>
+            <resource>com.scss.server.resources.TestResource</resource>
+        </application>
+    </components>
+    
+</config>
+
+
+
+
