@@ -77,6 +77,7 @@ public class CloudServer {
 		
         return true;
 	}
+	
     
 	protected boolean buildRestlet() {
 		try {
@@ -130,10 +131,10 @@ public class CloudServer {
             
         for (int i = 0; i < hosts.size(); i++) {
         	VirtualHost vh = hosts.get(i);
-            logger.trace(String.format("vh: %s---%s---%s", vh.getHostDomain(), vh.getHostPort(), vh.getHostScheme()));
+            logger.debug(String.format("vh: %s---%s---%s", vh.getHostDomain(), vh.getHostPort(), vh.getHostScheme()));
         }
             
-        logger.trace(String.format("vh: %s---%s---%s", component.getDefaultHost().getHostDomain(), 
+        logger.debug(String.format("vh: %s---%s---%s", component.getDefaultHost().getHostDomain(), 
 		component.getDefaultHost().getHostPort(), 
 		component.getDefaultHost().getHostScheme()));
 	}
@@ -194,16 +195,13 @@ public class CloudServer {
             return;
 		}
 		
-        if (flag) {
-        	
-        }
         
         config.getAccess().reload();
 	}
     
 	
-	public boolean reloadConfig(String __name) {
-        return readConfig();
+	public boolean reloadConfig() {
+        return ConfigureParser.shared().reload(config);
 	}
 
 	public String getConfigName() {
