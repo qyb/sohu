@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from lxml import etree
 from models import Access, User
-import hashlib
 import anyjson
+import hashlib
 import time
 
 
@@ -202,3 +203,39 @@ def extract_class_instance_to_dict(ins):
         pass
     
     return ins_dict
+
+
+def input_for_access_token_func(request):
+    
+    sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
+    sohupassport_uuid = '81215bb13f2f497u'
+    
+    return sohupassport_uuid
+
+
+def input_for_verify_credentials_func(request):
+    
+    access_token_input = request.COOKIES.get('access_token', '')
+    
+    return access_token_input
+
+
+def get_kan_user_to_xml_etree(kan_user):
+    
+    if kan_user:
+        user = etree.Element('user')
+    
+        user_id = etree.SubElement(user, 'user_id')
+        user_id.text = str(kan_user.get_user_id())
+    
+        username = etree.SubElement(user, 'username')
+        username.text = kan_user.get_kan_username()
+    
+        description = etree.SubElement(user, 'description')
+        description.text = kan_user.get_kan_self_description()
+        
+    else:
+        user = None
+    
+    return user
+    

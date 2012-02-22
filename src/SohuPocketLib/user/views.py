@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from user.helper import input_for_verify_func, input_for_show_func, \
-    extract_class_instance_to_dict, input_for_update_func
+from article.helper import generate_single_xml_etree
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from helper import KanUser, serialize
+from lxml import etree
+from user.helper import get_kan_user_to_xml_etree, input_for_access_token_func, \
+    input_for_verify_func, input_for_show_func, extract_class_instance_to_dict, \
+    input_for_update_func, input_for_verify_credentials_func
 
 
 def verify(request):
@@ -75,4 +78,45 @@ def update_test(request):
     
     return render_to_response('user_update_test.html',
                               context_instance = RequestContext(request))
+
+
+def access_token(request):
     
+    sohupassport_uuid = input_for_access_token_func(request)
+    kan_user = KanUser(sohupassport_uuid, '')
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        kan_user_etree = get_kan_user_to_xml_etree(kan_user)
+        if kan_user_etree is not None:
+            response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
+        http_response = HttpResponse(response, mimetype=mimetype)
+        http_response.set_cookie('access_token', kan_user.get_access_token())
+    else:
+        response_etree = generate_single_xml_etree('status', request.GET.get('status', ''))
+        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+        http_response = HttpResponse(response, mimetype=mimetype)
+        
+    return http_response
+
+
+def verify_credentials(request):
+    
+    access_token_input = input_for_verify_credentials_func(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        kan_user_etree = get_kan_user_to_xml_etree(kan_user)
+        if kan_user_etree is not None:
+            response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
+        http_response = HttpResponse(response, mimetype=mimetype)
+        http_response.set_cookie('access_token', kan_user.get_access_token(), httponly=False)
+    else:
+        response_etree = generate_single_xml_etree('status', '6')
+        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+        http_response = HttpResponse(response, mimetype=mimetype)
+        
+    return http_response
