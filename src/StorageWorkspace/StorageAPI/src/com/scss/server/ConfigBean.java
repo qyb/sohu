@@ -25,6 +25,7 @@ public class ConfigBean implements Serializable{
 	private NetworkBean    network     = null;
     private VirtualBean    virtual     = null;
     private AccessBean      access     = null;
+    private XMLConfiguration config	   = null;
     
     public NetworkBean getNetwork() { 
     	return network; 
@@ -38,32 +39,38 @@ public class ConfigBean implements Serializable{
     	return access;
     }
     
-    public boolean Parse(XMLConfiguration config) {
-    	if (null == config) {
+    public XMLConfiguration getXMLConfig() {
+    	return config;
+    }
+    
+    public boolean Parse(XMLConfiguration __config) {
+    	if (null == __config) {
             Common.error("Config Bean parse Error: for config is null");
     		return false;
     	}
+    	
+    	config = __config;
         
-        if (null == parseNetwork(config)) {
+        if (null == parseNetwork()) {
         	return false;
         }
         
-        if (null == parseVirtual(config)) {
+        if (null == parseVirtual()) {
         	return false;
         }
         
-        if (false == parseComponent(config)) {
+        if (false == parseComponent()) {
         	return false;
         }
         
-        if (false == parseList(config)) {
+        if (false == parseList()) {
         	return false;
         }
     	
     	return true;
     }
     
-    protected NetworkBean parseNetwork(XMLConfiguration config) {
+    protected NetworkBean parseNetwork() {
         network = new NetworkBean();
         if (null == network) {
         	Common.UseOut(null);
@@ -84,7 +91,7 @@ public class ConfigBean implements Serializable{
         return network;
     }
     
-    protected boolean parseComponent(XMLConfiguration config) {
+    protected boolean parseComponent() {
         if (null == this.virtual) {
             Common.error("Should successfully parseVirtual first");
             return false;
@@ -116,8 +123,8 @@ public class ConfigBean implements Serializable{
         return true;
     }
     
-    protected VirtualBean parseVirtual(XMLConfiguration config) {
-        virtual = new VirtualBean();
+    protected VirtualBean parseVirtual() {
+   		virtual = new VirtualBean();
         if (null == virtual) {
         	Common.UseOut(null);
         	return null;
@@ -144,8 +151,9 @@ public class ConfigBean implements Serializable{
         return virtual;
     }
     
-    protected boolean parseList(XMLConfiguration config) {
-        access = new AccessBean();
+    protected boolean parseList() {
+    	if (null == access)
+    		access = new AccessBean();
         if (null == access) {
         	Common.UseOut(null);
         	return false;
@@ -160,7 +168,7 @@ public class ConfigBean implements Serializable{
             access.setAllowFileName(allow);
             access.setForbidFileName(forbid);
             access.setOrder(order);
-            
+            logger.debug(String.format("=============== Access Order: %d ============== [%s]", order, access.toString()));
             access.reload();
         } catch (Exception e) {
         	logger.error(String.format("parseNetwork Error For: %s", e.getMessage()));
