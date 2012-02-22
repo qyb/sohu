@@ -8,13 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "ListViewController.h"
-
+#import "EditViewController.h"
 
 @class DetailViewController;
-@interface ReadedViewController : ListViewController {
+@interface ReadedViewController : ListViewController <FlipViewDidDelegate>{
     NSMutableArray *articles;
     DetailViewController *detailViewController;
 }
-@property(nonatomic, retain)NSArray *articles;
-@property(nonatomic, retain)DetailViewController *detailViewController;
+@property(retain, nonatomic)NSMutableArray *articles;
+-(IBAction)toggleEdit:(id)sender;
 @end

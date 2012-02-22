@@ -35,120 +35,150 @@
     } 
 }
 
--(BOOL)tableExist:(NSString *)name
-{
-    if([_db tableExists:name]){
-        return YES;
-    }else{
-        return NO;
-    }
-}
-
-
 -(void)createArticleTable
 {   
-    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS Article (key TEXT, title TEXT, url TEXT, download_url TEXT, cover TEXT, is_star INTEGER, is_read INTEGER, is_download INTEGER, is_delete INTEGER)"];
+    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS Article (key TEXT PRIMARY KEY, title TEXT, url TEXT, download_url TEXT, cover TEXT, category TEXT, create_time TEXT, is_star INTEGER, is_read INTEGER, is_download INTEGER)"];
 
 }
 
 -(void)createImageTable
 {   
-    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS Image (key TEXT, url TEXT, is_download INTEGER)"];
+    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS Image (key TEXT, url TEXT NOT NULL, is_download INTEGER)"];
 
 }
 
 -(void)createCategoryTable
 {
-    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS Category (name TEXT)"];
+    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS Category (name TEXT PRIMARY KEY)"];
+}
+
+-(void)createVersionTable
+{
+    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS Version (version INTEGER PRIMARY KEY)"];
+}
+
+-(void)createOperationTable
+{
+    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS Operation (type TEXT PRIMARY KEY, method TEXT, content TEXT)"];
+}
+
+-(void)createHistoryTable
+{
+    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS History (key TEXT PRIMARY KEY, read_time DATETIME)"];
 }
 
 -(void)insertArticleData:(NSMutableDictionary *)data
 {
-    NSString *sql = [NSString stringWithFormat:@"INSERT INTO Article (key, title, url, download_url, img_urls, cover, is_star, is_read, is_download, is_delete) VALUES ('%@', '%@', '%@', '%@', '%@', %@, %@, %d, %d)", [data objectForKey:@"key"], [data objectForKey:@"title"], [data objectForKey:@"url"], [data objectForKey:@"download_url"], [data objectForKey:@"cover"], [data objectForKey:@"is_star"], [data objectForKey:@"is_read"], 0, 0];
+    NSString *sql = [NSString stringWithFormat:@"INSERT INTO Article (key, title, url, download_url, cover, category, create_time, is_star, is_read, is_download) VALUES ('%@', '%@', '%@', '%@', '%@', '%@', '%@', %@, %@, %d)", [data objectForKey:@"key"], [data objectForKey:@"title"], [data objectForKey:@"url"], [data objectForKey:@"download_url"], [data objectForKey:@"cover"],[data objectForKey:@"category"], [data objectForKey:@"create_time"], [data objectForKey:@"is_star"], [data objectForKey:@"is_read"], 0];
     [_db executeUpdate:sql];
 }
 
--(void)insertImageData:(NSMutableDictionary *)data
+-(void)executeUpdate:(NSString *)sql
 {
-    NSString *sql = [NSString stringWithFormat:@"INSERT INTO Image (key, url, is_download) VALUES ('%@', '%@', %d)", [data objectForKey:@"key"], [data objectForKey:@"url"], 0];
-    [_db executeQuery:sql];
-
-}
-
--(void)insertCategoryData:(NSMutableDictionary *)data
-{
-    NSString *sql = [NSString stringWithFormat:@"INSERT INTO Category (name) VALUES ('%@')", [data objectForKey:@"name"]];
-    [_db executeQuery:sql];
-}
-
--(void)updateBoolData:(NSString *)tableName primaryKey:(NSString *)key columnName:(NSString *)name setValue:(int)value
-{
-    NSString *sql = [NSString stringWithFormat:@"UPDATE %@ SET %@ = %@ WHERE key= %@",tableName, name, value, key];
-    [_db executeUpdate:sql];
-
-}
-
--(void)updateStringData:(NSString *)tableName primaryKey:(NSString *)key columnName:(NSString *)name setValue:(NSString *)value
-{
-    NSString *sql = [NSString stringWithFormat:@"UPDATE Article SET %@ = '%@' WHERE key= %@",tableName, value, key];
     [_db executeUpdate:sql];
 }
 
--(BOOL)articleExist:(NSString *)key
+-(FMResultSet *)getRowEntity:(NSString *)tableName primaryKey:(NSString *)key
 {
-    NSString *article_key =[_db stringForQuery:@"SELECT key FROM Article WHERE key = ?", key];
-    if (article_key){
-        return YES;
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE key='%@'", tableName, key];
+    FMResultSet *rs = [_db executeQuery:sql];
+    return rs;
+}
+
+-(int)getVersionId
+{
+    int res = [_db intForQuery:@"SELECT version FROM Version"];
+    if (res){
+        return res;
     }else{
-        return NO;
+        return 0;
     }
+}
 
+-(Article *) getArticleInstance:(FMResultSet *)rs
+{
+    Article *article = [[[Article alloc] init] autorelease];
+    article.key = [rs stringForColumn:@"key"];
+    article.title = [rs stringForColumn:@"title"];
+    article.url = [rs stringForColumn:@"url"];
+    article.download_url = [rs stringForColumn:@"download_url"];
+    article.cover = [rs stringForColumn:@"cover"];
+    article.category = [rs stringForColumn:@"category"];
+    article.create_time = [rs dateForColumn:@"create_time"];
+    article.is_star = [rs boolForColumn:@"is_star"];
+    article.is_read = [rs boolForColumn:@"is_read"];
+    article.is_download = [rs boolForColumn:@"is_download"];
+    return article;
 }
 
 -(NSMutableArray *) getReadedArticles
 {
+    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Article WHERE is_read=1"];
     NSMutableArray *articles = [[[NSMutableArray alloc] init] autorelease];
-    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Article WHERE is_read=1 AND is_download=1 AND is_delete=0"];
     while ([rs next]){
-        Article *article = [[Article alloc] init];
-        article.key = [rs stringForColumn:@"key"];
-        article.title = [rs stringForColumn:@"title"];
-        article.url = [rs stringForColumn:@"url"];
-        article.download_url = [rs stringForColumn:@"download_url"];
-        article.cover = [rs stringForColumn:@"cover"];
-        article.category = [rs stringForColumn:@"category"];
-        article.is_star = [rs boolForColumn:@"is_star"];
-        article.is_read = [rs boolForColumn:@"is_read"];
-        article.is_download = [rs boolForColumn:@"is_download"];
-        article.is_delete = [rs boolForColumn:@"is_delete"];
-        [articles addObject:article];
-        [article release];
+        [articles addObject:[self getArticleInstance:rs]];
     }
-    [rs close];
     return articles;
 }
 
+
+
 -(NSMutableArray *) getNotReadArticles
 {
+    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Article WHERE is_read=0"]; 
     NSMutableArray *articles = [[[NSMutableArray alloc] init] autorelease];
-    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Article WHERE is_read=0 AND is_download=1 AND is_delete=0"]; 
     while ([rs next]){
-        Article *article = [[Article alloc] init];
-        article.key = [rs stringForColumn:@"key"];
-        article.title = [rs stringForColumn:@"title"];
-        article.url = [rs stringForColumn:@"url"];
-        article.download_url = [rs stringForColumn:@"download_url"];
-        article.cover = [rs stringForColumn:@"cover"];
-        article.category = [rs stringForColumn:@"category"];
-        article.is_star = [rs boolForColumn:@"is_star"];
-        article.is_read = [rs boolForColumn:@"is_read"];
-        article.is_download = [rs boolForColumn:@"is_download"];
-        article.is_delete = [rs boolForColumn:@"is_delete"];
-        [articles addObject:article];
-        [article release];
+        [articles addObject:[self getArticleInstance:rs]];
+    }
+    return articles;
+}
+
+-(NSMutableArray *) getRecentArticles
+{
+    NSMutableArray *articles = [[[NSMutableArray alloc] init] autorelease];
+    FMResultSet *historys = [_db executeQuery:@"SELECT * FROM History ORDER BY read_time DESC"];
+    while ([historys next]){
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM Article WHERE is_download=1 AND key='%@'", [historys stringForColumn:@"key"]];
+        FMResultSet *rs = [_db executeQuery:sql];
+        if([rs next]){
+            [articles addObject:[self getArticleInstance:rs]];
+        }
+    }
+    [historys close]; 
+    return articles;
+}   
+
+-(NSMutableArray *) getAllCategory
+{
+    NSMutableArray *categorys = [[[NSMutableArray alloc] init] autorelease];
+    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Category"];
+    while ([rs next]) {
+        Category *category = [[Category alloc] init];
+        category.name = [rs stringForColumn:@"name"];
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM Article WHERE category='%@'", [rs stringForColumn:@"name"]];
+        FMResultSet *qs = [_db executeQuery:sql];
+        NSMutableArray *articles = [[NSMutableArray alloc] init];
+        while ([qs next]){
+            [articles addObject:[self getArticleInstance:qs]];
+        }
+        category.articles = articles;
+        [categorys addObject:category];
+        [category release];
+        [articles release];
     }
     [rs close];
-    return articles;
+    return categorys;
+}
+
+-(NSMutableArray *) getAllImage:(NSString *)key
+{
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM Image WHERE key='%@'",key];
+    FMResultSet *rs = [_db executeQuery:sql];
+    NSMutableArray *images = [[[NSMutableArray alloc] init] autorelease];
+    while ([rs next]){
+        [images addObject:[rs stringForColumn:@"url"]];
+    }
+    return images;
 
 }
 

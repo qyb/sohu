@@ -10,7 +10,7 @@
 #import "Models.h"
 #import "DatabaseProcess.h"
 
-@interface ListViewController : UITableViewController {
+@interface ListViewController : UITableViewController{
     
 }
 @end

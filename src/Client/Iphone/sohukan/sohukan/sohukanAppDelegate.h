@@ -8,11 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "CXMLDocument.h"
+#import "DatabaseProcess.h"
 
 @interface sohukanAppDelegate : NSObject <UIApplicationDelegate> {
-    NSOperationQueue *_queue;
+    NSOperationQueue* _queue;
+    DatabaseProcess* _dp;
 }
-
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
 

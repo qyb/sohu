@@ -8,11 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "ListViewController.h"
+#import "EditViewController.h"
+
 @class DetailViewController;
-@interface NotReadViewController : ListViewController{
+@interface NotReadViewController : ListViewController<FlipViewDidDelegate> {
     NSMutableArray *articles;
+    NSMutableArray *markList;
     DetailViewController *detailViewController;
+    EditViewController *editViewController;
+    BOOL isEdit;
+
 }
-@property(nonatomic, retain)NSMutableArray *articles;
-@property(nonatomic, retain)DetailViewController *detailViewController;
+@property(retain, nonatomic)NSMutableArray *articles;
+
 @end
