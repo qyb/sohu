@@ -200,7 +200,7 @@ def get_myarticle_list_to_xml_etree(user_id, offset, limit):
     for myarticle_instance in myarticle_list:
         myarticle_instance_xml_etree = get_myarticle_instance_to_xml_etree(user_id,
                                                                            myarticle_instance.key)
-        if myarticle_instance_xml_etree:
+        if myarticle_instance_xml_etree is not None:
             articles.append(myarticle_instance_xml_etree)
     
     return articles
