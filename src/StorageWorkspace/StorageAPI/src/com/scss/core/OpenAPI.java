@@ -16,6 +16,7 @@ import com.scss.core.bucket.GET_SERVICE;
 import com.scss.core.bucket.PUT_BUCKET;
 import com.scss.core.object.DELETE_OBJECT;
 import com.scss.core.object.GET_OBJECT;
+import com.scss.core.object.HEAD_OBJECT;
 import com.scss.core.object.POST_OBJECT;
 import com.scss.core.object.PUT_OBJECT;
 
@@ -70,5 +71,6 @@ public abstract class OpenAPI implements ICallable {
 	public final static ICallable GET_OBJECT = new GET_OBJECT();
 	public final static ICallable PUT_OBJECT = new PUT_OBJECT();
 	public final static ICallable POST_OBJECT = new POST_OBJECT();
-	public final static ICallable DELETE_OBJECT = new DELETE_OBJECT();	
+	public final static ICallable DELETE_OBJECT = new DELETE_OBJECT();
+	public final static ICallable HEAD_OBJECT = new HEAD_OBJECT();	
 }

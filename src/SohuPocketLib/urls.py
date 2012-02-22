@@ -35,4 +35,7 @@ urlpatterns = patterns('',
     
     (r'^article/delete/(?P<key>[\w-]+)\.(?P<format>\w+)/$', 'SohuPocketLib.article.views.destroy'),
     (r'^article/delete/(?P<key>[\w-]+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.destroy_test'),
+    
+    (r'^account/access_token/?$', 'SohuPocketLib.user.views.access_token'),
+    (r'^account/verify_credentials/?$', 'SohuPocketLib.user.views.verify_credentials'),
 )
