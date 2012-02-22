@@ -3,6 +3,8 @@
  */
 package com.scss.core.object;
 
+import java.io.InputStream;
+import java.nio.BufferOverflowException;
 import java.util.Date;
 import java.util.Map;
 
@@ -12,10 +14,12 @@ import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
+import com.scss.core.MD5DigestInputStream;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
+import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 
@@ -31,7 +35,6 @@ public class PUT_OBJECT extends ObjectAPI {
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
-		
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
@@ -39,8 +42,9 @@ public class PUT_OBJECT extends ObjectAPI {
 		Date modifyTime = createTime;
 		String media_type = req_headers.get(CommonResponseHeader.MEDIA_TYPE);
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
+		// TODO: Server side md5 check. not supported now. String content_md5 = req_headers.get()
 		
-		//TODO: Check whether Logging is enabled 
+		//TODO: Check whether Bucket Logging is enabled 
 				
 		String user_meta = this.getUserMeta(req);
 		
@@ -50,24 +54,38 @@ public class PUT_OBJECT extends ObjectAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		
-		BfsClientResult rt = BfsClientWrapper.putFromStream(req.ContentStream);
-		if (rt.FileNumber > 0)
-			System.out.printf("BFS file no : %d (size=%d)\n", rt.FileNumber, rt.Size);
-			try{
-				ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
-				assert(null != bucket);
-				DBServiceHelper.putObject(req.ObjectKey, rt.FileNumber, req.getUser().getId(), 
-						bucket.getId(), user_meta, rt.Size, media_type);
-			} catch (SameNameException e) {
-				return ErrorResponse.BucketAlreadyExists(req);
-			}
-		
+
 		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
+		if (null == bucket)
+			return ErrorResponse.NoSuchBucket(req);
+
+
 		
-		
+		ScssObject obj = null;
+		InputStream stream = this.hookMD5Stream(req.ContentStream);
+		BfsClientResult bfsresult = BfsClientWrapper.getInstance().putFromStream(stream);
+		if (bfsresult.FileNumber > 0) {
+			try{
+				// Start transaction
+	
+				// TODO: consider which is first, insert db or insert file.
+				// TODO: do need to delete the old BFS file?
+					System.out.printf("BFS file no : %d (size=%d)\n", bfsresult.FileNumber, bfsresult.Size);
+					// TODO: db needs to lock the record?
+					obj = DBServiceHelper.putObject(req.ObjectKey, bfsresult.FileNumber, 
+							req.getUser().getId(),
+							bucket.getId(), user_meta, bfsresult.Size, media_type);
+				 
+				// Stop transaction
+			} catch (SameNameException e) {
+				//TODO: update the object.
+			} catch (BufferOverflowException e) {
+				return ErrorResponse.EntityTooLarge(req);
+			}
+		}
+
 		// set response headers
-		if (null != bucket) {
+		if (null != obj) {
 			APIResponse resp = new BucketAPIResponse();
 			Map<String, String> resp_headers = resp.getHeaders();
 			
@@ -80,14 +98,15 @@ public class PUT_OBJECT extends ObjectAPI {
 			resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
 			
 			// Set API response header
-			resp_headers.put(APIResponseHeader.LOCATION, "/" + req.BucketName);
+			resp_headers.put(APIResponseHeader.LOCATION, "/" + req.BucketName + req.Path);
 
 			//TODO: set user meta
 			// user_meta key-value pair -> header
 			
 			// TODO: set system meta
 			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(bucket.getModifyTime()));
-			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // PUT_BUCKET has no content
+			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, String.valueOf(bfsresult.Size));
+			resp_headers.put(CommonResponseHeader.ETAG, super.getContentMD5());
 			
 			// generate representation
 			resp.Repr = new org.restlet.representation.EmptyRepresentation();
@@ -96,7 +115,7 @@ public class PUT_OBJECT extends ObjectAPI {
 		}
 
 		// TODO: return appropriate error response. DB access should return a value to determine status.
-		return ErrorResponse.NoSuchBucket(req);
+		return ErrorResponse.InternalError(req);
 	}
 
 	/* (non-Javadoc)

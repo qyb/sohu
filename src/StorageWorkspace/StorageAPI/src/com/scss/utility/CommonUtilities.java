@@ -3,9 +3,12 @@
  */
 package com.scss.utility;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.codec.binary.Base64;
 import org.restlet.engine.util.DateUtils;
 
 
@@ -42,5 +45,18 @@ public class CommonUtilities {
 			return DateUtils.parse(date);
 		else
 			return new Date();
+	}
+	
+	public final static String getMD5(byte[] data) {
+		String rc = null;
+		try {
+			MessageDigest digest = MessageDigest.getInstance("MD5");
+			digest.update(data);
+	        byte[] b64 = Base64.encodeBase64(digest.digest());
+	        rc = new String(b64);					
+		} catch (NoSuchAlgorithmException e) {
+			
+		}
+		return rc;
 	}
 }

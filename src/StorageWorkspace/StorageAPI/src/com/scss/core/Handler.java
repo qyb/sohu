@@ -122,21 +122,23 @@ public class Handler extends ServerResource {
 		Operation op =  Operation.create(req);
 		OperationResult result = op.perform();
 		
-		if (null != result && result.Succeed) {
-			APIResponse resp = (APIResponse)result.Value; 			
-			Form resp_headers = (Form)this.getResponse().getAttributes().get("org.restlet.http.headers");
-			if (resp_headers == null)  {  
-				resp_headers = new Form();  
-				getResponse().getAttributes().put("org.restlet.http.headers", resp_headers);  
-			} 
-			for (String key: resp.getHeaders().keySet()) {
-				//TODO: fix the warning
-				//2012-2-20 12:05:47 org.restlet.engine.http.header.HeaderUtils addExtensionHeaders
-				//警告: Addition of the standard header "Content-Length" is not allowed. Please use the equivalent property in the Restlet API.
-				resp_headers.set(key, resp.getHeaders().get(key));
+		if (null != result) {
+			APIResponse resp = (APIResponse)result.Value;
+			if (result.Succeed) {
+				Form resp_headers = (Form)this.getResponse().getAttributes().get("org.restlet.http.headers");
+				if (resp_headers == null)  {  
+					resp_headers = new Form();  
+					getResponse().getAttributes().put("org.restlet.http.headers", resp_headers);  
+				} 
+				for (String key: resp.getHeaders().keySet()) {
+					//TODO: fix the warning
+					//2012-2-20 12:05:47 org.restlet.engine.http.header.HeaderUtils addExtensionHeaders
+					//警告: Addition of the standard header "Content-Length" is not allowed. Please use the equivalent property in the Restlet API.
+					resp_headers.set(key, resp.getHeaders().get(key));
+				}
 			}
 			return resp.Repr;
-		}
+		} 
 		
 		return null;
 	}

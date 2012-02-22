@@ -20,9 +20,9 @@ public class ScssObject implements java.io.Serializable {
 	private String meta;
 	private Long size;
 	private String mediaType;
-	private Boolean versionEnabled;
+	private Byte versionEnabled;
 	private String version;
-	private Boolean deleted;
+	private Byte deleted;
 	private Date expirationTime;
 	private Date createTime;
 	private Date modifyTime;
@@ -43,8 +43,8 @@ public class ScssObject implements java.io.Serializable {
 
 	/** full constructor */
 	public ScssObject(String key, Long bfsFile, Long ownerId, Long bucketId,
-			String meta, Long size, String mediaType, Boolean versionEnabled,
-			String version, Boolean deleted, Date expirationTime, Date createTime,
+			String meta, Long size, String mediaType, Byte versionEnabled,
+			String version, Byte deleted, Date expirationTime, Date createTime,
 			Date modifyTime) {
 		this.key = key;
 		this.bfsFile = bfsFile;
@@ -127,11 +127,11 @@ public class ScssObject implements java.io.Serializable {
 		this.mediaType = mediaType;
 	}
 
-	public Boolean getVersionEnabled() {
+	public Byte getVersionEnabled() {
 		return this.versionEnabled;
 	}
 
-	public void setVersionEnabled(Boolean versionEnabled) {
+	public void setVersionEnabled(Byte versionEnabled) {
 		this.versionEnabled = versionEnabled;
 	}
 
@@ -143,11 +143,11 @@ public class ScssObject implements java.io.Serializable {
 		this.version = version;
 	}
 
-	public Boolean getDeleted() {
+	public Byte getDeleted() {
 		return this.deleted;
 	}
 
-	public void setDeleted(Boolean deleted) {
+	public void setDeleted(Byte deleted) {
 		this.deleted = deleted;
 	}
 

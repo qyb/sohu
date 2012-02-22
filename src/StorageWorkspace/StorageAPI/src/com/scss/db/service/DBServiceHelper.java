@@ -234,6 +234,62 @@ public class DBServiceHelper {
 		return so;
 	}
 
+	public static ScssObject getObject(String bucket_name, String key) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ScssObject so = null;
+		try {
+			connection = connPool.getConnection();
+			String sql = "select object.`ID`, object.`Key`, object.`BFS_File`, "
+					+ "object.`owner_ID`, object.`Bucket_ID`, object.`Meta`, "
+					+ "object.`Size`, object.`Media_Type`, object.`Version_enabled`, "
+					+ "object.`Version`, object.`Deleted`, object.`Expiration_time`, "
+					+ "object.`Create_time`, object.`Modify_time` "
+					+ " from `scss_object` as object, `scss_bucket` as bucket "
+					+ " where object.key=? and object.bucket_id = bucket.id "
+					+ "    and bucket.name = ?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setString(1, key);
+			stmt.setString(2, bucket_name);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				so = new ScssObject();
+				so.setBfsFile(Long.valueOf(rs.getLong("BFS_File")));
+				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setKey(rs.getString("Key"));
+				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
+				so.setBucketId(Long.valueOf(rs.getLong("Bucket_ID")));
+				so.setMeta(rs.getString("Meta"));
+				so.setSize(Long.valueOf(rs.getLong("Size")));
+				so.setMediaType(rs.getString("Media_Type"));
+				so.setVersionEnabled(Boolean.valueOf(rs
+						.getBoolean("Version_enabled")));
+				so.setVersion(rs.getString("Version"));
+				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
+			}
+
+			rs.close();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return so;
+	}
+
 	public static ScssObject getObjectByKey(String key, Long owner_ID) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
@@ -1135,13 +1191,58 @@ public class DBServiceHelper {
 	}
 
 	public static void deleteBucket(String name) {
-		// TODO Auto-generated method stub
-
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		try {
+			connection = connPool.getConnection();
+			String sql = "delete from scss_bucket where `name`=?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setString(1, name);
+			stmt.executeUpdate();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void modifyBucket(ScssBucket putBucket) {
-		// TODO Auto-generated method stub
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		try {
+			connection = connPool.getConnection();
 
+			String sql = "UPDATE scss_group set user_ids=? where id=?";
+
+			stmt = connection.prepareStatement(sql);
+			stmt.setString(1, "");
+			stmt.setLong(2, null);
+			stmt.executeUpdate();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void modifyObject(ScssObject scssObject) {
