@@ -1388,21 +1388,22 @@ public class DBServiceHelper {
 			stmt.setLong(1, scssObject.getId());
 			stmt.setString(2, scssObject.getKey());
 			stmt.setLong(3, scssObject.getBfsFile());
-			stmt.setLong(4, scssObject.getBucketId());
-			stmt.setString(5, scssObject.getMeta());
-			stmt.setLong(6, scssObject.getSize());
-			stmt.setString(7, scssObject.getMediaType());
-			stmt.setBoolean(8, scssObject.getVersionEnabled() == 0 ? false
+			stmt.setLong(4, scssObject.getOwnerId());			
+			stmt.setLong(5, scssObject.getBucketId());
+			stmt.setString(6, scssObject.getMeta());
+			stmt.setLong(7, scssObject.getSize());
+			stmt.setString(8, scssObject.getMediaType());
+			stmt.setBoolean(9, scssObject.getVersionEnabled() == 0 ? false
 					: true);
-			stmt.setString(9, scssObject.getVersion());
-			stmt.setBoolean(10, scssObject.getDeleted() == 0 ? false : true);
-			stmt.setDate(11, new java.sql.Date(scssObject.getExpirationTime()
+			stmt.setString(10, scssObject.getVersion());
+			stmt.setBoolean(11, scssObject.getDeleted() == 0 ? false : true);
+			stmt.setDate(12, new java.sql.Date(scssObject.getExpirationTime()
 					.getTime()));
-			stmt.setDate(12, new java.sql.Date(scssObject.getCreateTime()
+			stmt.setDate(13, new java.sql.Date(scssObject.getCreateTime()
 					.getTime()));
-			stmt.setDate(12, new java.sql.Date(scssObject.getModifyTime()
+			stmt.setDate(14, new java.sql.Date(scssObject.getModifyTime()
 					.getTime()));
-			stmt.setLong(13, scssObject.getId());
+			stmt.setLong(15, scssObject.getId());
 			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
