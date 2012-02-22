@@ -8,6 +8,9 @@ import java.nio.BufferOverflowException;
 import java.util.Date;
 import java.util.Map;
 
+import org.restlet.data.MediaType;
+import org.restlet.data.Tag;
+
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
@@ -32,10 +35,13 @@ import com.scss.utility.CommonUtilities;
 public class PUT_OBJECT extends ObjectAPI {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#Invoke(com.bfsapi.server.APIRequest)
+	 * @see com.bfsapi.ICallable#Invoke(com.scss.core.APIRequest)
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
+		// TODO: !!! need to re-organize. extract to pre-invoke post-invoke !!! 
+		// TODO: !!! and use reslet metheod to process headers there !!!
+		
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
@@ -72,7 +78,7 @@ public class PUT_OBJECT extends ObjectAPI {
 		ScssObject obj = null;
 		InputStream stream = this.hookMD5Stream(req.ContentStream);
 		BfsClientResult bfsresult = BfsClientWrapper.getInstance().putFromStream(stream);
-		String etag = super.getContentMD5();
+		String etag = this.getBase64ContentMD5();
 		if (bfsresult.FileNumber > 0) {
 			
 			// post body is not match the size
@@ -142,10 +148,12 @@ public class PUT_OBJECT extends ObjectAPI {
 			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(bucket.getModifyTime()));
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0");
 			resp_headers.put(CommonResponseHeader.ETAG, etag);
-			System.out.printf("Computed ETAG : %s", etag );
+			System.out.printf("Computed ETAG : %s\n", etag );
 			
 			// generate representation
 			resp.Repr = new org.restlet.representation.EmptyRepresentation();
+			resp.Repr.setTag(new Tag(etag));
+			resp.Repr.setMediaType(MediaType.APPLICATION_ALL_XML);
 			resp.MediaType = Mimetypes.APPLICATION_XML;
 			return resp;
 		}
@@ -155,7 +163,7 @@ public class PUT_OBJECT extends ObjectAPI {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#CanInvoke(com.bfsapi.server.APIRequest, com.bfsapi.IAccessor)
+	 * @see com.bfsapi.ICallable#CanInvoke(com.scss.core.APIRequest, com.bfsapi.IAccessor)
 	 */
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {

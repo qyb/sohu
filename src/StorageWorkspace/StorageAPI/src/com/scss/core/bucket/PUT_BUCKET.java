@@ -88,7 +88,7 @@ public class PUT_BUCKET extends BucketAPI {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#CanInvoke(com.bfsapi.server.APIRequest, com.bfsapi.IAccessor)
+	 * @see com.bfsapi.ICallable#CanInvoke(com.scss.core.APIRequest, com.bfsapi.IAccessor)
 	 */
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {

@@ -30,7 +30,7 @@ import com.scss.utility.CommonUtilities;
 public class GET_BUCKET extends BucketAPI {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#Invoke(com.bfsapi.server.APIRequest)
+	 * @see com.bfsapi.ICallable#Invoke(com.scss.core.APIRequest)
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
@@ -115,7 +115,7 @@ public class GET_BUCKET extends BucketAPI {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#CanInvoke(com.bfsapi.server.APIRequest, com.bfsapi.IAccessor)
+	 * @see com.bfsapi.ICallable#CanInvoke(com.scss.core.APIRequest, com.bfsapi.IAccessor)
 	 */
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {

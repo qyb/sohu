@@ -16,6 +16,9 @@ public class Mimetypes {
     /** The default HTML mimetype: text/html */
     public static final String MIMETYPE_HTML = "text/html";
 
+    /** The default HTML mimetype: text/plain */
+    public static final String MIMETYPE_TEXT = "text/plain";
+
     /** The default binary mimetype: application/octet-stream */
     public static final String MIMETYPE_OCTET_STREAM = "application/octet-stream";
 

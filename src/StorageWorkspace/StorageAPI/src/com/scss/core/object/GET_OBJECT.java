@@ -4,15 +4,11 @@
 package com.scss.core.object;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
 import java.util.Date;
 import java.util.Map;
 
 import org.restlet.data.MediaType;
-import org.restlet.representation.ReadableRepresentation;
-import org.restlet.representation.StreamRepresentation;
+import org.restlet.data.Tag;
 
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
@@ -23,8 +19,6 @@ import com.scss.core.DynamicStreamRepresentation;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
-import com.scss.db.exception.SameNameException;
-import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -36,7 +30,7 @@ import com.scss.utility.CommonUtilities;
 public class GET_OBJECT extends ObjectAPI {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#CanInvoke(com.bfsapi.server.APIRequest, com.bfsapi.IAccessor)
+	 * @see com.bfsapi.ICallable#CanInvoke(com.scss.core.APIRequest, com.bfsapi.IAccessor)
 	 */
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {
@@ -45,7 +39,7 @@ public class GET_OBJECT extends ObjectAPI {
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#Invoke(com.bfsapi.server.APIRequest)
+	 * @see com.bfsapi.ICallable#Invoke(com.scss.core.APIRequest)
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
@@ -102,7 +96,7 @@ public class GET_OBJECT extends ObjectAPI {
 			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(obj.getModifyTime()));
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, String.valueOf(bfsresult.Size));
 			// TODO: make the ETAG computing hooked in progress or use DigestRepresentation.
-			resp_headers.put(CommonResponseHeader.ETAG, CommonUtilities.getMD5(bfsresult.File));
+			resp_headers.put(CommonResponseHeader.ETAG, obj.getEtag());
 
 			// generate representation.
 			// TODO: if DigesterRepresentation can get ETAG, use it. 
@@ -110,6 +104,7 @@ public class GET_OBJECT extends ObjectAPI {
 			//resp.Repr = new ReadableRepresentation((ReadableByteChannel) buffer, MediaType.APPLICATION_OCTET_STREAM);
 			ByteArrayInputStream stream = new ByteArrayInputStream(bfsresult.File);
 			resp.Repr = new DynamicStreamRepresentation(stream, MediaType.APPLICATION_OCTET_STREAM);
+			resp.Repr.setTag(new Tag(obj.getEtag()));
 			resp.MediaType = Mimetypes.MIMETYPE_OCTET_STREAM;
 			return resp;
 		}
