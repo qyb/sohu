@@ -215,7 +215,10 @@ def generate_single_xml_etree(tag, text, **kwargs):
 
 def input_for_list_func(request):
     if request.method == 'GET':
-        access_token_input = request.GET.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.GET.get('access_token', '')
         offset = request.GET.get('offset', '')
         try:
             offset = int(offset)
@@ -236,7 +239,10 @@ def input_for_list_func(request):
 
 def input_for_show_func(request):
     if request.method == 'GET':
-        access_token_input = request.GET.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.GET.get('access_token', '')
     else:
         access_token_input = ''
         
@@ -245,7 +251,10 @@ def input_for_show_func(request):
 
 def input_for_update_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
         url = request.POST.get('url', '')
     else:
         access_token_input = ''
@@ -256,7 +265,10 @@ def input_for_update_func(request):
 
 def input_for_destroy_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
     else:
         access_token_input = ''
         
@@ -265,7 +277,10 @@ def input_for_destroy_func(request):
 
 def input_for_modify_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
         modify_info = dict()
         args = ('is_delete', 'is_read', 'is_star')
         for arg in args:

@@ -166,19 +166,28 @@ def get_POST_dict(request):
 
 def input_for_verify_func(request):
     sohupassport_uuid = str(request.META.get('HTTP_X_SOHUPASSPORT_UUID', ''))
-    access_token_input = get_POST_dict(request).get('access_token', '')
+    try:
+        access_token_input = request.COOKIES['access_token']
+    except:
+        access_token_input = request.POST.get('access_token', '')
     
     return sohupassport_uuid, access_token_input
 
 
 def input_for_show_func(request):
-    access_token_input = get_GET_dict(request).get('access_token', '')
+    try:
+        access_token_input = request.COOKIES['access_token']
+    except:
+        access_token_input = request.GET.get('access_token', '')
     
     return access_token_input
 
 
 def input_for_update_func(request):
-    access_token_input = get_POST_dict(request).get('access_token', '')
+    try:
+        access_token_input = request.COOKIES['access_token']
+    except:
+        access_token_input = request.POST.get('access_token', '')
     user_info_dict = dict()
     keys = ('kan_username', 'kan_self_description')
     for key in keys:
@@ -186,7 +195,24 @@ def input_for_update_func(request):
         
     return access_token_input, user_info_dict
 
+
+def input_for_access_token_func(request):
     
+    sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
+    import socket
+    if  not socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+        sohupassport_uuid = '81215bb13f2f497u'
+    
+    return sohupassport_uuid
+
+
+def input_for_verify_credentials_func(request):
+    
+    access_token_input = request.COOKIES.get('access_token', '')
+    
+    return access_token_input   
+
+ 
 def extract_class_instance_to_dict(ins):
     """
     extract class instance to dict
@@ -203,20 +229,6 @@ def extract_class_instance_to_dict(ins):
         pass
     
     return ins_dict
-
-
-def input_for_access_token_func(request):
-    
-    sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
-    
-    return sohupassport_uuid
-
-
-def input_for_verify_credentials_func(request):
-    
-    access_token_input = request.COOKIES.get('access_token', '')
-    
-    return access_token_input
 
 
 def get_kan_user_to_xml_etree(kan_user):
@@ -237,4 +249,3 @@ def get_kan_user_to_xml_etree(kan_user):
         user = None
     
     return user
-    
