@@ -289,7 +289,7 @@ def input_for_modify_func(request):
 
 
 def input_for_list_count_func(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
             access_token_input = request.COOKIES['access_token']
         except:
