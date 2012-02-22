@@ -153,7 +153,7 @@ def list_count(request):
         response_etree = output_for_list_count_func_etree(count)
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
     else:
-        response_etree = generate_single_xml_etree('status', 'not logged in')
+        response_etree = generate_single_xml_etree('status', 'verify failed')
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
     
     return HttpResponse(response, mimetype=mimetype)
