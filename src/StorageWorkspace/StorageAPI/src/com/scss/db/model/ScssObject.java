@@ -18,6 +18,8 @@ public class ScssObject implements java.io.Serializable {
 	private Long ownerId;
 	private Long bucketId;
 	private String meta;
+	private String sysMeta;
+	private String etag;
 	private Long size;
 	private String mediaType;
 	private Byte versionEnabled;
@@ -43,14 +45,16 @@ public class ScssObject implements java.io.Serializable {
 
 	/** full constructor */
 	public ScssObject(String key, Long bfsFile, Long ownerId, Long bucketId,
-			String meta, Long size, String mediaType, Byte versionEnabled,
-			String version, Byte deleted, Date expirationTime, Date createTime,
-			Date modifyTime) {
+			String meta, String sysMeta, String etag, Long size,
+			String mediaType, Byte versionEnabled, String version,
+			Byte deleted, Date expirationTime, Date createTime, Date modifyTime) {
 		this.key = key;
 		this.bfsFile = bfsFile;
 		this.ownerId = ownerId;
 		this.bucketId = bucketId;
 		this.meta = meta;
+		this.sysMeta = sysMeta;
+		this.etag = etag;
 		this.size = size;
 		this.mediaType = mediaType;
 		this.versionEnabled = versionEnabled;
@@ -109,6 +113,22 @@ public class ScssObject implements java.io.Serializable {
 
 	public void setMeta(String meta) {
 		this.meta = meta;
+	}
+
+	public String getSysMeta() {
+		return this.sysMeta;
+	}
+
+	public void setSysMeta(String sysMeta) {
+		this.sysMeta = sysMeta;
+	}
+
+	public String getEtag() {
+		return this.etag;
+	}
+
+	public void setEtag(String etag) {
+		this.etag = etag;
 	}
 
 	public Long getSize() {
