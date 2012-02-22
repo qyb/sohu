@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from article.helper import generate_single_xml_etree
-from constants import DAYS_COOKIE_EXPIRES
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -10,7 +9,6 @@ from lxml import etree
 from user.helper import get_kan_user_to_xml_etree, input_for_access_token_func, \
     input_for_verify_func, input_for_show_func, extract_class_instance_to_dict, \
     input_for_update_func, input_for_verify_credentials_func
-import datetime
 
 
 def verify(request):
@@ -94,11 +92,7 @@ def access_token(request):
         if kan_user_etree is not None:
             response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
-        http_response.set_cookie('access_token',
-                                 kan_user.get_access_token(),
-                                 expires=datetime.datetime.now() \
-                                 + datetime.timedelta(days=DAYS_COOKIE_EXPIRES),
-                                 httponly=False)
+        http_response.set_cookie('access_token', kan_user.get_access_token())
     else:
         response_etree = generate_single_xml_etree('status', request.GET.get('status', ''))
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
@@ -119,11 +113,7 @@ def verify_credentials(request):
         if kan_user_etree is not None:
             response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
-        http_response.set_cookie('access_token',
-                                 kan_user.get_access_token(),
-                                 expires=datetime.datetime.now() \
-                                 + datetime.timedelta(days=DAYS_COOKIE_EXPIRES),
-                                 httponly=False)
+        http_response.set_cookie('access_token', kan_user.get_access_token(), httponly=False)
     else:
         response_etree = generate_single_xml_etree('status', '6')
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
