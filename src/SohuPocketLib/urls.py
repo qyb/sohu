@@ -38,5 +38,4 @@ urlpatterns = patterns('',
     
     (r'^account/access_token/?$', 'SohuPocketLib.user.views.access_token'),
     (r'^account/verify_credentials/?$', 'SohuPocketLib.user.views.verify_credentials'),
-    
 )
