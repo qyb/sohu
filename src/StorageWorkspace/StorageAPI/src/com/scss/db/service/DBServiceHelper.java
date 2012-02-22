@@ -1134,28 +1134,28 @@ public class DBServiceHelper {
 		return so;
 	}
 
-	public static void deleteBucket(String string) {
+	public static void deleteBucket(String name) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public static void modifyBucket(ScssBucket putBucket) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public static void modifyObject(ScssObject scssObject) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public static void modifyUser(ScssUser scssUser) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public static void modifyGroup(ScssGroup scssGroup) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
