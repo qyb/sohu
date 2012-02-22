@@ -10,4 +10,4 @@ def passport(request):
     return HttpResponse(page)
 
 def home(request):
-    return HttpResponse('welcome home!!!')
+    return HttpResponse('Welcome to sohukan!!!')

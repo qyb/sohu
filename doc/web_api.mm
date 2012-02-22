@@ -410,12 +410,12 @@
 </node>
 </node>
 </node>
-<node CREATED="1329707917848" FOLDED="true" ID="ID_1897451184" MODIFIED="1329893913688" TEXT="bookmark&#x76f8;&#x5173;&#x65b9;&#x6cd5;">
-<node CREATED="1329710094524" FOLDED="true" ID="ID_273279564" MODIFIED="1329893902065" TEXT="/api/2/bookmarks/list">
-<node CREATED="1329715442248" ID="ID_949853593" MODIFIED="1329715444498" TEXT="&#x63cf;&#x8ff0;">
+<node CREATED="1329707917848" ID="ID_1897451184" MODIFIED="1329898969169" TEXT="bookmark&#x76f8;&#x5173;&#x65b9;&#x6cd5;">
+<node CREATED="1329710094524" FOLDED="true" ID="ID_273279564" MODIFIED="1329899262303" TEXT="/api/2/bookmarks/list">
+<node CREATED="1329715442248" FOLDED="true" ID="ID_949853593" MODIFIED="1329899221766" TEXT="&#x63cf;&#x8ff0;">
 <node CREATED="1329718620562" ID="ID_1755738460" MODIFIED="1329718881777" TEXT="&#x8fd4;&#x56de;&#x6587;&#x4ef6;&#x5939;&#x4e2d;&#x6587;&#x7ae0;&#x5217;&#x8868;&#xff0c;&#x540c;&#x65f6;&#x540c;&#x6b65;&#x9605;&#x8bfb;&#x8fdb;&#x5ea6;"/>
 </node>
-<node CREATED="1329715368037" ID="ID_1395934815" MODIFIED="1329715371970" TEXT="&#x53c2;&#x6570;">
+<node CREATED="1329715368037" FOLDED="true" ID="ID_1395934815" MODIFIED="1329899139430" TEXT="&#x53c2;&#x6570;">
 <node CREATED="1329715374573" ID="ID_1756972247" MODIFIED="1329715384169" TEXT="limit">
 <node CREATED="1329716366902" ID="ID_324002141" MODIFIED="1329716406989" TEXT="&#x53ef;&#x9009;"/>
 <node CREATED="1329716407335" ID="ID_26764798" MODIFIED="1329716424934" TEXT="1&#x81f3;500&#x95f4;&#x7684;&#x6570;&#x5b57;&#xff0c;&#x9ed8;&#x8ba4;&#x4e3a;25"/>
@@ -466,11 +466,28 @@
 </node>
 </node>
 </node>
-<node CREATED="1329722204240" ID="ID_1016626477" MODIFIED="1329893736801" TEXT="&#x8f93;&#x51fa;&#x7c7b;&#x578b;">
+<node CREATED="1329722204240" FOLDED="true" ID="ID_1016626477" MODIFIED="1329899156813" TEXT="&#x8f93;&#x51fa;&#x7c7b;&#x578b;">
 <node CREATED="1329722208304" ID="ID_232913171" MODIFIED="1329722234845" TEXT="&#x7531;bookmark&#x6784;&#x6210;&#x7684;package"/>
 </node>
-<node CREATED="1329718831907" ID="ID_1333750641" MODIFIED="1329718838872" TEXT="&#x8f93;&#x51fa;&#x793a;&#x4f8b;">
+<node CREATED="1329718831907" FOLDED="true" ID="ID_1333750641" MODIFIED="1329899023298" TEXT="&#x8f93;&#x51fa;&#x793a;&#x4f8b;">
 <node COLOR="#cc6600" CREATED="1329722247717" ID="ID_1574699495" MODIFIED="1329722775351" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;package&gt;&#xa;&#x9;&lt;bookmark id=&quot;24301&quot;&gt;&#xa;&#x9;&#x9;&lt;url&gt;http://www.ifanr.com/73335&lt;/url&gt;&#xa;&#x9;&#x9;&lt;title&gt;&#x7528; Cornerstone &#x7ed9; Android &#x5e73;&#x677f;&#x52a0;&#x4e0a;&#x7a97;&#x53e3;&lt;/title&gt;&#xa;&#x9;&#x9;&lt;description&gt;one demo page&lt;/description&gt;&#xa;&#x9;&#x9;&lt;progress&gt;0&lt;/progress&gt;&#xa;&#x9;&#x9;&lt;version&gt;0&lt;/version&gt;&#xa;&#x9;&lt;/bookmark&gt;&#xa;&#x9;&lt;bookmark id=&quot;24302&quot;&gt;&#xa;&#x9;&#x9;&lt;url&gt;http://www.ifanr.com/73411&lt;/url&gt;&#xa;&#x9;&#x9;&lt;title&gt;Mozilla &#x5c06;&#x516c;&#x5e03;&#x79fb;&#x52a8;&#x64cd;&#x4f5c;&#x7cfb;&#x7edf; Boot2Gecko&lt;/title&gt;&#xa;&#x9;&#x9;&lt;description&gt;another demo page&lt;/description&gt;&#xa;&#x9;&#x9;&lt;progress&gt;0&lt;/progress&gt;&#xa;&#x9;&#x9;&lt;version&gt;1&lt;/version&gt;&#xa;&#x9;&lt;/bookmark&gt;&#xa;&#x9;&lt;bookmark id=&quot;24303&quot;&gt;&#xa;&#x9;&#x9;&lt;url&gt;http://www.ifanr.com/73194&lt;/url&gt;&#xa;&#x9;&#x9;&lt;title&gt;&#x804a;&#x804a;&#x4ea7;&#x54c1;&#x547d;&#x540d;&#x7684;&#x90a3;&#x4e9b;&#x4e8b;&#x513f;&lt;/title&gt;&#xa;&#x9;&#x9;&lt;description&gt;yet another demo page&lt;/description&gt;&#xa;&#x9;&#x9;&lt;progress&gt;0&lt;/progress&gt;&#xa;&#x9;&#x9;&lt;version&gt;0&lt;/version&gt;&#xa;&#x9;&lt;/bookmark&gt;&#xa;&lt;/package&gt;"/>
+</node>
+</node>
+<node CREATED="1329899028674" ID="ID_1850444453" MODIFIED="1329900007685" TEXT="/api/2/bookmarks/list_count">
+<node CREATED="1329899040274" ID="ID_875490401" MODIFIED="1329899719556" TEXT="&#x63cf;&#x8ff0;">
+<node CREATED="1329899066994" ID="ID_1170215738" MODIFIED="1329899275630" TEXT="&#x8fd4;&#x56de;&#x5f53;&#x65f6;&#x6587;&#x4ef6;&#x5939;&#x4e2d;&#x6587;&#x7ae0;&#x5217;&#x8868;&#x957f;&#x5ea6;&#xff0c;&#x4f9b;&#x5206;&#x9875;&#x53c2;&#x8003;"/>
+</node>
+<node CREATED="1329899045018" ID="ID_236899987" MODIFIED="1329899719045" TEXT="&#x53c2;&#x6570;">
+<node CREATED="1329899133901" ID="ID_1323677038" MODIFIED="1329899724372" TEXT="folder_id">
+<node CREATED="1329899281687" ID="ID_1233635146" MODIFIED="1329899303965" TEXT="&#x53ef;&#x9009;"/>
+<node CREATED="1329899308376" ID="ID_532667368" MODIFIED="1329900003856" TEXT="&#x9ed8;&#x8ba4;&#x6307;&#x4ee3;&#x6240;&#x6709;&#x672a;&#x5220;&#x9664;&#x7684;bookmark&#x96c6;&#x5408;"/>
+</node>
+</node>
+<node CREATED="1329899046930" ID="ID_540953342" MODIFIED="1329899718371" TEXT="&#x8f93;&#x51fa;&#x7c7b;&#x578b;">
+<node CREATED="1329899142853" ID="ID_1506680730" MODIFIED="1329899147786" TEXT="meta"/>
+</node>
+<node CREATED="1329899051018" ID="ID_1469174543" MODIFIED="1329899347434" TEXT="&#x8f93;&#x51fa;&#x793a;&#x4f8b;">
+<node COLOR="#cc6600" CREATED="1329893455886" ID="ID_1832794356" MODIFIED="1329899212366" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;meta&gt;&#xa;&#x9;&lt;count&gt;36&lt;count&gt;&#xa;&lt;meta&gt;&#xa;"/>
 </node>
 </node>
 <node CREATED="1329710517811" FOLDED="true" ID="ID_585361226" MODIFIED="1329893902496" TEXT="/api/2/bookmarks/update_read_progress">
@@ -652,7 +669,7 @@
 <node COLOR="#cc6600" CREATED="1329722624106" ID="ID_1349744534" MODIFIED="1329722797537" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;bookmark id=&quot;24301&quot;&gt;&#xa;&#x9;&lt;url&gt;http://www.ifanr.com/73335&lt;/url&gt;&#xa;&#x9;&lt;title&gt;&#x7528; Cornerstone &#x7ed9; Android &#x5e73;&#x677f;&#x52a0;&#x4e0a;&#x7a97;&#x53e3;&lt;/title&gt;&#xa;&#x9;&lt;description&gt;one demo page&lt;/description&gt;&#xa;&#x9;&lt;progress&gt;0&lt;/progress&gt;&#xa;&#x9;&lt;version&gt;0&lt;/version&gt;&#xa;&lt;/bookmark&gt;"/>
 </node>
 </node>
-<node CREATED="1329710560228" FOLDED="true" ID="ID_1733975152" MODIFIED="1329893911752" TEXT="/api/2/bookmarks/get_text">
+<node CREATED="1329710560228" FOLDED="true" ID="ID_1733975152" MODIFIED="1329898977263" TEXT="/api/2/bookmarks/get_text">
 <node CREATED="1329715480854" ID="ID_43781131" MODIFIED="1329715482531" TEXT="&#x63cf;&#x8ff0;">
 <node CREATED="1329723453472" ID="ID_497104066" MODIFIED="1329723469375" TEXT="&#x8fd4;&#x56de;&#x7ecf;&#x8fc7;&#x51c0;&#x5316;&#x7684;&#x7f51;&#x9875;"/>
 </node>
@@ -839,7 +856,7 @@
 </node>
 </node>
 </node>
-<node CREATED="1329725242175" FOLDED="true" ID="ID_1771716910" MODIFIED="1329893873631" TEXT="feedback&#x76f8;&#x5173;&#x65b9;&#x6cd5;">
+<node CREATED="1329725242175" FOLDED="true" ID="ID_1771716910" MODIFIED="1329899257694" TEXT="feedback&#x76f8;&#x5173;&#x65b9;&#x6cd5;">
 <node CREATED="1329725269600" ID="ID_1160279187" MODIFIED="1329725287078" TEXT="/api/2/feedback">
 <node CREATED="1329725288065" ID="ID_72674780" MODIFIED="1329725294230" TEXT="&#x63cf;&#x8ff0;">
 <node CREATED="1329725305738" ID="ID_623723878" MODIFIED="1329725314527" TEXT="&#x63d0;&#x4ea4;&#x7528;&#x6237;&#x53cd;&#x9988;"/>
@@ -853,10 +870,10 @@
 </node>
 </node>
 <node CREATED="1329725297169" ID="ID_896016290" MODIFIED="1329893869774" TEXT="&#x8f93;&#x51fa;&#x7c7b;&#x578b;">
-<node CREATED="1329725356395" ID="ID_1517366087" MODIFIED="1329725360888" TEXT="package"/>
+<node CREATED="1329725356395" ID="ID_1517366087" MODIFIED="1329899236186" TEXT="meta"/>
 </node>
 <node CREATED="1329725300153" ID="ID_1531980184" MODIFIED="1329725304190" TEXT="&#x8f93;&#x51fa;&#x793a;&#x4f8b;">
-<node COLOR="#cc6600" CREATED="1329721650490" ID="ID_1442287123" MODIFIED="1329725607732" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;package&gt;&#xa;&#x9;&lt;meta&gt;&#xa;&#x9;&#x9;&lt;status&gt;1&lt;/status&gt;&#xa;&#x9;&lt;/meta&gt;&#xa;&lt;/package&gt;&#xa;"/>
+<node COLOR="#cc6600" CREATED="1329721650490" ID="ID_1442287123" MODIFIED="1329899255326" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;meta&gt;&#xa;&#x9;&lt;status&gt;1&lt;/status&gt;&#xa;&lt;/meta&gt;&#xa;&#xa;"/>
 </node>
 </node>
 </node>

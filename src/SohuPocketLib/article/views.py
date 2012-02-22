@@ -3,7 +3,10 @@
 from article.helper import get_myarticle_list_to_xml_etree, input_for_list_func, \
     get_myarticle_instance_to_xml_etree, input_for_show_func, input_for_update_func, \
     generate_single_xml_etree, input_for_destroy_func, input_for_modify_func, \
-    modify_or_destroy_myarticle_instance, UpdateArticleInfo
+    modify_or_destroy_myarticle_instance, UpdateArticleInfo, \
+    input_for_list_count_func, get_myarticle_list_count, \
+    output_for_list_count_func_etree
+from constants import TRUE_REPR
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -11,7 +14,6 @@ from lxml import etree
 from page.tasks import PageFetchHandler
 from user.helper import KanUser
 import logging
-from constants import TRUE_REPR
 
 
 def list(request, format):
@@ -136,4 +138,22 @@ def modify_or_destroy_base(access_token_input, modify_info, key, format):
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
         mimetype = 'text/xml'
         
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def list_count(request):
+    access_token_input, folder_id = input_for_list_count_func(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    count = 0
+    if kan_user.is_logged_in():
+        count = get_myarticle_list_count(kan_user.get_user_id(), folder_id)
+        response_etree = output_for_list_count_func_etree(count)
+        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+    else:
+        response_etree = generate_single_xml_etree('status', 'not logged in')
+        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+    
     return HttpResponse(response, mimetype=mimetype)
