@@ -219,7 +219,6 @@ public class DBServiceHelper {
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
 			}
-
 			rs.close();
 			stmt.close();
 			connection.close();
@@ -1329,7 +1328,7 @@ public class DBServiceHelper {
 		}
 	}
 
-	public static void modifyBucket(ScssBucket putBucket) {
+	public static void modifyBucket(ScssBucket bucket) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		try {
@@ -1340,20 +1339,20 @@ public class DBServiceHelper {
 					+ "`logging_enabled`=?," + "`meta`=?," + "`deleted`=?,"
 					+ "`create_time`=?," + "`modify_time` =? " + "where `id`=?";
 			stmt = connection.prepareStatement(sql);
-			stmt.setLong(1, putBucket.getId());
-			stmt.setString(2, putBucket.getName());
-			stmt.setLong(3, putBucket.getOwnerId());
-			stmt.setBoolean(4, putBucket.getExprirationEnabled() == 0 ? false
+			stmt.setLong(1, bucket.getId());
+			stmt.setString(2, bucket.getName());
+			stmt.setLong(3, bucket.getOwnerId());
+			stmt.setBoolean(4, bucket.getExprirationEnabled() == 0 ? false
 					: true);
-			stmt.setBoolean(5, putBucket.getLoggingEnabled() == 0 ? false
+			stmt.setBoolean(5, bucket.getLoggingEnabled() == 0 ? false
 					: true);
-			stmt.setString(6, putBucket.getMeta());
-			stmt.setBoolean(7, putBucket.getDeleted() == 0 ? false : true);
-			stmt.setDate(8, new java.sql.Date(putBucket.getCreateTime()
+			stmt.setString(6, bucket.getMeta());
+			stmt.setBoolean(7, bucket.getDeleted() == 0 ? false : true);
+			stmt.setDate(8, new java.sql.Date(bucket.getCreateTime()
 					.getTime()));
-			stmt.setDate(9, new java.sql.Date(putBucket.getModifyTime()
+			stmt.setDate(9, new java.sql.Date(bucket.getModifyTime()
 					.getTime()));
-			stmt.setLong(10, putBucket.getId());
+			stmt.setLong(10, bucket.getId());
 			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
@@ -1400,9 +1399,9 @@ public class DBServiceHelper {
 					.getTime()));
 			stmt.setDate(12, new java.sql.Date(scssObject.getCreateTime()
 					.getTime()));
-			stmt.setDate(12, new java.sql.Date(scssObject.getModifyTime()
+			stmt.setDate(13, new java.sql.Date(scssObject.getModifyTime()
 					.getTime()));
-			stmt.setLong(13, scssObject.getId());
+			stmt.setLong(14, scssObject.getId());
 			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
@@ -1455,6 +1454,7 @@ public class DBServiceHelper {
 	}
 
 	public static void modifyGroup(ScssGroup scssGroup) {
+		//TODO:
 		// Connection connection = null;
 		// PreparedStatement stmt = null;
 		// try {
