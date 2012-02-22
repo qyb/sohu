@@ -6,6 +6,8 @@ package com.scss.core.object;
 import com.scss.Operation;
 import com.scss.OperationResult;
 import com.scss.Resource;
+import com.scss.core.APIResponse;
+import com.scss.core.ErrorResponse;
 
 /**
  * @author Samuel
@@ -26,7 +28,7 @@ public class ObjectResource extends Resource {
 	@Override
 	public Boolean CanAccess(Operation op) {
 		// TODO Auto-generated method stub
-		return null;
+		return true;
 	}
 
 
@@ -35,8 +37,42 @@ public class ObjectResource extends Resource {
 	 */
 	@Override
 	public OperationResult Operate(Operation op) {
-		// TODO Auto-generated method stub
-		return null;
+
+		assert(null != op);
+		assert(null != op.Operator);
+		assert(null != op.Performer);
+		assert(null != op.Request);
+		
+		OperationResult result = new OperationResult();
+		
+		// Access check
+		if (!this.CanAccess(op)) {
+			// No Access
+			ErrorResponse err_resp = ErrorResponse.AccessDenied(op.Request);
+			result.Succeed = false;
+			result.ErrorCode = err_resp.getCode();
+			result.ErrorMessage = err_resp.getMessage();
+			result.Value = err_resp;
+			
+		} else {
+			
+			// Passed access check. Invoke API.
+			APIResponse resp = (APIResponse) op.Operator.Invoke(op.Request);
+		
+			if (ErrorResponse.class.isInstance(resp)) {
+				ErrorResponse err_resp = (ErrorResponse) resp;
+				result.Succeed = false;
+				result.ErrorCode = err_resp.getCode();
+				result.ErrorMessage = err_resp.getMessage();
+			} else 
+				result.Succeed = true;
+		
+			result.Value = resp;
+		}
+		
+		
+		
+		return result;
 	}
 
 

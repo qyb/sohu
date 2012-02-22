@@ -20,7 +20,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sql.DataSource;
 
-import com.bfsapi.utility.Logger;
+import com.scss.utility.Logger;
+
 
 /**
  * @Title:数据库连接池:<br>
@@ -104,11 +105,7 @@ public class ConnectionPool implements Runnable, DataSource {
 			countThread, 60 * 2, TimeUnit.SECONDS,
 			new ArrayBlockingQueue<Runnable>(countThread + 1),
 			new ThreadPoolExecutor.DiscardOldestPolicy());;
-<<<<<<< HEAD
-	private static final Logger logger = Logger.getLogger("ITMANAGER2/POOL",
-=======
 	private static final Logger logger = Logger.getLogger("scss/pool",
->>>>>>> 10b41c461645f41d302f2bc9e61069413053fc61
 			Logger.ALL, true);
 	private boolean lock = false;
 	private PrintWriter logWriter;

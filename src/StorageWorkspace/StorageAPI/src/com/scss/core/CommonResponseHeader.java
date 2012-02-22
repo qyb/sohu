@@ -113,5 +113,7 @@ public class CommonResponseHeader {
 	
 	
 	public static final String STATUS = "Status";
+	
+	public static final String MEDIA_TYPE = "MediaType";
 
 }

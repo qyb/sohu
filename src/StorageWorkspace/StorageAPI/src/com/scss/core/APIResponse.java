@@ -15,7 +15,7 @@ import org.restlet.representation.Representation;
 public class APIResponse {
 	
 	public Representation  Repr = null;
-	public String MediaType = MediaTypes.APPLICATION_XML;
+	public String MediaType = Mimetypes.APPLICATION_XML;
 	
 	protected Map<String, String> headers = null;
 	

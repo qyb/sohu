@@ -1,14 +1,23 @@
 package com.scss.db.exception;
 
-public class SameNameDirException extends Exception {
+/**
+ * @Title:重名异常。<br>
+ * @Description: 创建某个对象已有重名对象时，抛出该异常。<br>
+ * @Deprecated ：
+ * 
+ * @author Jack.wu.xu 2012-2-19
+ * @version 1.0
+ * 
+ */
+public class SameNameException extends Exception {
 	private String name;
 	private String message;
 
-	public SameNameDirException(String name) {
+	public SameNameException(String name) {
 		this.name = name;
 	}
 
-	public SameNameDirException(String name, String message) {
+	public SameNameException(String name, String message) {
 		this.setName(name);
 		this.setMessage(message);
 	}

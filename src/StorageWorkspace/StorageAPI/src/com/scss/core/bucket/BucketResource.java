@@ -7,6 +7,7 @@ import com.scss.Operation;
 import com.scss.OperationResult;
 import com.scss.Resource;
 import com.scss.core.APIResponse;
+import com.scss.core.ErrorResponse;
 
 /**
  * @author Samuel
@@ -50,8 +51,8 @@ public class BucketResource extends Resource {
 			// No Access
 			ErrorResponse err_resp = ErrorResponse.AccessDenied(op.Request);
 			result.Succeed = false;
-			result.ErrorCode = err_resp.code;
-			result.ErrorMessage = err_resp.message;
+			result.ErrorCode = err_resp.getCode();
+			result.ErrorMessage = err_resp.getMessage();
 			result.Value = err_resp;
 			
 		} else {
@@ -62,8 +63,8 @@ public class BucketResource extends Resource {
 			if (ErrorResponse.class.isInstance(resp)) {
 				ErrorResponse err_resp = (ErrorResponse) resp;
 				result.Succeed = false;
-				result.ErrorCode = err_resp.code;
-				result.ErrorMessage = err_resp.message;
+				result.ErrorCode = err_resp.getCode();
+				result.ErrorMessage = err_resp.getMessage();
 			} else 
 				result.Succeed = true;
 		

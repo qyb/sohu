@@ -49,7 +49,7 @@ public class Operation {
 	public static Operation create(APIRequest req) throws InvaildRequestException {
 		Operation op = new Operation();
 		op.Request = req;
-		op.Performer = req.getUser();
+		op.Performer = (IAccessor) req.getUser();
 
 		String bucket_name = req.BucketName;
 		String object_key = req.ObjectKey;
@@ -86,6 +86,8 @@ public class Operation {
 				op.Operator = OpenAPI.POST_OBJECT;
 			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.DELETE))
 				op.Operator = OpenAPI.DELETE_OBJECT;
+			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.HEAD))
+				op.Operator = OpenAPI.HEAD_OBJECT;
 			else
 				throw new InvaildRequestException("Invaild HTTP method on object.");
 		}
