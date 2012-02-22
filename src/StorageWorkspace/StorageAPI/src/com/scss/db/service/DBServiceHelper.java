@@ -104,9 +104,9 @@ public class DBServiceHelper {
 			so.setMeta(meta);
 			so.setSize(size);
 			so.setMediaType(mediaType);
-			so.setVersionEnabled(version_enabled);
+			so.setVersionEnabled((byte) (version_enabled ? 1 : 0));
 			so.setVersion(version);
-			so.setDeleted(deleted);
+			so.setDeleted((byte) (deleted ? 1 : 0));
 			so.setExpirationTime(expirationTime);
 			so.setCreateTime(createTime);
 			so.setModifyTime(modifyTime);
@@ -206,10 +206,11 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -262,10 +263,11 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -315,10 +317,11 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -576,10 +579,11 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -1114,10 +1118,11 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -1222,11 +1227,25 @@ public class DBServiceHelper {
 		try {
 			connection = connPool.getConnection();
 
-			String sql = "UPDATE scss_group set user_ids=? where id=?";
-
+			String sql = "update scss_bucket set " + "`id`=?," + "`name`=?,"
+					+ "`owner_id`=?," + "`expriration_enabled`=?,"
+					+ "`logging_enabled`=?," + "`meta`=?," + "`deleted`=?,"
+					+ "`create_time`=?," + "`modify_time` =? " + "where `id`=?";
 			stmt = connection.prepareStatement(sql);
-			stmt.setString(1, "");
-			stmt.setLong(2, null);
+			stmt.setLong(1, putBucket.getId());
+			stmt.setString(2, putBucket.getName());
+			stmt.setLong(3, putBucket.getOwnerId());
+			stmt.setBoolean(4, putBucket.getExprirationEnabled() == 0 ? false
+					: true);
+			stmt.setBoolean(5, putBucket.getLoggingEnabled() == 0 ? false
+					: true);
+			stmt.setString(6, putBucket.getMeta());
+			stmt.setBoolean(7, putBucket.getDeleted() == 0 ? false : true);
+			stmt.setDate(8, new java.sql.Date(putBucket.getCreateTime()
+					.getTime()));
+			stmt.setDate(9, new java.sql.Date(putBucket.getModifyTime()
+					.getTime()));
+			stmt.setLong(10, putBucket.getId());
 			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
@@ -1246,17 +1265,117 @@ public class DBServiceHelper {
 	}
 
 	public static void modifyObject(ScssObject scssObject) {
-		// TODO Auto-generated method stub
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		try {
+			connection = connPool.getConnection();
 
+			String sql = "update scss_object set " + "`id`=?," + "`key`=?,"
+					+ "`bfs_file`=?," + "`owner_id`=?," + "`bucket_id`=?,"
+					+ "`meta`=?," + "`size`=?," + "`media_type`=?,"
+					+ "`version_enabled`=?," + "`version`=?," + "`deleted`=?,"
+					+ "`expiration_time`=?," + "`create_time`=?,"
+					+ "`modify_time` =? " + "where  `id`=?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, scssObject.getId());
+			stmt.setString(2, scssObject.getKey());
+			stmt.setLong(3, scssObject.getBfsFile());
+			stmt.setLong(4, scssObject.getBucketId());
+			stmt.setString(5, scssObject.getMeta());
+			stmt.setLong(6, scssObject.getSize());
+			stmt.setString(7, scssObject.getMediaType());
+			stmt.setBoolean(8, scssObject.getVersionEnabled() == 0 ? false
+					: true);
+			stmt.setString(9, scssObject.getVersion());
+			stmt.setBoolean(10, scssObject.getDeleted() == 0 ? false : true);
+			stmt.setDate(11, new java.sql.Date(scssObject.getExpirationTime()
+					.getTime()));
+			stmt.setDate(12, new java.sql.Date(scssObject.getCreateTime()
+					.getTime()));
+			stmt.setDate(12, new java.sql.Date(scssObject.getModifyTime()
+					.getTime()));
+			stmt.setLong(13, scssObject.getId());
+			stmt.executeUpdate();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void modifyUser(ScssUser scssUser) {
-		// TODO Auto-generated method stub
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		try {
+			connection = connPool.getConnection();
 
+			String sql = "update `scss_user` set " + "`id`=?,"
+					+ "`sohu_id`=?, " + "`access_key`=?," + "`status` =? "
+					+ "where  `id`=?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, scssUser.getId());
+			stmt.setString(2, scssUser.getSohuId());
+			stmt.setString(3, scssUser.getAccessKey());
+			stmt.setString(4, scssUser.getStatus());
+			stmt.setLong(5, scssUser.getId());
+			stmt.executeUpdate();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void modifyGroup(ScssGroup scssGroup) {
-		// TODO Auto-generated method stub
-
+//		Connection connection = null;
+//		PreparedStatement stmt = null;
+//		try {
+//			connection = connPool.getConnection();
+//
+//			String sql = "update `scss_user` set " + "`id`=?,"
+//					+ "`sohu_id`=?, " + "`access_key`=?," + "`status` =? "
+//					+ "where  `id`=?";
+//			stmt = connection.prepareStatement(sql);
+//			stmt.setLong(1, scssUser.getId());
+//			stmt.setString(2, scssUser.getSohuId());
+//			stmt.setString(3, scssUser.getAccessKey());
+//			stmt.setString(4, scssUser.getStatus());
+//			stmt.setLong(5, scssUser.getId());
+//			stmt.executeUpdate();
+//			stmt.close();
+//			connection.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} finally {
+//			try {
+//				if ((stmt != null) && (!stmt.isClosed())) {
+//					stmt.close();
+//				}
+//				if ((connection != null) && (!connection.isClosed()))
+//					connection.close();
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 }
