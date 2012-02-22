@@ -130,15 +130,15 @@ public class CloudServer {
             
         for (int i = 0; i < hosts.size(); i++) {
         	VirtualHost vh = hosts.get(i);
-            logger.trace(String.format("vh: %s---%s---%s", vh.getHostDomain(), vh.getHostPort(), vh.getHostScheme()));
+            logger.debug(String.format("vh: %s---%s---%s", vh.getHostDomain(), vh.getHostPort(), vh.getHostScheme()));
         }
             
-        logger.trace(String.format("vh: %s---%s---%s", component.getDefaultHost().getHostDomain(), 
+        logger.debug(String.format("vh: %s---%s---%s", component.getDefaultHost().getHostDomain(), 
 		component.getDefaultHost().getHostPort(), 
 		component.getDefaultHost().getHostScheme()));
 	}
     
-    /* Æô¶¯·þÎñÆ÷   */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½   */
 	public boolean start(String __logFileName, String __configName) {
 		if (null != __logFileName) 
 			this.logName = __logFileName;
@@ -167,7 +167,7 @@ public class CloudServer {
         return true;
 	}
     
-    /* ¹Ø±Õ·þÎñÆ÷ */
+    /* ï¿½Ø±Õ·ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	public void shutdown() {
         if (null != component || !component.isStopped()) {
         	try {
