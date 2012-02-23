@@ -3,6 +3,8 @@ package com.scss.core.object;
 import java.util.Date;
 import java.util.Map;
 
+import org.restlet.data.MediaType;
+import org.restlet.data.Tag;
 import org.restlet.representation.EmptyRepresentation;
 
 import com.scss.IAccessor;
@@ -33,6 +35,7 @@ public class HEAD_OBJECT extends ObjectAPI {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 	@Override
 	public APIResponse Invoke(APIRequest req) {
@@ -72,7 +75,7 @@ public class HEAD_OBJECT extends ObjectAPI {
 		// TODO: change the temporary values
 		resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
 		resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");				
-		resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.APPLICATION_XML);
+		resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.MIMETYPE_TEXT);
 		resp_headers.put(CommonResponseHeader.CONNECTION, "close");
 		resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
 		
@@ -83,15 +86,19 @@ public class HEAD_OBJECT extends ObjectAPI {
 		// user_meta key-value pair -> header
 		
 		// TODO: set system meta
-		resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(obj.getModifyTime()));
+		resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(new Date()));
 		resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, String.valueOf(obj.getSize()));
-		// TODO: make the ETAG computing hooked in progress or use DigestRepresentation.
-		//resp_headers.put(CommonResponseHeader.ETAG, obj.getEtag());
+		resp_headers.put(CommonResponseHeader.ETAG, obj.getEtag());
 
 		// generate representation.
-		resp.Repr = new EmptyRepresentation();
-		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.Repr = null;
+//		resp.Repr = new EmptyRepresentation();
+//		resp.Repr.setTag(new Tag(obj.getEtag()));
+//		resp.Repr.setSize(obj.getSize());
+//		resp.Repr.setMediaType(MediaType.TEXT_PLAIN);
+		resp.MediaType = Mimetypes.MIMETYPE_TEXT;
 		return resp;
 
-	}	
+	}
+
 }

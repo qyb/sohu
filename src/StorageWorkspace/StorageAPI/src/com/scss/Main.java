@@ -8,6 +8,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 import com.scss.core.Handler;
+import com.scss.server.CloudServer;
 
 /*
  * @author Samuel
@@ -26,7 +27,11 @@ public class Main {
 //		 component.getDefaultHost().attach("/api", Handler.class);
 //		 component.start();
 		 
-		 new Server(Protocol.HTTP, 80, Handler.class).start();
+		 if (args.length > 1 && args[1].equals("serve")) {
+			 CloudServer.shared().start(null, null);
+		 }
+		 else
+			 new Server(Protocol.HTTP, 80, Handler.class).start();
 	}
 
 }

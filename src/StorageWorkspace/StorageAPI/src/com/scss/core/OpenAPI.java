@@ -52,7 +52,11 @@ public abstract class OpenAPI implements ICallable {
 		
 	}
 	
-	public String getContentMD5() {
+	public byte[] getContentMD5() {
+        return md5DigestStream.getMd5Digest();
+	}
+
+	public String getBase64ContentMD5() {
         byte[] b64 = Base64.encodeBase64(md5DigestStream.getMd5Digest());
         return new String(b64);		
 	}
