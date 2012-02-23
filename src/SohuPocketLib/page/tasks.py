@@ -166,6 +166,7 @@ class UploadArticleHandler(Task):
         except SoftTimeLimitExceeded, exc:
             raise exc
         except Exception, exc:
+            logging.warn(str(exc))
             UploadArticleHandler.retry(exc=exc)
         else:
 #            call next step
@@ -175,7 +176,6 @@ class UploadArticleHandler(Task):
     
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         update_article_info, = args
-        self.clean_up(update_article_info)
         RollbackArticleInDbHandler.delay(update_article_info)
         
         return None

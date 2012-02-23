@@ -209,6 +209,7 @@ def get_myarticle_list_count(user_id, folder_id):
                                       
     return len(myarticle_list)
 
+
 def get_myarticle_list_to_xml_etree(user_id, offset, limit):
     myarticle_list = get_myarticle_list(user_id, offset, limit)
     articles = etree.Element('articles')

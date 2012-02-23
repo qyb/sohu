@@ -141,7 +141,7 @@ def modify_or_destroy_base(access_token_input, modify_info, key, format):
     return HttpResponse(response, mimetype=mimetype)
 
 
-def list_count(request):
+def api2_list_count(request):
     logging.warn(str(request))
     access_token_input, folder_id = input_for_list_count_func(request)
     kan_user = KanUser('', access_token_input)
@@ -162,7 +162,7 @@ def list_count(request):
     
 
 
-def list_count_test(request, *args, **kwargs):
+def api2_list_count_test(request, *args, **kwargs):
     
-    return render_to_response('list_count_test.html',
+    return render_to_response('api2_bookmarks_list_count_test.html',
                               context_instance = RequestContext(request))

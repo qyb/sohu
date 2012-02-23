@@ -116,6 +116,7 @@ class UploadImageHandler(Task):
         except SoftTimeLimitExceeded, exc:
             raise exc
         except Exception, exc:
+            logging.warn(str(exc))
             UploadImageHandler.retry(exc=exc)
         else:
 #            call next step

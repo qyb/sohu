@@ -2,7 +2,7 @@
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
 <node CREATED="1326071554357" ID="ID_1227887250" MODIFIED="1329709616435" STYLE="bubble" TEXT="&#x5f00;&#x53d1;&#x8005;api">
 <font NAME="SansSerif" SIZE="12"/>
-<node CREATED="1329701178916" ID="ID_1735649389" MODIFIED="1329975649312" POSITION="right" TEXT="api v1">
+<node CREATED="1329701178916" FOLDED="true" ID="ID_1735649389" MODIFIED="1329976777904" POSITION="right" TEXT="api v1">
 <node CREATED="1326071562481" ID="ID_739548863" MODIFIED="1327994920715" TEXT="/article/">
 <font NAME="SansSerif" SIZE="12"/>
 <node CREATED="1326071927474" ID="ID_1477985783" MODIFIED="1328605542409" TEXT="/article/add.format/">
@@ -318,7 +318,7 @@
 </node>
 </node>
 </node>
-<node CREATED="1329701197687" ID="ID_1643339173" MODIFIED="1329727546440" POSITION="right" TEXT="api v2">
+<node CREATED="1329701197687" ID="ID_1643339173" MODIFIED="1329976780804" POSITION="right" TEXT="api v2">
 <node CREATED="1329714986766" ID="ID_1736879556" MODIFIED="1329903491527" TEXT="&#x8f93;&#x5165;&#x683c;&#x5f0f;">
 <node CREATED="1329715053225" ID="ID_1225777456" MODIFIED="1329715063148" TEXT="HTTP POST&#x65b9;&#x5f0f;"/>
 <node CREATED="1329715038818" ID="ID_1454293031" MODIFIED="1329715065965" TEXT="&#x53c2;&#x6570;&#x4f7f;&#x7528;utf-8&#x7f16;&#x7801;"/>
@@ -359,9 +359,9 @@
 </node>
 </node>
 </node>
-<node CREATED="1329710696580" ID="ID_1921284491" MODIFIED="1329893914259" TEXT="account&#x76f8;&#x5173;&#x65b9;&#x6cd5;">
-<node CREATED="1329720397293" ID="ID_1036744889" MODIFIED="1329963842822" TEXT="/api/2/account/access_token">
+<node CREATED="1329710696580" ID="ID_1921284491" MODIFIED="1329981356635" TEXT="account&#x76f8;&#x5173;&#x65b9;&#x6cd5;">
 <cloud/>
+<node CREATED="1329720397293" ID="ID_1036744889" MODIFIED="1329981354803" TEXT="/api/2/account/access_token">
 <node CREATED="1329720458857" ID="ID_1135325803" MODIFIED="1329720461695" TEXT="&#x63cf;&#x8ff0;">
 <node CREATED="1329720464321" ID="ID_587458068" MODIFIED="1329893140450" TEXT="&#x901a;&#x8fc7;passport&#x9a8c;&#x8bc1;&#x540e;&#xff0c;&#x9996;&#x6b21;&#x8bbf;&#x95ee;sohukan&#x7684;&#x5165;&#x53e3;&#x3002;&#x8fd4;&#x56de;&#x9a8c;&#x8bc1;&#x6210;&#x529f;&#x7684;user&#x3002;"/>
 </node>
@@ -375,9 +375,11 @@
 <node CREATED="1329720989723" ID="ID_320134084" MODIFIED="1329720992970" TEXT="&#x8f93;&#x51fa;&#x793a;&#x4f8b;">
 <node COLOR="#cc6600" CREATED="1329720996380" ID="ID_379371662" MODIFIED="1329893011967" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;user&gt;&#xa;&#x9;&lt;user_id&gt;1&lt;/user_id&gt;&#xa;&#x9;&lt;username&gt;halo&lt;/username&gt;&#xa;&#x9;&lt;description&gt;lol&lt;/description&gt;&#xa;&lt;/user&gt;"/>
 </node>
+<node CREATED="1329984081721" ID="ID_484647140" MODIFIED="1329984085779" TEXT="&#x8bf4;&#x660e;">
+<node CREATED="1329984086690" ID="ID_584428455" MODIFIED="1329984117412" TEXT="&#x7531;&#x4e8e;passport&#x8c03;&#x7528;&#x539f;&#x56e0;&#xff0c;&#x8be5;&#x65b9;&#x6cd5;&#x540c;&#x65f6;&#x5141;&#x8bb8;POST&#x548c;GET&#x65b9;&#x5f0f;"/>
 </node>
-<node CREATED="1329720411244" ID="ID_424918145" MODIFIED="1329963844781" TEXT="/api/2/account/verify_credentials">
-<cloud/>
+</node>
+<node CREATED="1329720411244" ID="ID_424918145" MODIFIED="1329981353466" TEXT="/api/2/account/verify_credentials">
 <node CREATED="1329721459572" ID="ID_49432368" MODIFIED="1329721462467" TEXT="&#x63cf;&#x8ff0;">
 <node CREATED="1329721464028" ID="ID_195317104" MODIFIED="1329893154761" TEXT="&#x9a8c;&#x8bc1;cookie&#xff0c;&#x8fd4;&#x56de;&#x9a8c;&#x8bc1;&#x6210;&#x529f;&#x7684;user"/>
 </node>

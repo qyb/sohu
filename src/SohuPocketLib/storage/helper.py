@@ -6,7 +6,7 @@ from boto.s3.connection import Location
 
 
 def build_connect_s3():
-    s3 = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+    s3 = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, is_secure=False)
 
     return s3
 
