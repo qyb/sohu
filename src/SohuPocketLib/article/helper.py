@@ -54,6 +54,7 @@ def create_myarticle_instance(user_id, key, title, url):
     myarticle_instance.is_read = False
     myarticle_instance.is_star = False
     myarticle_instance.is_delete = False
+    myarticle_instance.is_ready = False
     myarticle_instance.create_time = datetime.now()
     myarticle_instance.read_time = None
     myarticle_instance.delete_time = None
@@ -194,7 +195,7 @@ def get_myarticle_list(user_id, offset, limit):
     myarticle_list = MyArticleInstance.objects \
                                       .using(chosen_db) \
                                       .filter(user_id=user_id, is_delete=False, is_ready=True) \
-                                      .order_by('-id') \
+                                      .order_by('-create_time') \
                                       [offset : offset + limit]
     
     return myarticle_list
