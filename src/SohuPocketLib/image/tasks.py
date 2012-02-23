@@ -2,12 +2,13 @@
 
 from article.helper import choose_a_db, mark_article_as_done
 from article.models import MyArticleInstance
+from celery.exceptions import SoftTimeLimitExceeded
 from celery.task import Task
 from celery.task.sets import subtask
 from constants import BUCKET_NAME_IMAGE, DOWNLOAD_IMAGE_MAX_RETRIES, \
     DOWNLOAD_IMAGE_DEFAULT_RETRY_DELAY, UPLOAD_IMAGE_MAX_RETRIES, \
     UPLOAD_IMAGE_DEFAULT_RETRY_DELAY, DOWNLOAD_IMAGE_TIME_LIMIT, \
-    UPLOAD_IMAGE_TIME_LIMIT
+    UPLOAD_IMAGE_TIME_LIMIT, CLEAN_UP_TIME_BEFORE_KILLED
 from image.helper import generate_image_instance_key, decrease_image_tobedone, \
     get_image_tobedone, create_myimage_instance, UpdateImageInfo, \
     delete_myimage_instance_in_db
@@ -23,6 +24,7 @@ class DownloadImageHandler(Task):
     """
     
     time_limit = DOWNLOAD_IMAGE_TIME_LIMIT
+    soft_time_limit = time_limit - CLEAN_UP_TIME_BEFORE_KILLED
     max_retries = DOWNLOAD_IMAGE_MAX_RETRIES
     default_retry_delay = DOWNLOAD_IMAGE_DEFAULT_RETRY_DELAY
     ignore_result = True
@@ -38,6 +40,8 @@ class DownloadImageHandler(Task):
                 mime = resource.info()['Content-Type']
             except:
                 mime = None
+        except SoftTimeLimitExceeded, exc:
+            raise exc
         except Exception, exc:
             DownloadImageHandler.retry(exc=exc)
         else:
@@ -93,6 +97,7 @@ class UploadImageHandler(Task):
     """
     
     time_limit = UPLOAD_IMAGE_TIME_LIMIT
+    soft_time_limit = time_limit - CLEAN_UP_TIME_BEFORE_KILLED
     max_retries = UPLOAD_IMAGE_MAX_RETRIES
     default_retry_delay = UPLOAD_IMAGE_DEFAULT_RETRY_DELAY
     ignore_result = True
@@ -108,6 +113,8 @@ class UploadImageHandler(Task):
                                    update_image_info.image_instance_key,
                                    update_image_info.image_data,
                                    headers=headers)
+        except SoftTimeLimitExceeded, exc:
+            raise exc
         except Exception, exc:
             UploadImageHandler.retry(exc=exc)
         else:

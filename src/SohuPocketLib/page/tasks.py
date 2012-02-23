@@ -8,7 +8,7 @@ from celery.task.sets import TaskSet, subtask
 from constants import BUCKET_NAME_ARTICLE, PAGE_FETCH_MAX_RETRIES, \
     PAGE_FETCH_DEFAULT_RETRY_DELAY, UPLOAD_ARTICLE_MAX_RETRIES, \
     UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY, PAGE_FETCH_TIME_LIMIT, \
-    UPLOAD_ARTICLE_TIME_LIMIT
+    UPLOAD_ARTICLE_TIME_LIMIT, CLEAN_UP_TIME_BEFORE_KILLED
 from image.helper import parse_and_replace_image_url_list, set_image_tobedone, \
     generate_image_tobedone_key
 from image.tasks import DownloadImageHandler
@@ -24,6 +24,7 @@ class PageFetchHandler(Task):
     '''
     
     time_limit = PAGE_FETCH_TIME_LIMIT
+    soft_time_limit = 10
     max_retries = PAGE_FETCH_MAX_RETRIES
     default_retry_delay = PAGE_FETCH_DEFAULT_RETRY_DELAY
     ignore_result = True
@@ -38,7 +39,10 @@ class PageFetchHandler(Task):
             except:
                 mime = None
         except Exception, exc:
-            PageFetchHandler.retry(exc=exc)
+            try:
+                PageFetchHandler.retry(exc=exc)
+            except Exception, e:
+                logging.warning(str(type(e)))
         else:
             update_article_info.url = url
             update_article_info.mime = mime
@@ -52,7 +56,7 @@ class PageFetchHandler(Task):
                                          callback=subtask(DownloadImageHandler))))))
             
         return None
-
+    
 
 class ReadableArticleHandler(Task):
     '''
@@ -144,6 +148,7 @@ class UploadArticleHandler(Task):
     """
     
     time_limit = UPLOAD_ARTICLE_TIME_LIMIT
+    soft_time_limit = time_limit - CLEAN_UP_TIME_BEFORE_KILLED
     max_retries = UPLOAD_ARTICLE_MAX_RETRIES
     default_retry_delay = UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY
     ignore_result = True
@@ -158,6 +163,8 @@ class UploadArticleHandler(Task):
                                    update_article_info.article_instance_key,
                                    update_article_info.article_content,
                                    headers=headers)
+        except SoftTimeLimitExceeded, exc:
+            raise exc
         except Exception, exc:
             UploadArticleHandler.retry(exc=exc)
         else:
@@ -168,6 +175,7 @@ class UploadArticleHandler(Task):
     
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         update_article_info, = args
+        self.clean_up(update_article_info)
         RollbackArticleInDbHandler.delay(update_article_info)
         
         return None
