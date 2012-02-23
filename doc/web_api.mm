@@ -360,7 +360,8 @@
 </node>
 </node>
 <node CREATED="1329710696580" ID="ID_1921284491" MODIFIED="1329893914259" TEXT="account&#x76f8;&#x5173;&#x65b9;&#x6cd5;">
-<node CREATED="1329720397293" ID="ID_1036744889" MODIFIED="1329720409578" TEXT="/api/2/account/access_token">
+<node CREATED="1329720397293" ID="ID_1036744889" MODIFIED="1329963842822" TEXT="/api/2/account/access_token">
+<cloud/>
 <node CREATED="1329720458857" ID="ID_1135325803" MODIFIED="1329720461695" TEXT="&#x63cf;&#x8ff0;">
 <node CREATED="1329720464321" ID="ID_587458068" MODIFIED="1329893140450" TEXT="&#x901a;&#x8fc7;passport&#x9a8c;&#x8bc1;&#x540e;&#xff0c;&#x9996;&#x6b21;&#x8bbf;&#x95ee;sohukan&#x7684;&#x5165;&#x53e3;&#x3002;&#x8fd4;&#x56de;&#x9a8c;&#x8bc1;&#x6210;&#x529f;&#x7684;user&#x3002;"/>
 </node>
@@ -375,7 +376,8 @@
 <node COLOR="#cc6600" CREATED="1329720996380" ID="ID_379371662" MODIFIED="1329893011967" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;user&gt;&#xa;&#x9;&lt;user_id&gt;1&lt;/user_id&gt;&#xa;&#x9;&lt;username&gt;halo&lt;/username&gt;&#xa;&#x9;&lt;description&gt;lol&lt;/description&gt;&#xa;&lt;/user&gt;"/>
 </node>
 </node>
-<node CREATED="1329720411244" ID="ID_424918145" MODIFIED="1329720431083" TEXT="/api/2/account/verify_credentials">
+<node CREATED="1329720411244" ID="ID_424918145" MODIFIED="1329963844781" TEXT="/api/2/account/verify_credentials">
+<cloud/>
 <node CREATED="1329721459572" ID="ID_49432368" MODIFIED="1329721462467" TEXT="&#x63cf;&#x8ff0;">
 <node CREATED="1329721464028" ID="ID_195317104" MODIFIED="1329893154761" TEXT="&#x9a8c;&#x8bc1;cookie&#xff0c;&#x8fd4;&#x56de;&#x9a8c;&#x8bc1;&#x6210;&#x529f;&#x7684;user"/>
 </node>
@@ -716,6 +718,25 @@
 </node>
 <node CREATED="1329724098158" ID="ID_761794195" MODIFIED="1329724100645" TEXT="&#x8f93;&#x51fa;&#x793a;&#x4f8b;">
 <node COLOR="#cc6600" CREATED="1329724420882" ID="ID_848127814" MODIFIED="1329727036963" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;folder id=&quot;571&quot;&gt;&#xa;&#x9;&lt;title&gt;game&lt;/title&gt;&#xa;&lt;/folder&gt;"/>
+</node>
+</node>
+<node CREATED="1329963612378" ID="ID_625298871" MODIFIED="1329963658197" TEXT="/api/2/folders/update">
+<node CREATED="1329963618520" ID="ID_629144896" MODIFIED="1329963624532" TEXT="&#x63cf;&#x8ff0;">
+<node CREATED="1329963634409" ID="ID_1995646364" MODIFIED="1329963674878" TEXT="&#x4fee;&#x6539;&#x5355;&#x4e2a;&#x5206;&#x7c7b;&#x57fa;&#x672c;&#x4fe1;&#x606f;&#xff08;&#x4ec5;&#x9650;&#x540d;&#x79f0;&#xff09;"/>
+</node>
+<node CREATED="1329963625128" ID="ID_669811604" MODIFIED="1329963626372" TEXT="&#x53c2;&#x6570;">
+<node CREATED="1329963676122" ID="ID_971418801" MODIFIED="1329963681590" TEXT="folder_id">
+<node CREATED="1329963682186" ID="ID_1360083416" MODIFIED="1329963683326" TEXT="&#x5fc5;&#x987b;"/>
+</node>
+<node CREATED="1329963684530" ID="ID_1710020523" MODIFIED="1329963687678" TEXT="title">
+<node CREATED="1329963688242" ID="ID_275869664" MODIFIED="1329963690854" TEXT="&#x5fc5;&#x987b;"/>
+</node>
+</node>
+<node CREATED="1329963626712" ID="ID_1406800154" MODIFIED="1329963629844" TEXT="&#x8f93;&#x51fa;&#x7c7b;&#x578b;">
+<node CREATED="1329963692946" ID="ID_1414414018" MODIFIED="1329963695830" TEXT="folder"/>
+</node>
+<node CREATED="1329963630128" ID="ID_1643704605" MODIFIED="1329963632806" TEXT="&#x8f93;&#x51fa;&#x793a;&#x4f8b;">
+<node COLOR="#cc6600" CREATED="1329724420882" ID="ID_1578511177" MODIFIED="1329727036963" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;folder id=&quot;571&quot;&gt;&#xa;&#x9;&lt;title&gt;game&lt;/title&gt;&#xa;&lt;/folder&gt;"/>
 </node>
 </node>
 <node CREATED="1329710631063" ID="ID_497154994" MODIFIED="1329903501465" TEXT="/api/2/folders/delete">
