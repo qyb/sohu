@@ -2,6 +2,7 @@
 
 from article.helper import generate_article_instance_key, \
     create_myarticle_instance, delete_myarticle_instance_in_db, mark_article_as_done
+from celery.exceptions import SoftTimeLimitExceeded
 from celery.task import Task
 from celery.task.sets import TaskSet, subtask
 from constants import BUCKET_NAME_ARTICLE, PAGE_FETCH_MAX_RETRIES, \
@@ -26,6 +27,7 @@ class PageFetchHandler(Task):
     max_retries = PAGE_FETCH_MAX_RETRIES
     default_retry_delay = PAGE_FETCH_DEFAULT_RETRY_DELAY
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, url, update_article_info):
         try:
@@ -58,6 +60,7 @@ class ReadableArticleHandler(Task):
     '''
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def get_title(self, doc):
         
@@ -89,6 +92,7 @@ class StoreArticleInfoHandler(Task):
     """
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info, callback=None):
         article_instance_key = generate_article_instance_key(update_article_info.url, update_article_info.user_id)
@@ -112,6 +116,7 @@ class ImageUrlListHandler(Task):
     """
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info, callback=None):
         try:
@@ -142,6 +147,7 @@ class UploadArticleHandler(Task):
     max_retries = UPLOAD_ARTICLE_MAX_RETRIES
     default_retry_delay = UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info, callback=None):
         try:
@@ -173,6 +179,7 @@ class BulkImageDownloadHandler(Task):
     """
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info, callback=None):
         try:
@@ -203,6 +210,7 @@ class RollbackArticleInDbHandler(Task):
     """
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info):
         delete_myarticle_instance_in_db(update_article_info.user_id,

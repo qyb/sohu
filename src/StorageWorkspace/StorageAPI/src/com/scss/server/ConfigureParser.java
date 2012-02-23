@@ -34,7 +34,9 @@ public class ConfigureParser {
         }
             
         try {
+            xml.clear();
             xml.load(configName);
+            
         } catch (Exception e) {
             logger.error(String.format("Configuration load failed: %s", e.getMessage()));
             return null;       	
@@ -46,6 +48,22 @@ public class ConfigureParser {
         }
         
         return rtn;
+    }
+    
+    public boolean reload(ConfigBean cb) {
+    	if (null != cb) {
+	        try {
+	            xml.clear();
+	            xml.load(configName);
+	            
+	        } catch (Exception e) {
+	            logger.error(String.format("Configuration load failed: %s", e.getMessage()));
+	            return false;
+	        }
+	        
+	        return cb.Parse(xml);
+    	}
+    	return false;
     }
 }
 

@@ -77,6 +77,7 @@ public class CloudServer {
 		
         return true;
 	}
+	
     
 	protected boolean buildRestlet() {
 		try {
@@ -194,16 +195,13 @@ public class CloudServer {
             return;
 		}
 		
-        if (flag) {
-        	
-        }
         
         config.getAccess().reload();
 	}
     
 	
-	public boolean reloadConfig(String __name) {
-        return readConfig();
+	public boolean reloadConfig() {
+        return ConfigureParser.shared().reload(config);
 	}
 
 	public String getConfigName() {

@@ -51,6 +51,9 @@ def create_myarticle_instance(user_id, key, title, url):
     myarticle_instance.key = key
     myarticle_instance.title = title
     myarticle_instance.url = url
+    myarticle_instance.is_read = False
+    myarticle_instance.is_star = False
+    myarticle_instance.is_delete = False
     myarticle_instance.save()
     
     return myarticle_instance
@@ -194,6 +197,14 @@ def get_myarticle_list(user_id, offset, limit):
     return myarticle_list
 
 
+def get_myarticle_list_count(user_id, folder_id):
+    chosen_db = choose_a_db(user_id)
+    myarticle_list = MyArticleInstance.objects \
+                                      .using(chosen_db) \
+                                      .filter(user_id=user_id, is_delete=False, is_ready=True)
+                                      
+    return len(myarticle_list)
+
 def get_myarticle_list_to_xml_etree(user_id, offset, limit):
     myarticle_list = get_myarticle_list(user_id, offset, limit)
     articles = etree.Element('articles')
@@ -277,6 +288,20 @@ def input_for_modify_func(request):
     return access_token_input, modify_info
 
 
+def input_for_list_count_func(request):
+    if request.method == 'POST':
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '') 
+        folder_id = request.POST.get('folder_id', '')
+    else:
+        access_token_input = ''
+        folder_id = ''
+    
+    return access_token_input, folder_id
+
+
 def mark_article_as_done(update_article_info):
     is_successful = True
     try:
@@ -290,3 +315,12 @@ def mark_article_as_done(update_article_info):
         is_successful = False
     
     return is_successful
+
+
+def output_for_list_count_func_etree(article_count):
+    meta = etree.Element('meta')
+    
+    count = etree.SubElement(meta, 'count')
+    count.text = str(article_count)
+    
+    return meta
