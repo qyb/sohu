@@ -77,6 +77,7 @@ public class CloudServer {
 		
         return true;
 	}
+	
     
 	protected boolean buildRestlet() {
 		try {
@@ -138,7 +139,7 @@ public class CloudServer {
 		component.getDefaultHost().getHostScheme()));
 	}
     
-    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½   */
+    /* Æô¶¯·þÎñÆ÷   */
 	public boolean start(String __logFileName, String __configName) {
 		if (null != __logFileName) 
 			this.logName = __logFileName;
@@ -167,7 +168,7 @@ public class CloudServer {
         return true;
 	}
     
-    /* ï¿½Ø±Õ·ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    /* ¹Ø±Õ·þÎñÆ÷ */
 	public void shutdown() {
         if (null != component || !component.isStopped()) {
         	try {
@@ -194,16 +195,13 @@ public class CloudServer {
             return;
 		}
 		
-        if (flag) {
-        	
-        }
         
         config.getAccess().reload();
 	}
     
 	
-	public boolean reloadConfig(String __name) {
-        return readConfig();
+	public boolean reloadConfig() {
+        return ConfigureParser.shared().reload(config);
 	}
 
 	public String getConfigName() {

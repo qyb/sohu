@@ -62,10 +62,12 @@ public class AdminApplication extends Application {
     	/* 
     	 *  4.  restart server 
     	 */
-    	router.attach("/restart", new Restlet() {
+    	router.attach("/flushConfig", new Restlet() {
     		public void handle(Request request, Response response) {
-    			CloudServer.shared().shutdown();
-    			CloudServer.shared().start(null, null);
+    			if (CloudServer.shared().reloadConfig())
+    				response.setEntity("Successful", MediaType.TEXT_PLAIN);
+    			else
+    				response.setEntity("Failed", MediaType.TEXT_PLAIN);
     		}
     	});
         

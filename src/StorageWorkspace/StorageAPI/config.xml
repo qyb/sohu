@@ -28,7 +28,7 @@
     <components>
         <application>
             <vid>1</vid>
-            <uri>/</uri>
+            <uri>/scss</uri>
             <class>com.scss.server.apps.ScssApplication</class>
             <resource>com.scss.server.resources.ScssResource</resource>
         </application>

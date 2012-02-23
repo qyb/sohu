@@ -135,22 +135,4 @@ public class BfsClientWrapper {
 		}
 		return result;
 	}
-	
-	public void deleteFile(long file_num) {
-		try {
-			this.client.delete(file_num);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NameServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BladeFSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

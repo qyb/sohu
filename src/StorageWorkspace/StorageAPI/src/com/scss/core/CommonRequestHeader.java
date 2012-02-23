@@ -39,15 +39,6 @@ public class CommonRequestHeader {
 	 * Required: No
 	 */
 	public static final String CONTENT_TYPE = "Content-Type";
-
-	/*
-	 * The base64 encoded md5 digest of request content
-	 * 
-	 * Type: String
-	 * Default: None
-	 * Required: No
-	 */
-	public static final String CONTENT_MD5 = "CONTENT-MD5";	
 	
 	/*
 	 * The current date and time according to the requester.
