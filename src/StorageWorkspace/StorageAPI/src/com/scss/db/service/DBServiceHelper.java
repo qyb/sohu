@@ -32,6 +32,25 @@ public class DBServiceHelper {
 	/**
 	 * 创建一个Object
 	 * 
+	 * @param ScssObject
+	 *            object: Object 实例，除了ID之外其他全部要求有真实值.<br>
+	 * @return ScssObject :返回刚存入好的Object<br>
+	 * @throws SameNameException
+	 */
+	public static ScssObject putObject(ScssObject object)
+			throws SameNameException {
+		return putObject(object.getKey(), object.getBfsFile(), object
+				.getOwnerId(), object.getBucketId(), object.getMeta(), object
+				.getSize(), object.getMediaType(), object.getSysMeta(), object
+				.getEtag(), object.getVersionEnabled() == 0 ? false : true,
+				object.getVersion(), object.getDeleted() == 0 ? false : true,
+				object.getExpirationTime(), object.getCreateTime(), object
+						.getExpirationTime());
+	}
+
+	/**
+	 * 创建一个Object
+	 * 
 	 * @param key:Object
 	 *            name.<br>
 	 * @param bfs_File：BFS-Key
@@ -489,6 +508,17 @@ public class DBServiceHelper {
 		}
 	}
 
+	public static ScssBucket putBucket(ScssBucket bucket)
+			throws SameNameException {
+
+		return putBucket(bucket.getName(), bucket.getOwnerId(), bucket
+				.getExprirationEnabled() == 0 ? false : true, bucket
+				.getLoggingEnabled() == 0 ? false : true, bucket.getMeta(),
+				bucket.getDeleted() == 0 ? false : true,
+				bucket.getCreateTime(), bucket.getModifyTime());
+
+	}
+
 	public static ScssBucket putBucket(String name, Long ownerId,
 			Boolean exprirationEnabled, Boolean loggingEnabled, String meta,
 			Boolean deleted, Date createTime, Date modifyTime)
@@ -612,6 +642,10 @@ public class DBServiceHelper {
 			}
 		}
 		return result;
+	}
+
+	public static ScssUser putUser(ScssUser user) throws SameNameException {
+		return putUser(user.getSohuId(), user.getAccessKey());
 	}
 
 	public static ScssUser putUser(String sohuId, String access_key)
@@ -789,6 +823,10 @@ public class DBServiceHelper {
 			}
 		}
 		return user;
+	}
+
+	public static ScssGroup putGroup(ScssGroup group) throws SameNameException {
+		return putGroup(group.getName());
 	}
 
 	public static ScssGroup putGroup(String groupName) throws SameNameException {
