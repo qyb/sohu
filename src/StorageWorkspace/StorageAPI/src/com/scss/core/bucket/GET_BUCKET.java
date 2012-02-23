@@ -7,18 +7,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.engine.util.DateUtils;
-
 import com.scss.Const;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
-import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
-import com.scss.db.BucketBussiness;
+import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -51,7 +48,10 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-			
+		
+		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName);
+		if (null == bucket)
+			return ErrorResponse.NoSuchBucket(req);
 		List<ScssObject> bucket_objects = (List<ScssObject>) DBServiceHelper.getBucket(req.getUser().getId(), req.BucketName);
 		
 		// set response headers
@@ -83,7 +83,7 @@ public class GET_BUCKET extends BucketAPI {
 		}
 
 		// TODO: return appropriate error response. DB access should return a value to determine status.
-		return ErrorResponse.NoSuchBucket(req);
+		return ErrorResponse.InternalError(req);
 	}
 	
 	private String getResponseText(APIRequest req, List<ScssObject> bucket_objects) {

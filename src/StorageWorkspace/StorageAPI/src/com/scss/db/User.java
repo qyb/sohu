@@ -11,8 +11,9 @@ import com.scss.db.model.ScssUser;
  * 
  */
 public class User extends ScssUser implements IAccessor {
-	public static User EveryOne = new User();
+	public static User EveryOne = null;
 	static {
+		EveryOne = new User();
 		EveryOne.setId((long)1);
 		EveryOne.setSohuId("EveryOne");
 	}

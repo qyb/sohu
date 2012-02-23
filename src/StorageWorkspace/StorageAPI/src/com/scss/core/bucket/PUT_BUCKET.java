@@ -35,6 +35,7 @@ public class PUT_BUCKET extends BucketAPI {
 		// get system meta
 		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
+		String media_type = req_headers.get(CommonResponseHeader.CONTENT_TYPE);
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
 		//TODO: Check whether Logging is enabled 
@@ -84,7 +85,7 @@ public class PUT_BUCKET extends BucketAPI {
 		}
 
 		// TODO: return appropriate error response. DB access should return a value to determine status.
-		return ErrorResponse.NoSuchBucket(req);
+		return ErrorResponse.InternalError(req);
 	}
 
 	/* (non-Javadoc)

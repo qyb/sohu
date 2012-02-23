@@ -19,6 +19,7 @@ import com.scss.core.object.GET_OBJECT;
 import com.scss.core.object.HEAD_OBJECT;
 import com.scss.core.object.POST_OBJECT;
 import com.scss.core.object.PUT_OBJECT;
+import com.scss.utility.CommonUtilities;
 
 /**
  * @author Samuel
@@ -52,8 +53,8 @@ public abstract class OpenAPI implements ICallable {
 		
 	}
 	
-	public byte[] getContentMD5() {
-        return md5DigestStream.getMd5Digest();
+	public String getContentMD5() {
+        return CommonUtilities.getMd5Hex(md5DigestStream.getMd5Digest());
 	}
 
 	public String getBase64ContentMD5() {

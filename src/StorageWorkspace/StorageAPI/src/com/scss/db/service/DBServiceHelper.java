@@ -111,7 +111,7 @@ public class DBServiceHelper {
 			stmt.setBoolean(8, version_enabled);
 			stmt.setString(9, version);
 			stmt.setBoolean(10, deleted);
-			stmt.setDate(11, new java.sql.Date(expirationTime.getTime()));
+			stmt.setDate(11, null);
 			stmt.setDate(12, new java.sql.Date(createTime.getTime()));
 			stmt.setDate(13, new java.sql.Date(modifyTime.getTime()));
 			stmt.setString(14, sysMeta);
@@ -1251,7 +1251,7 @@ public class DBServiceHelper {
 	public static ScssBucket getBucketByName(String bucketName, Long userId) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
-		ScssBucket so = new ScssBucket();
+		ScssBucket so = null;
 		try {
 			connection = connPool.getConnection();
 			String sql = "select bucket.`id`,`name`,`owner_ID`,`expriration_enabled`,"
@@ -1263,7 +1263,7 @@ public class DBServiceHelper {
 			stmt.setString(2, bucketName);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
-
+				so = new ScssBucket();
 				so.setId(Long.valueOf(rs.getLong("ID")));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
@@ -1298,7 +1298,7 @@ public class DBServiceHelper {
 	public static ScssBucket getBucketByName(String name) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
-		ScssBucket so = new ScssBucket();
+		ScssBucket so = null;
 		try {
 			connection = connPool.getConnection();
 			String sql = "select `id`,`name`,`owner_ID`,`expriration_enabled`,"
@@ -1308,6 +1308,7 @@ public class DBServiceHelper {
 			stmt.setString(1, name);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
+				so = new ScssBucket();
 				so.setId(Long.valueOf(rs.getLong("ID")));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
@@ -1420,7 +1421,8 @@ public class DBServiceHelper {
 					+ "`meta`=?," + "`size`=?," + "`media_type`=?,"
 					+ "`version_enabled`=?," + "`version`=?," + "`deleted`=?,"
 					+ "`expiration_time`=?," + "`create_time`=?,"
-					+ "`modify_time` =? " + "where  `id`=?";
+					+ "`modify_time` =?, " + "`etag` =? " 
+					+ "where  `id`=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, scssObject.getId());
 			stmt.setString(2, scssObject.getKey());
@@ -1434,13 +1436,15 @@ public class DBServiceHelper {
 					: true);
 			stmt.setString(10, scssObject.getVersion());
 			stmt.setBoolean(11, scssObject.getDeleted() == 0 ? false : true);
-			stmt.setDate(12, new java.sql.Date(scssObject.getExpirationTime()
-					.getTime()));
+			stmt.setDate(12, null);
+			//stmt.setDate(12, new java.sql.Date(scssObject.getExpirationTime()
+			//		.getTime()));
 			stmt.setDate(13, new java.sql.Date(scssObject.getCreateTime()
 					.getTime()));
 			stmt.setDate(14, new java.sql.Date(scssObject.getModifyTime()
 					.getTime()));
-			stmt.setLong(15, scssObject.getId());
+			stmt.setString(15, scssObject.getEtag());
+			stmt.setLong(16, scssObject.getId());
 			stmt.executeUpdate();
 			stmt.close();
 			connection.close();

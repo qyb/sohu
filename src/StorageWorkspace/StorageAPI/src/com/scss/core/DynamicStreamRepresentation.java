@@ -27,14 +27,14 @@ public class DynamicStreamRepresentation extends OutputRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-    	byte[] buffer = new byte[256];
+    	byte[] buffer = new byte[512];
     	int size;
-    	System.out.printf("DynamicStreamRepresentation.write enter\n");
+    	//System.out.printf("DynamicStreamRepresentation.write enter\n");
 		while ((size = this.data.read(buffer)) != -1){
     		outputStream.write(buffer, 0, size);
-    		System.out.printf("DynamicStreamRepresentation read %d\n", size);
+    		//System.out.printf("DynamicStreamRepresentation read %d\n", size);
     	}
-		System.out.printf("DynamicStreamRepresentation.write exit\n");
+		//System.out.printf("DynamicStreamRepresentation.write exit\n");
     }
 
 }

@@ -14,6 +14,7 @@ import org.restlet.Request;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -124,8 +125,8 @@ public class Handler extends ServerResource {
 		
 		if (null != result) {
 			APIResponse resp = (APIResponse)result.Value;
+			Form resp_headers = (Form)this.getResponse().getAttributes().get("org.restlet.http.headers");
 			if (result.Succeed) {
-				Form resp_headers = (Form)this.getResponse().getAttributes().get("org.restlet.http.headers");
 				if (resp_headers == null)  {  
 					resp_headers = new Form();  
 					getResponse().getAttributes().put("org.restlet.http.headers", resp_headers);  
@@ -136,6 +137,9 @@ public class Handler extends ServerResource {
 					//警告: Addition of the standard header "Content-Length" is not allowed. Please use the equivalent property in the Restlet API.
 					resp_headers.set(key, resp.getHeaders().get(key));
 				}
+			} else {
+				ErrorResponse err_resp = (ErrorResponse)resp;
+				this.getResponse().setStatus(new Status(err_resp.getHttp_status()));
 			}
 			return resp.Repr;
 		} 

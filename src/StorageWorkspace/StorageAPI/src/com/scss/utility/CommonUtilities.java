@@ -47,7 +47,7 @@ public class CommonUtilities {
 			return new Date();
 	}
 	
-	public final static String getMD5(byte[] data) {
+	public final static String getBase64MD5(byte[] data) {
 		String rc = null;
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -59,4 +59,17 @@ public class CommonUtilities {
 		}
 		return rc;
 	}
+
+	  static final String HEXES = "0123456789abcdef";
+	  public static String getMd5Hex( byte [] data ) {
+	    if ( data == null ) {
+	      return null;
+	    }
+	    final StringBuilder hex = new StringBuilder( 2 * data.length );
+	    for ( final byte b : data ) {
+	      hex.append(HEXES.charAt((b & 0xF0) >> 4))
+	         .append(HEXES.charAt((b & 0x0F)));
+	    }
+	    return hex.toString();
+	  }	
 }
