@@ -15,6 +15,7 @@ import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
+import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.MD5DigestInputStream;
@@ -47,7 +48,16 @@ public class PUT_OBJECT extends ObjectAPI {
 		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
 		String media_type = req_headers.get(CommonResponseHeader.MEDIA_TYPE);
-		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
+		Long size = Long.parseLong(req_headers.get(CommonResponseHeader.CONTENT_LENGTH));
+		if (size <= 0) {
+			return ErrorResponse.MissingContentLength(req);
+		}
+		String contentMD5 = req_headers.get(CommonRequestHeader.CONTENT_MD5);
+		Boolean version_enabled = false;
+		String version = null;
+		Date expireTime = null;
+		String sys_meta = null; //extra system meta
+		boolean server_check = false; // server md5 check
 		// TODO: Server side md5 check. not supported now. String content_md5 = req_headers.get()
 		
 		//TODO: Check whether Bucket Logging is enabled 
@@ -64,24 +74,49 @@ public class PUT_OBJECT extends ObjectAPI {
 		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
-
-
 		
 		ScssObject obj = null;
 		InputStream stream = this.hookMD5Stream(req.ContentStream);
 		BfsClientResult bfsresult = BfsClientWrapper.getInstance().putFromStream(stream);
 		String etag = this.getBase64ContentMD5();
+		
 		if (bfsresult.FileNumber > 0) {
+			
+			// post body is not match the size
+			if (bfsresult.Size < size) {
+				BfsClientWrapper.getInstance().deleteFile(bfsresult.FileNumber);
+				return ErrorResponse.IncompleteBody(req);
+			}
+			
+			// MD5 check failed.
+			if (server_check && !etag.equals(contentMD5)){
+				BfsClientWrapper.getInstance().deleteFile(bfsresult.FileNumber);
+				return ErrorResponse.BadDigest(req);
+			}
+			
 			try{
 				// Start transaction
 	
 				// TODO: consider which is first, insert db or insert file.
 				// TODO: do need to delete the old BFS file?
-					System.out.printf("BFS file no : %d (size=%d)\n", bfsresult.FileNumber, bfsresult.Size);
-					// TODO: db needs to lock the record?
+				System.out.printf("BFS file no : %d (size=%d)\n", bfsresult.FileNumber, bfsresult.Size);
+				// TODO: db needs to lock the record?
+				obj = DBServiceHelper.getObject(req.BucketName, req.ObjectKey);
+				if (null != obj) {
+					long old_bfs = obj.getBfsFile();
+					obj.setBfsFile(bfsresult.FileNumber);
+					obj.setEtag(etag);
+					DBServiceHelper.modifyObject(obj);
+					if (old_bfs > 0)
+						BfsClientWrapper.getInstance().deleteFile(obj.getBfsFile());
+					
+				} else 
+//					obj = DBServiceHelper.putObject(req.ObjectKey, bfsresult.FileNumber, 
+//						req.getUser().getId(),
 					obj = DBServiceHelper.putObject(req.ObjectKey, bfsresult.FileNumber, 
-							req.getUser().getId(),
-							bucket.getId(), user_meta, bfsresult.Size, media_type);
+							req.getUser().getId(), bucket.getId(), user_meta, bfsresult.Size, 
+							media_type, sys_meta, etag, version_enabled, version, false, expireTime, 
+							createTime, modifyTime);
 				 
 				// Stop transaction
 			} catch (SameNameException e) {
@@ -115,6 +150,7 @@ public class PUT_OBJECT extends ObjectAPI {
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0");
 			resp_headers.put(CommonResponseHeader.ETAG, etag);
 			System.out.printf("Computed ETAG : %s\n", etag );
+
 			
 			// generate representation
 			resp.Repr = new org.restlet.representation.EmptyRepresentation();
@@ -134,7 +170,7 @@ public class PUT_OBJECT extends ObjectAPI {
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {
 		// TODO Auto-generated method stub
-		return null;
+		return true;
 	}
 
 }

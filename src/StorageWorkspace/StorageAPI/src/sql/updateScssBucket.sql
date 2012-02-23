@@ -8,5 +8,5 @@
         `meta`=?,
         `deleted`=?,
         `create_time`=?,
-        `modify_time` =?,
+        `modify_time` =?
     where `id`=?

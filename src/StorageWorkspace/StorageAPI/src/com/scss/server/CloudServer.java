@@ -139,7 +139,7 @@ public class CloudServer {
 		component.getDefaultHost().getHostScheme()));
 	}
     
-    /* Æô¶¯·þÎñÆ÷   */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½   */
 	public boolean start(String __logFileName, String __configName) {
 		if (null != __logFileName) 
 			this.logName = __logFileName;
@@ -168,7 +168,7 @@ public class CloudServer {
         return true;
 	}
     
-    /* ¹Ø±Õ·þÎñÆ÷ */
+    /* ï¿½Ø±Õ·ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	public void shutdown() {
         if (null != component || !component.isStopped()) {
         	try {

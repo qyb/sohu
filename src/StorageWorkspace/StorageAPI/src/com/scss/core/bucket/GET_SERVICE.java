@@ -84,23 +84,23 @@ public class GET_SERVICE extends BucketAPI {
 	private String getResponseText(APIRequest req, List<ScssBucket> buckets) {
 		// TODO: make the string static
 		StringBuilder sb = new StringBuilder();
-		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		sb.append("<ListAllMyBucketsResult xmlns=\"" + Const.XMLNS + "\">\n");
-		sb.append("  <Owner>\n");
-		sb.append("    <ID>" + req.getUser().getSohuId() + "</ID>\n");
-		sb.append("    <DisplayName>" + req.getUser().getSohuId() + "</DisplayName>\n");
-		sb.append("  </Owner>\n");
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		sb.append("<ListAllMyBucketsResult xmlns=\"" + Const.XMLNS + "\">");
+		sb.append("  <Owner>");
+		sb.append("    <ID>" + req.getUser().getSohuId() + "</ID>");
+		sb.append("    <DisplayName>" + req.getUser().getSohuId() + "</DisplayName>");
+		sb.append("  </Owner>");
 		
 		
-		sb.append("  <Buckets>\n");
+		sb.append("  <Buckets>");
 		for(ScssBucket bucket: buckets){
-			sb.append("    <Bucket>\n");
-		    sb.append("      <Name>" + bucket.getName() + "</Name>\n");
-		    sb.append("      <CreationDate>" + CommonUtilities.formatResponseTextDate(bucket.getCreateTime()) + "</CreationDate>\n");
-		    sb.append("    </Bucket>\n");
+			sb.append("    <Bucket>");
+		    sb.append("      <Name>" + bucket.getName() + "</Name>");
+		    sb.append("      <CreationDate>" + CommonUtilities.formatResponseTextDate(bucket.getCreateTime()) + "</CreationDate>");
+		    sb.append("    </Bucket>");
 		}
-		sb.append("  </Buckets>\n");
-		sb.append("</ListAllMyBucketsResult>\n");
+		sb.append("  </Buckets>");
+		sb.append("</ListAllMyBucketsResult>");
 		return sb.toString();
 	}
 
