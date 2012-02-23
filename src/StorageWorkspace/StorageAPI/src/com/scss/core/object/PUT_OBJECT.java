@@ -70,10 +70,7 @@ public class PUT_OBJECT extends ObjectAPI {
 		ScssObject obj = null;
 		InputStream stream = this.hookMD5Stream(req.ContentStream);
 		BfsClientResult bfsresult = BfsClientWrapper.getInstance().putFromStream(stream);
-<<<<<<< HEAD
 		String etag = this.getBase64ContentMD5();
-=======
->>>>>>> ed60004a10e441fd3af5b11085224c4894398253
 		if (bfsresult.FileNumber > 0) {
 			try{
 				// Start transaction
@@ -115,14 +112,9 @@ public class PUT_OBJECT extends ObjectAPI {
 			
 			// TODO: set system meta
 			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(bucket.getModifyTime()));
-<<<<<<< HEAD
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0");
 			resp_headers.put(CommonResponseHeader.ETAG, etag);
 			System.out.printf("Computed ETAG : %s\n", etag );
-=======
-			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, String.valueOf(bfsresult.Size));
-			resp_headers.put(CommonResponseHeader.ETAG, super.getContentMD5());
->>>>>>> ed60004a10e441fd3af5b11085224c4894398253
 			
 			// generate representation
 			resp.Repr = new org.restlet.representation.EmptyRepresentation();
