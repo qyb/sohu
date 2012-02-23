@@ -54,6 +54,9 @@ def create_myarticle_instance(user_id, key, title, url):
     myarticle_instance.is_read = False
     myarticle_instance.is_star = False
     myarticle_instance.is_delete = False
+    myarticle_instance.create_time = datetime.now()
+    myarticle_instance.read_time = None
+    myarticle_instance.delete_time = None
     myarticle_instance.save()
     
     return myarticle_instance
@@ -211,7 +214,7 @@ def get_myarticle_list_to_xml_etree(user_id, offset, limit):
     for myarticle_instance in myarticle_list:
         myarticle_instance_xml_etree = get_myarticle_instance_to_xml_etree(user_id,
                                                                            myarticle_instance.key)
-        if myarticle_instance_xml_etree:
+        if myarticle_instance_xml_etree is not None:
             articles.append(myarticle_instance_xml_etree)
     
     return articles
@@ -226,7 +229,10 @@ def generate_single_xml_etree(tag, text, **kwargs):
 
 def input_for_list_func(request):
     if request.method == 'GET':
-        access_token_input = request.GET.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.GET.get('access_token', '')
         offset = request.GET.get('offset', '')
         try:
             offset = int(offset)
@@ -247,7 +253,10 @@ def input_for_list_func(request):
 
 def input_for_show_func(request):
     if request.method == 'GET':
-        access_token_input = request.GET.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.GET.get('access_token', '')
     else:
         access_token_input = ''
         
@@ -256,7 +265,10 @@ def input_for_show_func(request):
 
 def input_for_update_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
         url = request.POST.get('url', '')
     else:
         access_token_input = ''
@@ -267,7 +279,10 @@ def input_for_update_func(request):
 
 def input_for_destroy_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
     else:
         access_token_input = ''
         
@@ -276,7 +291,10 @@ def input_for_destroy_func(request):
 
 def input_for_modify_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
         modify_info = dict()
         args = ('is_delete', 'is_read', 'is_star')
         for arg in args:
