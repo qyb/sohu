@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from storage.models import MultiDB
 from django.core.cache import cache
 from django.db import models
+from storage.models import MultiDB
 
 
 class MyArticleInstance(MultiDB):
@@ -19,6 +19,7 @@ class MyArticleInstance(MultiDB):
     read_time = models.DateTimeField(null=True, blank=True)     #标记为已读时间
     delete_time = models.DateTimeField(null=True, blank=True)   #标记为删除时间
     is_ready = models.BooleanField(default=False)               #是否已处理完毕
+    folder_name = models.CharField(max_length=256)              #所属文件夹
 
     def __unicode__(self):
         
@@ -45,3 +46,5 @@ class MyArticleInstance(MultiDB):
         self.delete_cache()
         
         return None
+
+

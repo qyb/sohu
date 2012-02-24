@@ -3,9 +3,8 @@
 from article.helper import get_myarticle_list_to_xml_etree, input_for_list_func, \
     get_myarticle_instance_to_xml_etree, input_for_show_func, input_for_update_func, \
     generate_single_xml_etree, input_for_destroy_func, input_for_modify_func, \
-    modify_or_destroy_myarticle_instance, UpdateArticleInfo, \
-    input_for_list_count_func, get_myarticle_list_count, \
-    output_for_list_count_func_etree
+    modify_or_destroy_myarticle_instance, UpdateArticleInfo, input_for_api2_count, \
+    get_myarticle_list_count, output_for_api2_count_etree
 from constants import TRUE_REPR
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -142,8 +141,7 @@ def modify_or_destroy_base(access_token_input, modify_info, key, format):
 
 
 def api2_count(request):
-    logging.warn(str(request))
-    access_token_input, folder_id = input_for_list_count_func(request)
+    access_token_input, folder_id = input_for_api2_count(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     response = None
@@ -151,13 +149,12 @@ def api2_count(request):
     count = 0
     if kan_user.is_logged_in():
         count = get_myarticle_list_count(kan_user.get_user_id(), folder_id)
-        response_etree = output_for_list_count_func_etree(count)
+        response_etree = output_for_api2_count_etree(count)
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
     else:
         response_etree = generate_single_xml_etree('status', 'verify failed')
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
     
-    logging.warn(str(response))
     return HttpResponse(response, mimetype=mimetype)
     
 
