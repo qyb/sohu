@@ -86,6 +86,8 @@ public class Operation {
 				op.Operator = OpenAPI.POST_OBJECT;
 			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.DELETE))
 				op.Operator = OpenAPI.DELETE_OBJECT;
+			else if (req.Method.equalsIgnoreCase(Const.REQUEST_METHOD.HEAD))
+				op.Operator = OpenAPI.HEAD_OBJECT;
 			else
 				throw new InvaildRequestException("Invaild HTTP method on object.");
 		}

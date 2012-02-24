@@ -4,15 +4,11 @@
 package com.scss.core.object;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
 import java.util.Date;
 import java.util.Map;
 
 import org.restlet.data.MediaType;
-import org.restlet.representation.ReadableRepresentation;
-import org.restlet.representation.StreamRepresentation;
+import org.restlet.data.Tag;
 
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
@@ -23,8 +19,6 @@ import com.scss.core.DynamicStreamRepresentation;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
-import com.scss.db.exception.SameNameException;
-import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -36,7 +30,7 @@ import com.scss.utility.CommonUtilities;
 public class GET_OBJECT extends ObjectAPI {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#CanInvoke(com.bfsapi.server.APIRequest, com.bfsapi.IAccessor)
+	 * @see com.bfsapi.ICallable#CanInvoke(com.scss.core.APIRequest, com.bfsapi.IAccessor)
 	 */
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {
@@ -45,7 +39,7 @@ public class GET_OBJECT extends ObjectAPI {
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#Invoke(com.bfsapi.server.APIRequest)
+	 * @see com.bfsapi.ICallable#Invoke(com.scss.core.APIRequest)
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
@@ -55,7 +49,7 @@ public class GET_OBJECT extends ObjectAPI {
 		// get system meta
 		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
-		String media_type = req_headers.get(CommonResponseHeader.MEDIA_TYPE);
+		String media_type = req_headers.get(CommonResponseHeader.CONTENT_TYPE);
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		// TODO: Server side md5 check. not supported now. String content_md5 = req_headers.get()
 		
@@ -88,7 +82,7 @@ public class GET_OBJECT extends ObjectAPI {
 			// TODO: change the temporary values
 			resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
 			resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");				
-			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.APPLICATION_XML);
+			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, media_type);
 			resp_headers.put(CommonResponseHeader.CONNECTION, "close");
 			resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
 			
@@ -102,7 +96,7 @@ public class GET_OBJECT extends ObjectAPI {
 			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(obj.getModifyTime()));
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, String.valueOf(bfsresult.Size));
 			// TODO: make the ETAG computing hooked in progress or use DigestRepresentation.
-			resp_headers.put(CommonResponseHeader.ETAG, CommonUtilities.getMD5(bfsresult.File));
+			resp_headers.put(CommonResponseHeader.ETAG, obj.getEtag());
 
 			// generate representation.
 			// TODO: if DigesterRepresentation can get ETAG, use it. 
@@ -110,7 +104,9 @@ public class GET_OBJECT extends ObjectAPI {
 			//resp.Repr = new ReadableRepresentation((ReadableByteChannel) buffer, MediaType.APPLICATION_OCTET_STREAM);
 			ByteArrayInputStream stream = new ByteArrayInputStream(bfsresult.File);
 			resp.Repr = new DynamicStreamRepresentation(stream, MediaType.APPLICATION_OCTET_STREAM);
-			resp.MediaType = Mimetypes.MIMETYPE_OCTET_STREAM;
+			resp.Repr.setTag(new Tag(obj.getEtag()));
+			resp.Repr.setMediaType(MediaType.valueOf(obj.getMediaType()));
+			resp.MediaType = obj.getMediaType();
 			return resp;
 		}
 

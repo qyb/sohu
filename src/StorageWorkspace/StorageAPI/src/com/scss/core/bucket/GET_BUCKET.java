@@ -7,18 +7,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.engine.util.DateUtils;
-
 import com.scss.Const;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.APIResponseHeader;
-import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
-import com.scss.db.BucketBussiness;
+import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -30,7 +27,7 @@ import com.scss.utility.CommonUtilities;
 public class GET_BUCKET extends BucketAPI {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#Invoke(com.bfsapi.server.APIRequest)
+	 * @see com.bfsapi.ICallable#Invoke(com.scss.core.APIRequest)
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
@@ -51,7 +48,10 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-			
+		
+		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName);
+		if (null == bucket)
+			return ErrorResponse.NoSuchBucket(req);
 		List<ScssObject> bucket_objects = (List<ScssObject>) DBServiceHelper.getBucket(req.getUser().getId(), req.BucketName);
 		
 		// set response headers
@@ -83,39 +83,39 @@ public class GET_BUCKET extends BucketAPI {
 		}
 
 		// TODO: return appropriate error response. DB access should return a value to determine status.
-		return ErrorResponse.NoSuchBucket(req);
+		return ErrorResponse.InternalError(req);
 	}
 	
 	private String getResponseText(APIRequest req, List<ScssObject> bucket_objects) {
 		// TODO: Use template? or make the string static
 		StringBuilder sb = new StringBuilder();
-		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		sb.append("<ListBucketResult xmlns=\"" + Const.XMLNS + "\">\n");
-		sb.append("  <Name>" + req.BucketName + "</Name>\n");
-		sb.append("  <Prefix />\n"); // TODO: Not implemented
-		sb.append("  <Marker />\n"); // TODO: Not implemented
-		sb.append("  <MaxKeys />\n"); // TODO: Not implemented
-		sb.append("  <IsTruncated />\n"); // TODO: Not implemented
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		sb.append("<ListBucketResult xmlns=\"" + Const.XMLNS + "\">");
+		sb.append("  <Name>" + req.BucketName + "</Name>");
+		sb.append("  <Prefix />"); // TODO: Not implemented
+		sb.append("  <Marker />"); // TODO: Not implemented
+		sb.append("  <MaxKeys />"); // TODO: Not implemented
+		sb.append("  <IsTruncated />"); // TODO: Not implemented
 		
-		sb.append("  <Contents>\n");
+		sb.append("  <Contents>");
 		for(ScssObject obj: bucket_objects){
-		    sb.append("    <Key>" + obj.getKey() + "</Key>\n");
-		    sb.append("    <LastModified>" + CommonUtilities.formatResponseTextDate(obj.getModifyTime())+ "</LastModified>\n");
+		    sb.append("    <Key>" + obj.getKey() + "</Key>");
+		    sb.append("    <LastModified>" + CommonUtilities.formatResponseTextDate(obj.getModifyTime())+ "</LastModified>");
 		    sb.append("    <ETag />"); // TODO: Not implemented
-		    sb.append("    <Size>" + obj.getSize().toString() + "</Size>\n");
+		    sb.append("    <Size>" + obj.getSize().toString() + "</Size>");
 		    sb.append("    <StorageClass />"); // TODO: Not implemented
-			sb.append("    <Owner>\n");
-			sb.append("      <ID>" + req.getUser().getSohuId() + "</ID>\n");
-			sb.append("      <DisplayName>" + req.getUser().getSohuId() + "</DisplayName>\n");
-			sb.append("    </Owner>\n");		    
+			sb.append("    <Owner>");
+			sb.append("      <ID>" + req.getUser().getSohuId() + "</ID>");
+			sb.append("      <DisplayName>" + req.getUser().getSohuId() + "</DisplayName>");
+			sb.append("    </Owner>");		    
 		}
-		sb.append("  </Contents>\n");
+		sb.append("  </Contents>");
 		sb.append("</ListBucketResult>");
 		return sb.toString();
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#CanInvoke(com.bfsapi.server.APIRequest, com.bfsapi.IAccessor)
+	 * @see com.bfsapi.ICallable#CanInvoke(com.scss.core.APIRequest, com.bfsapi.IAccessor)
 	 */
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {

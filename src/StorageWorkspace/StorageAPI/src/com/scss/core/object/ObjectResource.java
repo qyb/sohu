@@ -50,8 +50,8 @@ public class ObjectResource extends Resource {
 			// No Access
 			ErrorResponse err_resp = ErrorResponse.AccessDenied(op.Request);
 			result.Succeed = false;
-			result.ErrorCode = err_resp.getCode();
-			result.ErrorMessage = err_resp.getMessage();
+//			result.ErrorCode = err_resp.getCode();
+//			result.ErrorMessage = err_resp.getMessage();
 			result.Value = err_resp;
 			
 		} else {
@@ -62,8 +62,8 @@ public class ObjectResource extends Resource {
 			if (ErrorResponse.class.isInstance(resp)) {
 				ErrorResponse err_resp = (ErrorResponse) resp;
 				result.Succeed = false;
-				result.ErrorCode = err_resp.getCode();
-				result.ErrorMessage = err_resp.getMessage();
+//				result.ErrorCode = err_resp.getCode();
+//				result.ErrorMessage = err_resp.getMessage();
 			} else 
 				result.Succeed = true;
 		

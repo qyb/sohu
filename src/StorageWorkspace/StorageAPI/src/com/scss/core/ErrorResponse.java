@@ -15,6 +15,7 @@ public class ErrorResponse extends APIResponse{
 	protected String message;
 	protected String resource;
 	protected String requestID;
+	protected int http_status;
 	
 	// TODO: use annotation or functional programming to make the error responses look like field
 
@@ -79,6 +80,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "409 Conflict");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(409);
 		return resp;
 	}
     
@@ -108,7 +110,15 @@ public class ErrorResponse extends APIResponse{
 		resp.MediaType = Mimetypes.APPLICATION_XML;
 		return resp;
 	}
-   /**
+   public int getHttp_status() {
+		return http_status;
+	}
+
+	public void setHttp_status(int http_status) {
+		this.http_status = http_status;
+	}
+
+/**
     * This request does not support credentials.
     * @param req
     * @return
@@ -237,6 +247,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "500 Internal Server Error");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.http_status = 500;
 		return resp;
 	}
    /**
@@ -667,6 +678,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(404);
 		return resp;
 	}
 	/**

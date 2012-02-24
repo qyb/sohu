@@ -8,6 +8,7 @@ Created on 2012-2-15
 '''
 import unittest
 
+from scss import helper
 
 class BucketTest(unittest.TestCase):
 
@@ -20,8 +21,15 @@ class BucketTest(unittest.TestCase):
         pass
 
 
-    def testName(self):
-        pass
+    def testGetOrCreateBucket(self):
+#        bucket = helper.get_or_create_bucket("boto-test")
+#        print "bucket %s created." % bucket 
+#        assert (None != bucket)
+        bucket = helper.get_or_create_bucket("not-exist-bucket")
+        print "bucket %s created." % bucket 
+        assert (None != bucket)
+
+        
 
 
 if __name__ == "__main__":

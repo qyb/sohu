@@ -3,7 +3,9 @@
 #from django.conf import settings
 import boto
 from boto.s3.connection import Location
-
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 #boto.s3.connection.S3Connection.DefaultHost = "localhost"
 
 AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'

@@ -51,6 +51,13 @@ def create_myarticle_instance(user_id, key, title, url):
     myarticle_instance.key = key
     myarticle_instance.title = title
     myarticle_instance.url = url
+    myarticle_instance.is_read = False
+    myarticle_instance.is_star = False
+    myarticle_instance.is_delete = False
+    myarticle_instance.is_ready = False
+    myarticle_instance.create_time = datetime.now()
+    myarticle_instance.read_time = None
+    myarticle_instance.delete_time = None
     myarticle_instance.save()
     
     return myarticle_instance
@@ -188,10 +195,19 @@ def get_myarticle_list(user_id, offset, limit):
     myarticle_list = MyArticleInstance.objects \
                                       .using(chosen_db) \
                                       .filter(user_id=user_id, is_delete=False, is_ready=True) \
-                                      .order_by('-id') \
+                                      .order_by('-create_time') \
                                       [offset : offset + limit]
     
     return myarticle_list
+
+
+def get_myarticle_list_count(user_id, folder_id):
+    chosen_db = choose_a_db(user_id)
+    myarticle_list = MyArticleInstance.objects \
+                                      .using(chosen_db) \
+                                      .filter(user_id=user_id, is_delete=False, is_ready=True)
+                                      
+    return len(myarticle_list)
 
 
 def get_myarticle_list_to_xml_etree(user_id, offset, limit):
@@ -200,7 +216,7 @@ def get_myarticle_list_to_xml_etree(user_id, offset, limit):
     for myarticle_instance in myarticle_list:
         myarticle_instance_xml_etree = get_myarticle_instance_to_xml_etree(user_id,
                                                                            myarticle_instance.key)
-        if myarticle_instance_xml_etree:
+        if myarticle_instance_xml_etree is not None:
             articles.append(myarticle_instance_xml_etree)
     
     return articles
@@ -215,7 +231,10 @@ def generate_single_xml_etree(tag, text, **kwargs):
 
 def input_for_list_func(request):
     if request.method == 'GET':
-        access_token_input = request.GET.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.GET.get('access_token', '')
         offset = request.GET.get('offset', '')
         try:
             offset = int(offset)
@@ -236,7 +255,10 @@ def input_for_list_func(request):
 
 def input_for_show_func(request):
     if request.method == 'GET':
-        access_token_input = request.GET.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.GET.get('access_token', '')
     else:
         access_token_input = ''
         
@@ -245,7 +267,10 @@ def input_for_show_func(request):
 
 def input_for_update_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
         url = request.POST.get('url', '')
     else:
         access_token_input = ''
@@ -256,7 +281,10 @@ def input_for_update_func(request):
 
 def input_for_destroy_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
     else:
         access_token_input = ''
         
@@ -265,7 +293,10 @@ def input_for_destroy_func(request):
 
 def input_for_modify_func(request):
     if request.method == 'POST':
-        access_token_input = request.POST.get('access_token', '')
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '')
         modify_info = dict()
         args = ('is_delete', 'is_read', 'is_star')
         for arg in args:
@@ -275,6 +306,20 @@ def input_for_modify_func(request):
         modify_info = dict()
         
     return access_token_input, modify_info
+
+
+def input_for_list_count_func(request):
+    if request.method == 'POST':
+        try:
+            access_token_input = request.COOKIES['access_token']
+        except:
+            access_token_input = request.POST.get('access_token', '') 
+        folder_id = request.POST.get('folder_id', '')
+    else:
+        access_token_input = ''
+        folder_id = ''
+    
+    return access_token_input, folder_id
 
 
 def mark_article_as_done(update_article_info):
@@ -290,3 +335,12 @@ def mark_article_as_done(update_article_info):
         is_successful = False
     
     return is_successful
+
+
+def output_for_list_count_func_etree(article_count):
+    meta = etree.Element('meta')
+    
+    count = etree.SubElement(meta, 'count')
+    count.text = str(article_count)
+    
+    return meta

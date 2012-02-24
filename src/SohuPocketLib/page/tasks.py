@@ -2,12 +2,13 @@
 
 from article.helper import generate_article_instance_key, \
     create_myarticle_instance, delete_myarticle_instance_in_db, mark_article_as_done
+from celery.exceptions import SoftTimeLimitExceeded
 from celery.task import Task
 from celery.task.sets import TaskSet, subtask
 from constants import BUCKET_NAME_ARTICLE, PAGE_FETCH_MAX_RETRIES, \
     PAGE_FETCH_DEFAULT_RETRY_DELAY, UPLOAD_ARTICLE_MAX_RETRIES, \
     UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY, PAGE_FETCH_TIME_LIMIT, \
-    UPLOAD_ARTICLE_TIME_LIMIT
+    UPLOAD_ARTICLE_TIME_LIMIT, CLEAN_UP_TIME_BEFORE_KILLED
 from image.helper import parse_and_replace_image_url_list, set_image_tobedone, \
     generate_image_tobedone_key
 from image.tasks import DownloadImageHandler
@@ -23,9 +24,11 @@ class PageFetchHandler(Task):
     '''
     
     time_limit = PAGE_FETCH_TIME_LIMIT
+    soft_time_limit = 10
     max_retries = PAGE_FETCH_MAX_RETRIES
     default_retry_delay = PAGE_FETCH_DEFAULT_RETRY_DELAY
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, url, update_article_info):
         try:
@@ -36,7 +39,10 @@ class PageFetchHandler(Task):
             except:
                 mime = None
         except Exception, exc:
-            PageFetchHandler.retry(exc=exc)
+            try:
+                PageFetchHandler.retry(exc=exc)
+            except Exception, e:
+                logging.warning(str(type(e)))
         else:
             update_article_info.url = url
             update_article_info.mime = mime
@@ -50,7 +56,7 @@ class PageFetchHandler(Task):
                                          callback=subtask(DownloadImageHandler))))))
             
         return None
-
+    
 
 class ReadableArticleHandler(Task):
     '''
@@ -58,6 +64,7 @@ class ReadableArticleHandler(Task):
     '''
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def get_title(self, doc):
         
@@ -89,6 +96,7 @@ class StoreArticleInfoHandler(Task):
     """
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info, callback=None):
         article_instance_key = generate_article_instance_key(update_article_info.url, update_article_info.user_id)
@@ -112,6 +120,7 @@ class ImageUrlListHandler(Task):
     """
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info, callback=None):
         try:
@@ -139,9 +148,11 @@ class UploadArticleHandler(Task):
     """
     
     time_limit = UPLOAD_ARTICLE_TIME_LIMIT
+    soft_time_limit = time_limit - CLEAN_UP_TIME_BEFORE_KILLED
     max_retries = UPLOAD_ARTICLE_MAX_RETRIES
     default_retry_delay = UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info, callback=None):
         try:
@@ -152,7 +163,10 @@ class UploadArticleHandler(Task):
                                    update_article_info.article_instance_key,
                                    update_article_info.article_content,
                                    headers=headers)
+        except SoftTimeLimitExceeded, exc:
+            raise exc
         except Exception, exc:
+            logging.warn(str(exc))
             UploadArticleHandler.retry(exc=exc)
         else:
 #            call next step
@@ -173,6 +187,7 @@ class BulkImageDownloadHandler(Task):
     """
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info, callback=None):
         try:
@@ -203,6 +218,7 @@ class RollbackArticleInDbHandler(Task):
     """
     
     ignore_result = True
+    store_errors_even_if_ignored = True
     
     def run(self, update_article_info):
         delete_myarticle_instance_in_db(update_article_info.user_id,

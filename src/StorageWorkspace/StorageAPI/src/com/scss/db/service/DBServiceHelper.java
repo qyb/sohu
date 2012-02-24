@@ -1,11 +1,10 @@
-package com.scss.db.service;
+﻿package com.scss.db.service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,8 +19,6 @@ import com.scss.utility.Logger;
 
 public class DBServiceHelper {
 	private static ConnectionPool connPool;
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm:ss");
 
 	private static final Logger logger = Logger
 			.getLogger("DB/SERVICE", 0, true);
@@ -30,6 +27,25 @@ public class DBServiceHelper {
 	static {
 		if (connPool == null)
 			connPool = new ConnectionPool("/db.properties");
+	}
+
+	/**
+	 * 创建一个Object
+	 * 
+	 * @param ScssObject
+	 *            object: Object 实例，除了ID之外其他全部要求有真实值.<br>
+	 * @return ScssObject :返回刚存入好的Object<br>
+	 * @throws SameNameException
+	 */
+	public static ScssObject putObject(ScssObject object)
+			throws SameNameException {
+		return putObject(object.getKey(), object.getBfsFile(), object
+				.getOwnerId(), object.getBucketId(), object.getMeta(), object
+				.getSize(), object.getMediaType(), object.getSysMeta(), object
+				.getEtag(), object.getVersionEnabled() == 0 ? false : true,
+				object.getVersion(), object.getDeleted() == 0 ? false : true,
+				object.getExpirationTime(), object.getCreateTime(), object
+						.getExpirationTime());
 	}
 
 	/**
@@ -66,9 +82,10 @@ public class DBServiceHelper {
 	 */
 	public static ScssObject putObject(String key, Long BFS_File,
 			Long owner_ID, Long Bucket_ID, String meta, Long size,
-			String mediaType, boolean version_enabled, String version,
-			boolean deleted, Date expirationTime, Date createTime,
-			Date modifyTime) throws SameNameException {
+			String mediaType, String sysMeta, String etag,
+			boolean version_enabled, String version, boolean deleted,
+			Date expirationTime, Date createTime, Date modifyTime)
+			throws SameNameException {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		ScssObject so = new ScssObject();
@@ -79,8 +96,8 @@ public class DBServiceHelper {
 					+ "`Meta`,`Size`,`Media_Type`,"
 					+ "`Version_enabled`,`Version`,"
 					+ "`Deleted`,`Expiration_time`,"
-					+ "`Create_time`,`Modify_time`) "
-					+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					+ "`Create_time`,`Modify_time`,`sys_meta`,`etag`) "
+					+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 			stmt = connection.prepareStatement(sql,
 					Statement.RETURN_GENERATED_KEYS);
@@ -94,19 +111,23 @@ public class DBServiceHelper {
 			stmt.setBoolean(8, version_enabled);
 			stmt.setString(9, version);
 			stmt.setBoolean(10, deleted);
-			stmt.setDate(11, new java.sql.Date(expirationTime.getTime()));
+			stmt.setDate(11, null);
 			stmt.setDate(12, new java.sql.Date(createTime.getTime()));
 			stmt.setDate(13, new java.sql.Date(modifyTime.getTime()));
+			stmt.setString(14, sysMeta);
+			stmt.setString(15, etag);
 			so.setKey(key);
 			so.setBfsFile(BFS_File);
 			so.setOwnerId(owner_ID);
 			so.setBucketId(Bucket_ID);
 			so.setMeta(meta);
+			so.setSysMeta(sysMeta);
+			so.setEtag(etag);
 			so.setSize(size);
 			so.setMediaType(mediaType);
-			so.setVersionEnabled(version_enabled);
+			so.setVersionEnabled((byte) (version_enabled ? 1 : 0));
 			so.setVersion(version);
-			so.setDeleted(deleted);
+			so.setDeleted((byte) (deleted ? 1 : 0));
 			so.setExpirationTime(expirationTime);
 			so.setCreateTime(createTime);
 			so.setModifyTime(modifyTime);
@@ -169,8 +190,8 @@ public class DBServiceHelper {
 			Long owner_ID, Long Bucket_ID, String Meta, Long Size,
 			String Media_Type) throws SameNameException {
 		return putObject(key, BFS_File, owner_ID, Bucket_ID, "Meta", Long
-				.valueOf(1024L), Media_Type, false, "v1.0", true, new Date(
-				System.currentTimeMillis() + 604800000L), new Date(),
+				.valueOf(1024L), Media_Type, "", "", false, "v1.0", true,
+				new Date(System.currentTimeMillis() + 604800000L), new Date(),
 				new Date());
 	}
 
@@ -191,7 +212,7 @@ public class DBServiceHelper {
 			connection = connPool.getConnection();
 			String sql = "select `ID`, `Key`, `BFS_File`, `owner_ID`, `Bucket_ID`, `Meta`, `Size`, "
 					+ "`Media_Type`, `Version_enabled`, `Version`, `Deleted`, `Expiration_time`, "
-					+ "`Create_time`, `Modify_time` "
+					+ "`Create_time`, `Modify_time`, `sys_meta`,   `etag` "
 					+ "from `scss_object` as object "
 					+ "where object.BFS_File=?";
 			stmt = connection.prepareStatement(sql);
@@ -206,15 +227,17 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so.setSysMeta(rs.getString("sys_meta"));
+				so.setEtag(rs.getString("etag"));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
 			}
-
 			rs.close();
 			stmt.close();
 			connection.close();
@@ -244,7 +267,7 @@ public class DBServiceHelper {
 					+ "object.`owner_ID`, object.`Bucket_ID`, object.`Meta`, "
 					+ "object.`Size`, object.`Media_Type`, object.`Version_enabled`, "
 					+ "object.`Version`, object.`Deleted`, object.`Expiration_time`, "
-					+ "object.`Create_time`, object.`Modify_time` "
+					+ "object.`Create_time`, object.`Modify_time` , `sys_meta`,   `etag` "
 					+ " from `scss_object` as object, `scss_bucket` as bucket "
 					+ " where object.key=? and object.bucket_id = bucket.id "
 					+ "    and bucket.name = ?";
@@ -262,10 +285,13 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so.setSysMeta(rs.getString("sys_meta"));
+				so.setEtag(rs.getString("etag"));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -315,10 +341,11 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -481,6 +508,17 @@ public class DBServiceHelper {
 		}
 	}
 
+	public static ScssBucket putBucket(ScssBucket bucket)
+			throws SameNameException {
+
+		return putBucket(bucket.getName(), bucket.getOwnerId(), bucket
+				.getExprirationEnabled() == 0 ? false : true, bucket
+				.getLoggingEnabled() == 0 ? false : true, bucket.getMeta(),
+				bucket.getDeleted() == 0 ? false : true,
+				bucket.getCreateTime(), bucket.getModifyTime());
+
+	}
+
 	public static ScssBucket putBucket(String name, Long ownerId,
 			Boolean exprirationEnabled, Boolean loggingEnabled, String meta,
 			Boolean deleted, Date createTime, Date modifyTime)
@@ -576,10 +614,11 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -603,6 +642,10 @@ public class DBServiceHelper {
 			}
 		}
 		return result;
+	}
+
+	public static ScssUser putUser(ScssUser user) throws SameNameException {
+		return putUser(user.getSohuId(), user.getAccessKey());
 	}
 
 	public static ScssUser putUser(String sohuId, String access_key)
@@ -780,6 +823,10 @@ public class DBServiceHelper {
 			}
 		}
 		return user;
+	}
+
+	public static ScssGroup putGroup(ScssGroup group) throws SameNameException {
+		return putGroup(group.getName());
 	}
 
 	public static ScssGroup putGroup(String groupName) throws SameNameException {
@@ -1008,6 +1055,7 @@ public class DBServiceHelper {
 			while (rs.next()) {
 				ScssBucket so = new ScssBucket();
 				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setName(rs.getString("name"));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
 				so.setCreateTime(rs.getTimestamp("create_time"));
@@ -1114,10 +1162,67 @@ public class DBServiceHelper {
 				so.setMeta(rs.getString("Meta"));
 				so.setSize(Long.valueOf(rs.getLong("Size")));
 				so.setMediaType(rs.getString("Media_Type"));
-				so.setVersionEnabled(Boolean.valueOf(rs
-						.getBoolean("Version_enabled")));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
 				so.setVersion(rs.getString("Version"));
-				so.setDeleted(Boolean.valueOf(rs.getBoolean("Deleted")));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
+				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
+				so.setCreateTime(rs.getTimestamp("Create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
+				result.add(so);
+			}
+
+			rs.close();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public static List<ScssObject> getBucket(String name) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		List result = new ArrayList();
+		try {
+			connection = connPool.getConnection();
+			String sql = "select object.`ID`, object.`Key`, object.`BFS_File`, "
+					+ "object.`owner_ID`, object.`Bucket_ID`, object.`Meta`, object.`Size`, "
+					+ "object.`Media_Type`, object.`Version_enabled`, object.`Version`, "
+					+ "object.`Deleted`, object.`Expiration_time`, object.`Create_time`, "
+					+ "object.`Modify_time` from `scss_object` as object ,"
+					+ "`scss_bucket` as bucket where bucket.name=?"
+					+ " and object.Bucket_ID= bucket.id";
+			stmt = connection.prepareStatement(sql);
+			stmt.setString(1, name);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				ScssObject so = new ScssObject();
+				so.setBfsFile(Long.valueOf(rs.getLong("BFS_File")));
+				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setKey(rs.getString("Key"));
+				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
+				so.setBucketId(Long.valueOf(rs.getLong("Bucket_ID")));
+				so.setMeta(rs.getString("Meta"));
+				so.setSize(Long.valueOf(rs.getLong("Size")));
+				so.setMediaType(rs.getString("Media_Type"));
+				so
+						.setVersionEnabled((byte) (rs
+								.getBoolean("Version_enabled") ? 1 : 0));
+				so.setVersion(rs.getString("Version"));
+				so.setDeleted((byte) (rs.getBoolean("Deleted") ? 1 : 0));
 				so.setExpirationTime(rs.getTimestamp("Expiration_time"));
 				so.setCreateTime(rs.getTimestamp("Create_time"));
 				so.setModifyTime(rs.getTimestamp("Modify_time"));
@@ -1146,7 +1251,7 @@ public class DBServiceHelper {
 	public static ScssBucket getBucketByName(String bucketName, Long userId) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
-		ScssBucket so = new ScssBucket();
+		ScssBucket so = null;
 		try {
 			connection = connPool.getConnection();
 			String sql = "select bucket.`id`,`name`,`owner_ID`,`expriration_enabled`,"
@@ -1158,7 +1263,52 @@ public class DBServiceHelper {
 			stmt.setString(2, bucketName);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
+				so = new ScssBucket();
+				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
+				so.setMeta(rs.getString("Meta"));
+				so.setCreateTime(rs.getTimestamp("create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
+				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
+				so.setExprirationEnabled(Byte.valueOf(rs
+						.getByte("expriration_enabled")));
+				so.setLoggingEnabled(Byte
+						.valueOf(rs.getByte("Logging_enabled")));
+			}
 
+			rs.close();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return so;
+	}
+
+	public static ScssBucket getBucketByName(String name) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ScssBucket so = null;
+		try {
+			connection = connPool.getConnection();
+			String sql = "select `id`,`name`,`owner_ID`,`expriration_enabled`,"
+					+ "`Logging_enabled`,`Meta`,`deleted`,`create_time`,`Modify_time` "
+					+ "from `scss_bucket` as bucket  " + "where bucket.name=?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setString(1, name);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				so = new ScssBucket();
 				so.setId(Long.valueOf(rs.getLong("ID")));
 				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
 				so.setMeta(rs.getString("Meta"));
@@ -1216,17 +1366,32 @@ public class DBServiceHelper {
 		}
 	}
 
-	public static void modifyBucket(ScssBucket putBucket) {
+	public static void modifyBucket(ScssBucket bucket) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		try {
 			connection = connPool.getConnection();
 
-			String sql = "UPDATE scss_group set user_ids=? where id=?";
-
+			String sql = "update scss_bucket set " + "`id`=?," + "`name`=?,"
+					+ "`owner_id`=?," + "`expriration_enabled`=?,"
+					+ "`logging_enabled`=?," + "`meta`=?," + "`deleted`=?,"
+					+ "`create_time`=?," + "`modify_time` =? " + "where `id`=?";
 			stmt = connection.prepareStatement(sql);
-			stmt.setString(1, "");
-			stmt.setLong(2, null);
+			stmt.setLong(1, bucket.getId());
+			stmt.setString(2, bucket.getName());
+			stmt.setLong(3, bucket.getOwnerId());
+			stmt.setBoolean(4, bucket.getExprirationEnabled() == 0 ? false
+					: true);
+			stmt.setBoolean(5, bucket.getLoggingEnabled() == 0 ? false : true);
+			stmt.setString(6, bucket.getMeta());
+			stmt.setBoolean(7, bucket.getDeleted() == 0 ? false : true);
+			stmt
+					.setDate(8, new java.sql.Date(bucket.getCreateTime()
+							.getTime()));
+			stmt
+					.setDate(9, new java.sql.Date(bucket.getModifyTime()
+							.getTime()));
+			stmt.setLong(10, bucket.getId());
 			stmt.executeUpdate();
 			stmt.close();
 			connection.close();
@@ -1246,17 +1411,165 @@ public class DBServiceHelper {
 	}
 
 	public static void modifyObject(ScssObject scssObject) {
-		// TODO Auto-generated method stub
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		try {
+			connection = connPool.getConnection();
 
+			String sql = "update scss_object set " + "`id`=?," + "`key`=?,"
+					+ "`bfs_file`=?," + "`owner_id`=?," + "`bucket_id`=?,"
+					+ "`meta`=?," + "`size`=?," + "`media_type`=?,"
+					+ "`version_enabled`=?," + "`version`=?," + "`deleted`=?,"
+					+ "`expiration_time`=?," + "`create_time`=?,"
+					+ "`modify_time` =?, " + "`etag` =? " 
+					+ "where  `id`=?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, scssObject.getId());
+			stmt.setString(2, scssObject.getKey());
+			stmt.setLong(3, scssObject.getBfsFile());
+			stmt.setLong(4, scssObject.getOwnerId());
+			stmt.setLong(5, scssObject.getBucketId());
+			stmt.setString(6, scssObject.getMeta());
+			stmt.setLong(7, scssObject.getSize());
+			stmt.setString(8, scssObject.getMediaType());
+			stmt.setBoolean(9, scssObject.getVersionEnabled() == 0 ? false
+					: true);
+			stmt.setString(10, scssObject.getVersion());
+			stmt.setBoolean(11, scssObject.getDeleted() == 0 ? false : true);
+			stmt.setDate(12, null);
+			//stmt.setDate(12, new java.sql.Date(scssObject.getExpirationTime()
+			//		.getTime()));
+			stmt.setDate(13, new java.sql.Date(scssObject.getCreateTime()
+					.getTime()));
+			stmt.setDate(14, new java.sql.Date(scssObject.getModifyTime()
+					.getTime()));
+			stmt.setString(15, scssObject.getEtag());
+			stmt.setLong(16, scssObject.getId());
+			stmt.executeUpdate();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void modifyUser(ScssUser scssUser) {
-		// TODO Auto-generated method stub
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		try {
+			connection = connPool.getConnection();
 
+			String sql = "update `scss_user` set " + "`id`=?,"
+					+ "`sohu_id`=?, " + "`access_key`=?," + "`status` =? "
+					+ "where  `id`=?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, scssUser.getId());
+			stmt.setString(2, scssUser.getSohuId());
+			stmt.setString(3, scssUser.getAccessKey());
+			stmt.setString(4, scssUser.getStatus());
+			stmt.setLong(5, scssUser.getId());
+			stmt.executeUpdate();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void modifyGroup(ScssGroup scssGroup) {
-		// TODO Auto-generated method stub
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		try {
+			connection = connPool.getConnection();
 
+			String sql = "update `scss_group` set `id`=?,"
+					+ "`name`=?, `user_ids`=? " + " where `id`=?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, scssGroup.getId());
+			stmt.setString(2, scssGroup.getName());
+			stmt.setString(3, scssGroup.getUserIds());
+			stmt.setLong(4, scssGroup.getId());
+			stmt.executeUpdate();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static ScssBucket getBucketById(Long bucketId) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ScssBucket so = new ScssBucket();
+		try {
+			connection = connPool.getConnection();
+			String sql = "select `id`,`name`,`owner_ID`,`expriration_enabled`,"
+					+ "`Logging_enabled`,`Meta`,`deleted`,`create_time`,`Modify_time` "
+					+ "from `scss_bucket` as bucket  " + "where  bucket.id=?";
+			stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, bucketId);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+
+				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setName(rs.getString("name"));
+				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
+				so.setMeta(rs.getString("Meta"));
+				so.setCreateTime(rs.getTimestamp("create_time"));
+				so.setModifyTime(rs.getTimestamp("Modify_time"));
+				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
+				so.setExprirationEnabled(Byte.valueOf(rs
+						.getByte("expriration_enabled")));
+				so.setLoggingEnabled(Byte
+						.valueOf(rs.getByte("Logging_enabled")));
+			}
+
+			rs.close();
+			stmt.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if ((stmt != null) && (!stmt.isClosed())) {
+					stmt.close();
+				}
+				if ((connection != null) && (!connection.isClosed()))
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return so;
 	}
 }

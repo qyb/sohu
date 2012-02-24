@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from lxml import etree
 from models import Access, User
-import hashlib
 import anyjson
+import hashlib
 import time
 
 
@@ -202,3 +203,71 @@ def extract_class_instance_to_dict(ins):
         pass
     
     return ins_dict
+
+
+def input_for_api2_access_token_func(request):
+    
+    import socket
+    
+    sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
+    if  not socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+        sohupassport_uuid = '81215bb13f2f497u'
+    
+    return sohupassport_uuid
+
+
+def input_for_api2_verify_credentials_func(request):
+    
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        access_token_input = ''
+    
+    return access_token_input
+
+
+def input_for_api2_update_func(request):
+    
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+        valid_modify_attrs = ('username', 'description')
+        modify_info = dict()
+        
+        for attr in valid_modify_attrs:
+            if request.POST.has_key(attr):
+                modify_info[attr] = request.POST[attr]
+    else:
+        access_token_input = ''
+        modify_info = dict()
+            
+    return access_token_input, modify_info
+
+
+def get_kan_user_to_xml_etree(kan_user):
+    
+    if kan_user:
+        user = etree.Element('user')
+    
+        user_id = etree.SubElement(user, 'user_id')
+        user_id.text = str(kan_user.get_user_id())
+    
+        username = etree.SubElement(user, 'username')
+        username.text = kan_user.get_kan_username()
+    
+        description = etree.SubElement(user, 'description')
+        description.text = kan_user.get_kan_self_description()
+        
+    else:
+        user = None
+    
+    return user
+
+
+def update_kan_user_instance(kan_user, modify_info):
+    
+    if modify_info.has_key('username'):
+        kan_user.set_kan_username(modify_info['username'])
+    if modify_info.has_key('description'):
+        kan_user.set_kan_self_description(modify_info['description'])
+        
+    return None

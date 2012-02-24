@@ -69,8 +69,8 @@ public class S3Sample {
 
         //String bucketName = "my-first-s3-bucket-" + UUID.randomUUID();
         //String key = "MyObjectKey";
-        String bucketName = "boto-test";
-        String key = "sdk_test";
+        String bucketName = "sdk-test";
+        String key = "sam2";
 
         System.out.println("===========================================");
         System.out.println("Getting Started with Amazon S3");
@@ -94,15 +94,15 @@ public class S3Sample {
             /*
              * List the buckets in your account
              */
-//            try {
-//            System.out.println("Listing buckets");
-//            for (Bucket bucket : s3.listBuckets()) {
-//                System.out.println(" - " + bucket.getName());
-//            }
-//            System.out.println();
-//            } catch (Exception e) {
-//            	e.printStackTrace();
-//            }
+            try {
+	            System.out.println("Listing buckets");
+	            for (Bucket bucket : s3.listBuckets()) {
+	                System.out.println(" - " + bucket.getName());
+	            }
+	            System.out.println();
+            } catch (Exception e) {
+            	e.printStackTrace();
+            }
 
             /*
              * Upload an object to your bucket - You can easily upload a file to
