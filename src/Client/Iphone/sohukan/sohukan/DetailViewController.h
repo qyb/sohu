@@ -12,12 +12,16 @@
     IBOutlet UIWebView *webView;
     IBOutlet UISwitch *switchButton;
     IBOutlet UIActivityIndicatorView *activityIndicatorView;
+    IBOutlet UIBarButtonItem *leftButton;
+    IBOutlet UIBarButtonItem *readModeButton;
     NSString *key;
     NSString *url;
     BOOL dayMode;
+    BOOL isRead;
 }
 @property(assign, nonatomic)NSString *key;
 @property(assign, nonatomic)NSString *url;
+@property(assign, nonatomic)BOOL isRead;
 @property(retain, nonatomic)IBOutlet UIWebView *webView;
 @property(retain, nonatomic)IBOutlet UISwitch *switchButton;
 -(IBAction)switchReadMode:(id)sender;

@@ -23,11 +23,11 @@
          continueAfterRunningActions = "No"
          isPathRelative = "1"
          filePath = "sohukan/DatabaseProcess.m"
-         timestampString = "351498123.294493"
+         timestampString = "351768664.246845"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "129"
-         endingLineNumber = "129"
+         startingLineNumber = "145"
+         endingLineNumber = "145"
          landmarkName = "-getNotReadArticles"
          landmarkType = "5">
       </FileBreakpoint>
@@ -77,7 +77,7 @@
          continueAfterRunningActions = "No"
          isPathRelative = "1"
          filePath = "sohukan/sohukanAppDelegate.m"
-         timestampString = "351161068.411667"
+         timestampString = "351761454.626548"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "183"
@@ -98,6 +98,34 @@
          endingLineNumber = "14"
          landmarkName = "@interface AddCategory"
          landmarkType = "2">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         isPathRelative = "1"
+         filePath = "sohukan/NotReadViewController.m"
+         timestampString = "351756486.642055"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "38"
+         endingLineNumber = "38"
+         landmarkName = "-initButton"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         isPathRelative = "1"
+         filePath = "sohukan/ReadedViewController.m"
+         timestampString = "351756133.258789"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "153"
+         endingLineNumber = "153"
+         landmarkName = "-buildSearchResult:"
+         landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>
 </Bucket>

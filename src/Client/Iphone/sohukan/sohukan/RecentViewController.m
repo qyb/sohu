@@ -10,6 +10,7 @@
 #import "DetailViewController.h"
 
 @implementation RecentViewController
+@synthesize articles;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -30,10 +31,7 @@
 
 - (void)viewDidLoad
 {
-    DatabaseProcess *dp = [[DatabaseProcess alloc] init];
-    articles = [dp getRecentArticles];
-    [dp closeDB];
-    [dp release];
+    
     [super viewDidLoad];
 }
 
@@ -46,6 +44,15 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    DatabaseProcess *dp = [[DatabaseProcess alloc] init];
+    self.articles = [dp getRecentArticles];
+    NSSortDescriptor *timeDescriptor = [[NSSortDescriptor alloc] initWithKey:@"create_time"  
+                                                         ascending:YES];  
+    NSArray *sortDescriptors = [NSArray arrayWithObject:timeDescriptor];  
+    [self.articles sortUsingDescriptors:sortDescriptors];
+    [dp closeDB];
+    [dp release];
+    [timeDescriptor release];
     [self.navigationController setToolbarHidden:NO];
     [self.navigationController setNavigationBarHidden:NO];
     [super viewWillAppear:animated];
@@ -73,12 +80,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [articles count];
+    return [self.articles count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -92,10 +99,12 @@
                                        reuseIdentifier:CellIdentifier]
                 autorelease];
     }
-    Article *article = [articles objectAtIndex:[indexPath row]];
+    Article *article = [self.articles objectAtIndex:[indexPath row]];
     cell.textLabel.text = article.title;
-    cell.detailTextLabel.text = article.url;
-    cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+    NSURL *link = [[NSURL alloc] initWithString:article.url];
+    cell.detailTextLabel.text = link.host;
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    [link release];
     return cell;
 }
 

@@ -11,6 +11,8 @@
 #import "ReadedViewController.h"
 #import "RecentViewController.h"
 #import "CategoryViewController.h"
+#import "FavouriteViewController.h"
+#import "SettingViewController.h"
 
 @implementation RootViewController
 @synthesize controllers;
@@ -102,5 +104,24 @@
     CategoryViewController *categoryContorller = [[CategoryViewController alloc] initWithStyle:UITableViewStylePlain];
     [self.navigationController pushViewController:categoryContorller animated:YES];
     categoryContorller.title = @"分类";
+    [categoryContorller release];
+}
+
+-(IBAction)toSetting:(id)sender
+{
+    SettingViewController *settingController = [[SettingViewController alloc]
+                                                initWithStyle:UITableViewStyleGrouped];
+    [self.navigationController pushViewController:settingController animated:YES];
+    settingController.title = @"设置";
+    [settingController release];
+}
+
+-(IBAction)toFavourite:(id)sender
+{
+    FavouriteViewController *favouriteController = [[FavouriteViewController alloc]
+                                                initWithNibName:@"FavouriteViewController" bundle:nil];
+    [self.navigationController pushViewController:favouriteController animated:YES];
+    favouriteController.title = @"如何收藏";
+    [favouriteController release];
 }
 @end

@@ -36,16 +36,12 @@
     _category.text = self.article.category;
     isRead = self.article.is_read;
     isDel = NO;
-    /*
     UIImage *nodelImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_nodel" ofType:@"png"]];
-    UIImage *delImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_nodel" ofType:@"png"]];
     [delButton setBackgroundImage:nodelImg forState:UIControlStateNormal];
-    [delButton setBackgroundImage:delImg forState:UIControlEventTouchUpInside];
     UIImage *markImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_mark" ofType:@"png"]];
-    UIImage *markedImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_mark" ofType:@"png"]];
+   // UIImage *markedImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_mark" ofType:@"png"]];
     [markButton setBackgroundImage:markImg forState:UIControlStateNormal];
-    [markButton setBackgroundImage:markedImg forState:UIControlEventTouchUpInside];
-*/
+    //[markButton setBackgroundImage:markedImg forState:UIControlEventTouchUpInside];
     [super viewDidLoad];
 }
 
@@ -72,12 +68,28 @@
 
 -(IBAction)readyToDel:(id)sender
 {
+    UIButton *button = (UIButton*)sender;
+    UIImage *img;
+    if (isDel){
+        img = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_del" ofType:@"png"]];
+    }else{
+        img = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_nodel" ofType:@"png"]];
+    }
+    [button setBackgroundImage:img forState:UIControlStateNormal];
     isDel = !isDel;
     
 }
 
 -(IBAction)readyToMark:(id)sender
 {
+    UIButton *button = (UIButton *)sender;
+    UIImage *img;
+    if (isRead) {
+        img = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_marked" ofType:@"png"]];
+    }else{
+        img = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_mark" ofType:@"png"]];
+               }
+        [button setBackgroundImage:img forState:UIControlStateNormal];
     isRead = !isRead;
 
 }
@@ -109,4 +121,11 @@
     }
     [self.delegate flipViewDidFinish:self];
 }
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
+}
+
 @end

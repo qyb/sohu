@@ -68,7 +68,8 @@
 
 - (void)viewDidUnload
 {       
-    [self.categorys release];
+    //[self.categorys release];
+    self.categorys = nil;
     [categoryListViewController release];
     [addCategoryViewController release];
     [super viewDidUnload];

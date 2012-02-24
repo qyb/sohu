@@ -14,4 +14,5 @@
     NSMutableArray *articles;
     DetailViewController *detailViewController;
 }
+@property(retain, nonatomic)NSMutableArray *articles;
 @end

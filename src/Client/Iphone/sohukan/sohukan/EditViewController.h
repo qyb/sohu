@@ -11,7 +11,7 @@
 @protocol FlipViewDidDelegate;
 
 @class Article;
-@interface EditViewController : UIViewController{
+@interface EditViewController : UIViewController<UITextFieldDelegate>{
     IBOutlet UILabel *_url;
     IBOutlet UITextField *_titleContent;
     IBOutlet UITextField *_category;

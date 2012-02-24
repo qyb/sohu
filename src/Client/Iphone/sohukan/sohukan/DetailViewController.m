@@ -16,6 +16,7 @@
 @synthesize switchButton;
 @synthesize key;
 @synthesize url;
+@synthesize isRead;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -28,6 +29,7 @@
 
 - (void)didReceiveMemoryWarning
 {
+    self.webView = nil;
     [super didReceiveMemoryWarning];
     
 }
@@ -77,30 +79,62 @@
 
 -(IBAction)switchBackgroundMode:(id)sender
 {   
-    
     NSString *js;
+    UIImage *readModeImg;
     if (dayMode) {
-        js = @"document.body.style.backgroundColor='#000';document.body.style.color='#FFF';";
-        dayMode = NO;
+        js = @"document.body.style.backgroundColor='#000';document.body.style.color='#666';";
+        readModeImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"night" ofType:@"png"]];
+        [readModeButton setImage:readModeImg];
     }else{
-        js = @"document.body.style.backgroundColor='#FFF';document.body.style.color='#000';";
-        dayMode = YES;
+        js = @"document.body.style.backgroundColor='#f3f6f5'";
+        readModeImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"day" ofType:@"png"]];
+        [readModeButton setImage:readModeImg];
     }
+    dayMode = !dayMode;
+
     [self.webView stringByEvaluatingJavaScriptFromString:js];
+}
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == alertView.cancelButtonIndex) {
+        return;
+    }else{
+        DatabaseProcess *dp = [[DatabaseProcess alloc] init];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        NSFileManager *fileManager =[NSFileManager defaultManager];
+        [dp executeUpdate:[NSString stringWithFormat:@"DELETE FROM Article WHERE key='%@'",self.key]];
+        NSString *appFile = [documentsDirectory stringByAppendingPathComponent:self.key];
+        [fileManager removeItemAtPath:appFile error:nil];
+        [self.navigationController popViewControllerAnimated:YES];
+        [dp release];
+    }
 }
 
 -(IBAction)markRead:(id)sender
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);  
-    NSString *documentDirectory = [paths objectAtIndex:0];  
-    NSString *dbPath = [documentDirectory stringByAppendingPathComponent:@"sohukan.db"];  
-    FMDatabase *db= [FMDatabase databaseWithPath:dbPath];
-    [db open];
-    [db executeUpdate:[NSString stringWithFormat:@"UPDATE Article SET is_read=1 WHERE key='%@'",self.key]];
-    [self.navigationController popViewControllerAnimated:YES];
+    if (self.isRead) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"确定要删除吗" 
+                                                        message:@""
+                                                       delegate:self 
+                                              cancelButtonTitle:@"取消" 
+                                              otherButtonTitles:@"确定",nil];
+        [alert show];
+        [alert release];
+        
+    }else{
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);  
+        NSString *documentDirectory = [paths objectAtIndex:0];  
+        NSString *dbPath = [documentDirectory stringByAppendingPathComponent:@"sohukan.db"];  
+        FMDatabase *db= [FMDatabase databaseWithPath:dbPath];
+        [db open];
+        [db executeUpdate:[NSString stringWithFormat:@"UPDATE Article SET is_read=1 WHERE key='%@'",self.key]];
+        [self.navigationController popViewControllerAnimated:YES];
     //NSArray *allControllers = self.navigationController.viewControllers;
     //UITableViewController *parent = [allControllers lastObject];
     //[parent.tableView reloadData];
+    }
 }
 
 -(IBAction)refresh:(id)sender
@@ -119,6 +153,22 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [self.navigationController setToolbarHidden:YES];
+    UIImage *leftImg;
+    if (self.isRead) {
+        leftImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"detail_del" ofType:@"png"]];
+        [leftButton setImage:leftImg];
+    }else{
+        leftImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"detail_marking" ofType:@"png"]];
+        [leftButton setImage:leftImg];
+    }
+    UIImage *readModeImg;
+    if (dayMode) {
+        readModeImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"day" ofType:@"png"]];
+        [readModeButton setImage:readModeImg];
+    }else{
+        readModeImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"night" ofType:@"png"]];
+        [readModeButton setImage:readModeImg];
+    }
     self.webView.scalesPageToFit = NO;
     self.webView.delegate = self;
     if (self.switchButton.on){
@@ -147,6 +197,25 @@
         }
         [images release];*/
         [self.webView loadHTMLString:html baseURL:nil];
+        
+        NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"sohukan.db"]; 
+        FMDatabase *db= [FMDatabase databaseWithPath:dbPath];
+        [db open];
+        FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT * FROM History WHERE key='%@'",self.key]];
+        NSDateFormatter *dateFormatter = [[ NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        NSString * timeString = [dateFormatter stringFromDate:[NSDate date]];
+        NSString *sql;
+        if ([rs next]) {
+            sql = [NSString stringWithFormat:@"UPDATE History SET read_time='%@' WHERE key='%@'", timeString, self.key];
+            [db executeUpdate:sql];
+        }else{
+            sql = [NSString stringWithFormat: @"INSERT INTO History (key, read_time) VALUES ('%@', '%@')", self.key, timeString];
+            [db executeUpdate:sql];
+        }
+        [dateFormatter release];
+        [rs close];
+        [db close];
     }else{
         [NSURLProtocol unregisterClass:[NSURLProtocolCustom class]];
         [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
@@ -162,10 +231,10 @@
 }
 -(void)viewDidLoad
 {  
+    dayMode = YES;
     [self.view addSubview:self.webView];
     [self.view removeFromSuperview];
     [(UIScrollView *)[[self.webView subviews] objectAtIndex:0] setBounces:NO];
-    dayMode = YES;//白天
     self.switchButton.on = YES;
     [self.switchButton addTarget:self action:@selector(switchReadMode:) forControlEvents:UIControlEventValueChanged];
     activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -176,10 +245,12 @@
     
 - (void)viewDidUnload
 { 
-    //[self.key release], self.key=nil;
-    //[self.webView release], self.webView = nil;
+    self.key=nil;
+    self.webView = nil;
+    self.switchButton =nil;
     [activityIndicatorView release];
-    [self.switchButton release];
+    leftButton = nil;
+    readModeButton = nil;
     [super viewDidUnload];
 }
 
@@ -187,10 +258,6 @@
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
-
-
-
-
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
@@ -200,7 +267,7 @@
                                                   cancelButtonTitle:@"取消"
                                              destructiveButtonTitle:nil
                                                   otherButtonTitles:@"收藏", @"在浏览器中打开", nil]; 
-        [actionSheet showFromToolbar:self.navigationController.toolbar];
+        [actionSheet showInView:self.view];
         [actionSheet release];
         return NO;
     }
@@ -215,6 +282,7 @@
     }
     switch (buttonIndex) {
         case 0: {
+            [NSURLProtocol unregisterClass:[NSURLProtocolCustom class]];
             NSString *myRequestString = [NSString stringWithFormat:@"access_token=%@&url=%@", @"649cfef6a94ee38f0c82a26dc8ad341292c7510e", actionSheet.title];
             NSData *myRequestData = [NSData dataWithBytes: [myRequestString UTF8String] length: [myRequestString length]];
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://10.10.69.53/article/add.xml/"]];
@@ -240,11 +308,12 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {   //NSString *js = @"var images=document.images;for(var index in images){images[index].style.display='none';};";
-    //[self.webView stringByEvaluatingJavaScriptFromString:js];
+    NSString *js = @"var images=document.images;for(var index in images){images[index].style.maxWidth='100%';};";
+    [self.webView stringByEvaluatingJavaScriptFromString:js];
     if (dayMode) {
-        [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.backgroundColor='#FFF';document.body.style.color='#000';"];
+        [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.backgroundColor='#f3f6f5'"];
     }else{
-        [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.backgroundColor='#000';document.body.style.color='#FFF';"];
+        [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.style.backgroundColor='#000';document.body.style.color='#666';"];
     }
     [activityIndicatorView stopAnimating];
 }

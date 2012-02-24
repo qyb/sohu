@@ -182,6 +182,14 @@
     BOOL need_update = NO;
     if ([self isEnableWIFI] || [self isEnable3G]){
         if (version){
+            NSString *articleURL = [[NSString alloc] initWithFormat:@"http://10.10.69.53/article/list.xml?access_token=%@&limit=5", _access_token];
+            NSData *articleXML = [self getDataWithSynchronous:articleURL];
+            NSMutableArray *array = [self parseXML:articleXML path:@"//article" attributeName:@"key"];
+            [articleURL release];
+            for(NSMutableDictionary *entity in array){
+                [self processArticleData:entity];
+            }
+            /*
             //NSString *recordURL = [[NSString alloc] initWithFormat:@"http://10.10.69.53/record/list.xml?access_token=%@&last_version=%@", @"649cfef6a94ee38f0c82a26dc8ad341292c7510e", version];
             NSData *responseData = [self getDataWithSynchronous:@"http://10.10.69.53/record/list.xml?access_token=649cfef6a94ee38f0c82a26dc8ad341292c7510e&last_version=1"];
             //[recordURL release];
@@ -223,8 +231,7 @@
                     version = new_version;
                     need_update = YES;
                 }
-            
-            }
+            }*/
         }else{
             [_dp createArticleTable];
             [_dp createImageTable];
@@ -242,7 +249,7 @@
     }else{
         NSLog(@"No network");
     }
-    NSLog(@"Parse oper_record xml success");
+    NSLog(@"Parse xml success");
     //3g:2, edge:1, wifi:6
     //[_queue setMaxConcurrentOperationCount:6];
     if (need_update){

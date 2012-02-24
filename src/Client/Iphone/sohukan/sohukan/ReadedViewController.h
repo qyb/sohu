@@ -11,10 +11,14 @@
 #import "EditViewController.h"
 
 @class DetailViewController;
-@interface ReadedViewController : ListViewController <FlipViewDidDelegate>{
+@interface ReadedViewController : ListViewController <FlipViewDidDelegate, UIAlertViewDelegate, UISearchBarDelegate>{
     NSMutableArray *articles;
+    NSMutableArray *delList;
     DetailViewController *detailViewController;
+    UISegmentedControl *segmentedControl;
+    BOOL isOrder;
+    BOOL isDel;
+    int arrayLength;
 }
 @property(retain, nonatomic)NSMutableArray *articles;
--(IBAction)toggleEdit:(id)sender;
 @end

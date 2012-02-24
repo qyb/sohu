@@ -64,12 +64,18 @@
 
 -(void)createHistoryTable
 {
-    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS History (key TEXT PRIMARY KEY, read_time DATETIME)"];
+    [_db executeUpdate:@"CREATE TABLE IF NOT EXISTS History (key TEXT, read_time TEXT)"];
 }
 
 -(void)insertArticleData:(NSMutableDictionary *)data
 {
-    NSString *sql = [NSString stringWithFormat:@"INSERT INTO Article (key, title, url, download_url, cover, category, create_time, is_star, is_read, is_download) VALUES ('%@', '%@', '%@', '%@', '%@', '%@', '%@', %@, %@, %d)", [data objectForKey:@"key"], [data objectForKey:@"title"], [data objectForKey:@"url"], [data objectForKey:@"download_url"], [data objectForKey:@"cover"],[data objectForKey:@"category"], [data objectForKey:@"create_time"], [data objectForKey:@"is_star"], [data objectForKey:@"is_read"], 0];
+    NSString *category;
+    if ([[[data objectForKey:@"category"] stringValue] length] == 0) {
+        category = @"";
+    }else{
+        category = [[data objectForKey:@"category"] stringValue];
+    }
+    NSString *sql = [NSString stringWithFormat:@"INSERT INTO Article (key, title, url, download_url, cover, category, create_time, is_star, is_read, is_download) VALUES ('%@', '%@', '%@', '%@', '%@', '%@', '%@', %@, %@, %d)", [data objectForKey:@"key"], [data objectForKey:@"title"], [data objectForKey:@"url"], [data objectForKey:@"download_url"], [data objectForKey:@"cover"], category, [data objectForKey:@"create_time"], [data objectForKey:@"is_star"], [data objectForKey:@"is_read"], 0];
     [_db executeUpdate:sql];
 }
 
@@ -95,7 +101,7 @@
     }
 }
 
--(Article *) getArticleInstance:(FMResultSet *)rs
+-(Article *) getArticleInstance:(FMResultSet *)rs dateFormatter:(NSDateFormatter *)dateFormatter
 {
     Article *article = [[[Article alloc] init] autorelease];
     article.key = [rs stringForColumn:@"key"];
@@ -104,7 +110,7 @@
     article.download_url = [rs stringForColumn:@"download_url"];
     article.cover = [rs stringForColumn:@"cover"];
     article.category = [rs stringForColumn:@"category"];
-    article.create_time = [rs dateForColumn:@"create_time"];
+    article.create_time = [dateFormatter dateFromString:[rs stringForColumn:@"create_time"]];
     article.is_star = [rs boolForColumn:@"is_star"];
     article.is_read = [rs boolForColumn:@"is_read"];
     article.is_download = [rs boolForColumn:@"is_download"];
@@ -113,11 +119,19 @@
 
 -(NSMutableArray *) getReadedArticles
 {
-    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Article WHERE is_read=1"];
+    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Article WHERE is_read=1 ORDER BY rowid desc;"];
     NSMutableArray *articles = [[[NSMutableArray alloc] init] autorelease];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     while ([rs next]){
-        [articles addObject:[self getArticleInstance:rs]];
+        [articles addObject:[self getArticleInstance:rs dateFormatter:dateFormatter]];
     }
+    [dateFormatter release];
+    NSSortDescriptor *timeDescriptor = [[NSSortDescriptor alloc] initWithKey:@"create_time"  
+                                                                   ascending:NO];  
+    NSArray *sortDescriptors = [NSArray arrayWithObject:timeDescriptor];  
+    [articles sortUsingDescriptors:sortDescriptors];
+    [timeDescriptor release];
     return articles;
 }
 
@@ -125,33 +139,29 @@
 
 -(NSMutableArray *) getNotReadArticles
 {
-    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Article WHERE is_read=0"]; 
+    FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Article WHERE is_read=0 ORDER BY rowid desc;"]; 
     NSMutableArray *articles = [[[NSMutableArray alloc] init] autorelease];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     while ([rs next]){
-        [articles addObject:[self getArticleInstance:rs]];
+        [articles addObject:[self getArticleInstance:rs dateFormatter:dateFormatter]];
     }
+    [dateFormatter release];
+    NSSortDescriptor *timeDescriptor = [[NSSortDescriptor alloc] initWithKey:@"create_time"  
+                                                                   ascending:NO];  
+    NSArray *sortDescriptors = [NSArray arrayWithObject:timeDescriptor];  
+    [articles sortUsingDescriptors:sortDescriptors];
+    [timeDescriptor release];
     return articles;
 }
 
--(NSMutableArray *) getRecentArticles
-{
-    NSMutableArray *articles = [[[NSMutableArray alloc] init] autorelease];
-    FMResultSet *historys = [_db executeQuery:@"SELECT * FROM History ORDER BY read_time DESC"];
-    while ([historys next]){
-        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM Article WHERE is_download=1 AND key='%@'", [historys stringForColumn:@"key"]];
-        FMResultSet *rs = [_db executeQuery:sql];
-        if([rs next]){
-            [articles addObject:[self getArticleInstance:rs]];
-        }
-    }
-    [historys close]; 
-    return articles;
-}   
 
 -(NSMutableArray *) getAllCategory
 {
     NSMutableArray *categorys = [[[NSMutableArray alloc] init] autorelease];
     FMResultSet *rs = [_db executeQuery:@"SELECT * FROM Category"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     while ([rs next]) {
         Category *category = [[Category alloc] init];
         category.name = [rs stringForColumn:@"name"];
@@ -159,7 +169,7 @@
         FMResultSet *qs = [_db executeQuery:sql];
         NSMutableArray *articles = [[NSMutableArray alloc] init];
         while ([qs next]){
-            [articles addObject:[self getArticleInstance:qs]];
+            [articles addObject:[self getArticleInstance:qs dateFormatter:dateFormatter]];
         }
         category.articles = articles;
         [categorys addObject:category];
@@ -167,6 +177,7 @@
         [articles release];
     }
     [rs close];
+    [dateFormatter release];
     return categorys;
 }
 
@@ -180,6 +191,28 @@
     }
     return images;
 
+}
+
+-(NSMutableArray *)getRecentArticles
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSMutableArray *articles = [[NSMutableArray alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    FMResultSet *rs = [_db executeQuery:@"SELECT key FROM History"];
+    while ([rs next]) {
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM Article WHERE key='%@'", [rs stringForColumn:@"key"]];
+        FMResultSet *qs = [_db executeQuery:sql];
+        while ([qs next]){
+            [articles addObject:[self getArticleInstance:qs dateFormatter:dateFormatter]];
+        }
+    }
+    [dateFormatter release];
+    return articles;
+}
+
+-(int)getHistoryCount
+{
+    return [_db intForQuery:@"SELECT count(*) FROM History"];
 }
 
 - (void)closeDB

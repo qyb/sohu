@@ -25,8 +25,6 @@
         [self.controller presentModalViewController:editViewController animated:YES];
         //NSString *path = [[NSBundle mainBundle] pathForResource:@"edit" ofType:@"png"];
         //UIColor *color = [UIColor colorWithPatternImage:[UIImage imageWithContentsOfFile:path]];
-        //_titleLabel.backgroundColor = color;
-        //self.textLabel.backgroundColor = color;
     }
 }
 
