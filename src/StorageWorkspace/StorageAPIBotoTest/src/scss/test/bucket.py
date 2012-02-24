@@ -22,11 +22,12 @@ class BucketTest(unittest.TestCase):
 
 
     def testGetOrCreateBucket(self):
-        bucket = helper.get_or_create_bucket("boto-test")
-        print bucket
-        assert (None != bucket)
+#        bucket = helper.get_or_create_bucket("boto-test")
+#        print "bucket %s created." % bucket 
+#        assert (None != bucket)
         bucket = helper.get_or_create_bucket("not-exist-bucket")
-        assert (None == bucket)
+        print "bucket %s created." % bucket 
+        assert (None != bucket)
 
         
 

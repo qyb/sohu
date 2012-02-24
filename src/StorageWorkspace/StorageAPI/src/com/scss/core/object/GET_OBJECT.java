@@ -49,7 +49,7 @@ public class GET_OBJECT extends ObjectAPI {
 		// get system meta
 		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
-		String media_type = req_headers.get(CommonResponseHeader.MEDIA_TYPE);
+		String media_type = req_headers.get(CommonResponseHeader.CONTENT_TYPE);
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		// TODO: Server side md5 check. not supported now. String content_md5 = req_headers.get()
 		
@@ -82,7 +82,7 @@ public class GET_OBJECT extends ObjectAPI {
 			// TODO: change the temporary values
 			resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
 			resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");				
-			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.APPLICATION_XML);
+			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, media_type);
 			resp_headers.put(CommonResponseHeader.CONNECTION, "close");
 			resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
 			
@@ -105,7 +105,8 @@ public class GET_OBJECT extends ObjectAPI {
 			ByteArrayInputStream stream = new ByteArrayInputStream(bfsresult.File);
 			resp.Repr = new DynamicStreamRepresentation(stream, MediaType.APPLICATION_OCTET_STREAM);
 			resp.Repr.setTag(new Tag(obj.getEtag()));
-			resp.MediaType = Mimetypes.MIMETYPE_OCTET_STREAM;
+			resp.Repr.setMediaType(MediaType.valueOf(obj.getMediaType()));
+			resp.MediaType = obj.getMediaType();
 			return resp;
 		}
 

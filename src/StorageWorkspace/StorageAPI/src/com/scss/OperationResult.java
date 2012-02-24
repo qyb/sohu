@@ -10,6 +10,6 @@ package com.scss;
 public class OperationResult {
 	public Boolean Succeed = false;
 	public Object Value = null;
-	public String ErrorCode = null;
-	public String ErrorMessage = null;
+//	public String ErrorCode = null;
+//	public String ErrorMessage = null;
 }

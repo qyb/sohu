@@ -47,8 +47,8 @@ public class PUT_OBJECT extends ObjectAPI {
 		// get system meta
 		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
-		String media_type = req_headers.get(CommonResponseHeader.MEDIA_TYPE);
-		Long size = Long.parseLong(req_headers.get(CommonResponseHeader.CONTENT_LENGTH));
+		String media_type = req_headers.get(CommonResponseHeader.CONTENT_TYPE);
+		long size = Long.parseLong(req_headers.get(CommonResponseHeader.CONTENT_LENGTH));
 		if (size <= 0) {
 			return ErrorResponse.MissingContentLength(req);
 		}
@@ -71,16 +71,21 @@ public class PUT_OBJECT extends ObjectAPI {
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
 
+		if (size > BfsClientWrapper.MAX_SIZE)
+			return ErrorResponse.EntityTooLarge(req);
+		
+		
 		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
 		
 		ScssObject obj = null;
 		InputStream stream = this.hookMD5Stream(req.ContentStream);
-		BfsClientResult bfsresult = BfsClientWrapper.getInstance().putFromStream(stream);
-		String etag = this.getBase64ContentMD5();
+		BfsClientResult bfsresult = BfsClientWrapper.getInstance().putFromStream(stream, (int)size);
+		String etag = null;
 		
 		if (bfsresult.FileNumber > 0) {
+			etag = this.getContentMD5();
 			
 			// post body is not match the size
 			if (bfsresult.Size < size) {
@@ -107,8 +112,8 @@ public class PUT_OBJECT extends ObjectAPI {
 					obj.setBfsFile(bfsresult.FileNumber);
 					obj.setEtag(etag);
 					DBServiceHelper.modifyObject(obj);
-					if (old_bfs > 0)
-						BfsClientWrapper.getInstance().deleteFile(obj.getBfsFile());
+					//if (modify_succeed && old_bfs > 0)
+					//	BfsClientWrapper.getInstance().deleteFile(obj.getBfsFile());
 					
 				} else 
 //					obj = DBServiceHelper.putObject(req.ObjectKey, bfsresult.FileNumber, 
@@ -154,7 +159,7 @@ public class PUT_OBJECT extends ObjectAPI {
 			
 			// generate representation
 			resp.Repr = new org.restlet.representation.EmptyRepresentation();
-			resp.Repr.setTag(new Tag(etag));
+			resp.Repr.setTag(new Tag(etag, false));
 			resp.Repr.setMediaType(MediaType.APPLICATION_ALL_XML);
 			resp.MediaType = Mimetypes.APPLICATION_XML;
 			return resp;

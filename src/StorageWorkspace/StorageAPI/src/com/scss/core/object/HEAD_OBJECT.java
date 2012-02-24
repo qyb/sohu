@@ -45,7 +45,7 @@ public class HEAD_OBJECT extends ObjectAPI {
 		// get system meta
 		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
 		Date modifyTime = createTime;
-		String media_type = req_headers.get(CommonResponseHeader.MEDIA_TYPE);
+		String media_type = req_headers.get(CommonResponseHeader.CONTENT_TYPE);
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		// TODO: Server side md5 check. not supported now. String content_md5 = req_headers.get()
 		
