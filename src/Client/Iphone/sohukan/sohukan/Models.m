@@ -15,21 +15,14 @@
     @synthesize download_url;
     @synthesize cover;
     @synthesize category;
+    @synthesize create_time;
     @synthesize is_star;
     @synthesize is_read;
-    @synthesize is_download;
-    @synthesize is_delete;
-
-@end
-
-@implementation Image
-    @synthesize key;
-    @synthesize url;
     @synthesize is_download;
 
 @end
 
 @implementation Category
     @synthesize name;
-
+    @synthesize articles;
 @end
