@@ -61,6 +61,18 @@ def input_for_apiv2_delete(request):
     return access_token_input, name
 
 
+def input_for_apiv2_set_order(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+        order_string = request.POST.get('order', '')
+        order = order_string.split(',')
+    else:
+        access_token_input = ''
+        order = []
+    
+    return access_token_input, order
+    
+    
 def generate_folder_key(user_id, folder_name):
     folder_key = KEY_FOLDER % (user_id, folder_name)
     
@@ -72,12 +84,13 @@ def select_folder_list(user_id):
     folder_list = Folder.objects.using(chosen_db) \
                         .filter(user_id=user_id) \
                         .order_by('order')
+                        
     return folder_list
 
 
 def convert_folder_to_etree(folder):
 #    always have root node instead of None by default
-    node_folder = etree.Element('folder')
+    node_folder = etree.Element('folder', id=folder.id)
     if folder:
         node_name = etree.SubElement(node_folder, 'name')
         node_name.text = folder.name
@@ -146,3 +159,14 @@ def delete_folder(folder):
         is_successful = False
     
     return is_successful
+
+
+def set_order_by_name(user_id, order):
+    for rank, folder_name in enumerate(order):
+        folder = get_folder_by_name(user_id, folder_name)
+        if folder:
+            folder.order = rank
+            folder.save()
+    
+    return None
+         
