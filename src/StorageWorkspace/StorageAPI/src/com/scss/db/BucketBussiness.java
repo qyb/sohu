@@ -2,7 +2,9 @@ package com.scss.db;
 
 import java.util.List;
 
+import com.scss.core.object.BfsClientWrapper;
 import com.scss.db.exception.SameNameException;
+import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.model.ScssUser;
 import com.scss.db.service.DBServiceHelper;
@@ -77,6 +79,79 @@ public class BucketBussiness {
 		return bucket_objects;
 		
 	}
+	/**
+	 * 根据objectkey,ower_id和bucketName删除一个对象
+	 * @param key
+	 * @param owner_ID
+	 * @param bucketName
+	 * @return
+	 */
+	public static boolean deleteObject(String key, Long owner_ID, String bucketName)
+	{
+		
+		ScssBucket  scssBucket=DBServiceHelper.getBucketByName(bucketName,owner_ID) ;
+		
+		if(null!=scssBucket)
+		{
+			
+			ScssObject obj = DBServiceHelper.getObject(bucketName, key);
+			
+			if(null!=obj&&null != obj.getKey() || null != obj.getBfsFile())
+			{
+				 try {
+					 
+					  BfsClientWrapper.getInstance().deleteFile(obj.getBfsFile());
+					  
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					
+				}
+				 
+				DBServiceHelper.deleteObject(key, owner_ID, scssBucket.getId());
+					
+				return true; 
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+	/**
+	 * 删除bucket
+	 * @param owner_ID
+	 * @param bucketName
+	 * @return
+	 */
+	public static boolean deleteBucket(Long owner_ID, String bucketName)
+	{
+		ScssBucket  scssBucket=DBServiceHelper.getBucketByName(bucketName,owner_ID);
+		
+		if(null!= scssBucket)
+		{
+			List<ScssObject> scssObjectList = DBServiceHelper.getBucket(bucketName);
+			
+			if(null!=scssObjectList&&scssObjectList.size()>0)
+			{
+				return false;
+			}
+			else
+			{
+				DBServiceHelper.deleteBucket(bucketName, owner_ID);
+				
+				return true;
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+
 	
 
 }

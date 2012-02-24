@@ -26,7 +26,7 @@ public class BfsClientWrapper {
 	/*
 	 * Get the instance of BFS client.
 	 */
-	protected static BfsClientWrapper getInstance() {
+	public static BfsClientWrapper getInstance() {
 		
 		if (null == BfsClientWrapper.instance) {
 			// TODO: make it configurated. conf.get ...
