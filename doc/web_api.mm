@@ -772,7 +772,7 @@
 <node COLOR="#cc6600" CREATED="1329724420882" ID="ID_167294088" MODIFIED="1329727041707" TEXT="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&#xa;&lt;folder id=&quot;571&quot;/&gt;"/>
 </node>
 </node>
-<node CREATED="1329710637911" FOLDED="true" ID="ID_478423192" MODIFIED="1330062598072" TEXT="/api/2/folders/set-order">
+<node CREATED="1329710637911" ID="ID_478423192" MODIFIED="1330080744127" TEXT="/api/2/folders/set-order">
 <node CREATED="1329715501333" ID="ID_460368515" MODIFIED="1329715503394" TEXT="&#x63cf;&#x8ff0;">
 <node CREATED="1329724068869" ID="ID_573294710" MODIFIED="1329724084126" TEXT="&#x8bbe;&#x7f6e;folder&#x95f4;&#x7684;&#x6392;&#x5e8f;"/>
 </node>
