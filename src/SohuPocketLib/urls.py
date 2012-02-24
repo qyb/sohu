@@ -36,16 +36,13 @@ urlpatterns = patterns('',
     (r'^article/delete/(?P<key>[\w-]+)\.(?P<format>\w+)/?$', 'SohuPocketLib.article.views.destroy'),
     (r'^article/delete/(?P<key>[\w-]+)\.(?P<format>\w+)/test/$', 'SohuPocketLib.article.views.destroy_test'),
     
-    (r'^api/2/account/access_token/?$', 'SohuPocketLib.user.views.api2_access_token'),
-    (r'^api/2/account/verify_credentials/?$', 'SohuPocketLib.user.views.api2_verify_credentials'),
+    (r'^api/2/account/access-token/?$', 'SohuPocketLib.user.views.api2_access_token'),
+    (r'^api/2/account/verify-credentials/?$', 'SohuPocketLib.user.views.api2_verify_credentials'),
     
     (r'^api/2/account/update/?$', 'SohuPocketLib.user.views.api2_update'),
     (r'^api/2/account/update/test/$', 'SohuPocketLib.user.views.api2_update_test'),
     
-    (r'^api/2/bookmarks/list_count/?$', 'SohuPocketLib.article.views.api2_list_count'),
-    (r'^api/2/bookmarks/list_count/test/$', 'SohuPocketLib.article.views.api2_list_count_test'),
-    
-    
-    
+    (r'^api/2/bookmarks/count/?$', 'SohuPocketLib.article.views.api2_count'),
+    (r'^api/2/bookmarks/count/test/$', 'SohuPocketLib.article.views.api2_count_test'),
     
 )
