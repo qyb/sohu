@@ -26,7 +26,7 @@ public class DBServiceHelper {
 
 	static {
 		if (connPool == null)
-			connPool = new ConnectionPool("/db.properties");
+			connPool = new ConnectionPool("db.properties");
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class DBServiceHelper {
 	 * 
 	 * @param ScssObject
 	 *            object: Object 实例，除了ID之外其他全部要求有真实值.<br>
-	 * @return ScssObject :返回刚存入好的Object<br>
+	 * @return ScssObject :返回刚存入的Object<br>
 	 * @throws SameNameException
 	 */
 	public static ScssObject putObject(ScssObject object)
