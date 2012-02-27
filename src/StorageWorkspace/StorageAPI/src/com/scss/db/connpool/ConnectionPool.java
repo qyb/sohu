@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 
 import com.scss.utility.Logger;
 
-
 /**
  * @Title:数据库连接池:<br>
  * @Description: <br>
@@ -55,24 +54,32 @@ public class ConnectionPool implements Runnable, DataSource {
 	public ConnectionPool() {
 	}
 
+	public static InputStream getResourceAsStream(String resource)
+			throws IOException {
+		return getResourceAsStream(getClassLoader(), resource);
+	}
+
+	public static InputStream getResourceAsStream(ClassLoader loader,
+			String resource) throws IOException {
+		InputStream in = null;
+		if (loader != null)
+			in = loader.getResourceAsStream(resource);
+		if (in == null)
+			in = ClassLoader.getSystemResourceAsStream(resource);
+		if (in == null)
+			throw new IOException("Could not find resource " + resource);
+		return in;
+	}
+
+	private static ClassLoader getClassLoader() {
+		return Thread.currentThread().getContextClassLoader();
+	}
+
 	public ConnectionPool(String configFileName) {
 
-		String path = ConnectionPool.class.getResource("/").toString();
-		if (path != null && path.indexOf("/bin/") != -1) {
-			path = path.substring(6, path.indexOf("/bin") + 4)
-					+ configFileName;
-		} else {
-			path = path.substring(6, path.indexOf("/classes") + 8)
-					+ configFileName;
-		}
-		InputStream fis = null;
 		try {
-			fis = new FileInputStream(path);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		Properties config = new Properties();
-		try {
+			InputStream fis = getResourceAsStream(configFileName);
+			Properties config = new Properties();
 			config.load(fis);
 			this.max = Integer.parseInt(config.getProperty("poolMaxSize"));
 			this.min = Integer.parseInt(config.getProperty("poolMinSize"));

@@ -8,9 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@class ListViewController;
-@interface RootViewController : UITableViewController {
-    ListViewController *listViewController;
+@interface RootViewController : UIViewController {
+    //ListViewController *listViewController;
     NSArray *controllers;
 }
 @property(nonatomic, retain)NSArray *controllers;

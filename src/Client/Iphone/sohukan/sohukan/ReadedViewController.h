@@ -8,13 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "ListViewController.h"
-
+#import "EditViewController.h"
 
 @class DetailViewController;
-@interface ReadedViewController : ListViewController {
+@interface ReadedViewController : ListViewController <FlipViewDidDelegate, UIAlertViewDelegate, UISearchBarDelegate>{
     NSMutableArray *articles;
+    NSMutableArray *delList;
     DetailViewController *detailViewController;
+    UISegmentedControl *segmentedControl;
+    BOOL isOrder;
+    BOOL isDel;
+    int arrayLength;
 }
-@property(nonatomic, retain)NSArray *articles;
-@property(nonatomic, retain)DetailViewController *detailViewController;
+@property(retain, nonatomic)NSMutableArray *articles;
 @end

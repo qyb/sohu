@@ -17,14 +17,17 @@
 -(void)createArticleTable;
 -(void)createImageTable;
 -(void)createCategoryTable;
--(BOOL)tableExist:(NSString *)name;
+-(void)createVersionTable;
+-(void)createOperationTable;
+-(void)createHistoryTable;
+-(void)executeUpdate:(NSString *)sql;
 -(void)insertArticleData:(NSMutableDictionary *)data;
--(void)insertImageData:(NSMutableDictionary *)data;
--(void)insertCategoryData:(NSMutableDictionary *)data;
--(void)updateBoolData:(NSString *)tableName primaryKey:(NSString *)key columnName:(NSString *)name setValue:(int)value;
--(void)updateStringData:(NSString *)tableName primaryKey:(NSString *)key columnName:(NSString *)name setValue:(NSString *)value;
 -(FMResultSet *)getRowEntity:(NSString *)tableName primaryKey:(NSString *)key;
+-(int)getVersionId;
 -(NSMutableArray *)getReadedArticles;
 -(NSMutableArray *)getNotReadArticles;
+-(NSMutableArray *)getRecentArticles;
+-(NSMutableArray *)getAllCategory;
+-(NSMutableArray *) getAllImage:(NSString *)key;
 -(void)closeDB;
 @end

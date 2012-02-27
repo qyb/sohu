@@ -12,6 +12,7 @@ from user.helper import get_kan_user_to_xml_etree, \
     input_for_api2_verify_credentials_func, input_for_api2_update_func, \
     update_kan_user_instance
 import logging
+import datetime
 
 
 def verify(request):
@@ -95,7 +96,10 @@ def api2_access_token(request):
         if kan_user_etree is not None:
             response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
-        http_response.set_cookie('access_token', kan_user.get_access_token())
+        http_response.set_cookie('access_token',
+                                 kan_user.get_access_token(),
+                                 expires=datetime.datetime.now() + datetime.timedelta(days=1),
+                                 httponly=False)
     else:
         response_etree = generate_single_xml_etree('status', request.GET.get('status', ''))
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
