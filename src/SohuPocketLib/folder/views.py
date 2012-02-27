@@ -113,4 +113,3 @@ def apiv2_set_order(request):
         response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
         
     return HttpResponse(response, mimetype=mimetype)
-    
