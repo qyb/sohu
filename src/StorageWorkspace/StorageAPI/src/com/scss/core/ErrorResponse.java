@@ -25,6 +25,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
 	
@@ -39,6 +40,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
     /**
@@ -52,6 +54,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
     
@@ -66,6 +69,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
     
@@ -95,6 +99,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "409 Conflict");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(409);
 		return resp;
 	}
     /**
@@ -108,14 +113,8 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "409 Conflict");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(409);
 		return resp;
-	}
-   public int getHttp_status() {
-		return http_status;
-	}
-
-	public void setHttp_status(int http_status) {
-		this.http_status = http_status;
 	}
 
 /**
@@ -129,6 +128,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -142,6 +142,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
    /**
@@ -155,6 +156,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -168,6 +170,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -181,6 +184,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -194,6 +198,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    
@@ -208,6 +213,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -221,6 +227,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -234,6 +241,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -247,7 +255,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "500 Internal Server Error");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
-		resp.http_status = 500;
+		resp.setHttp_status(500);
 		return resp;
 	}
    /**
@@ -261,6 +269,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
    /**
@@ -274,6 +283,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "N/A");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(0);
 		return resp;
 	}
    /**
@@ -287,6 +297,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -300,6 +311,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -313,6 +325,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "409 Conflict");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(409);
 		return resp;
 	}
    /**
@@ -326,6 +339,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -339,6 +353,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -352,6 +367,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -365,6 +381,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -378,6 +395,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
    
@@ -392,6 +410,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -405,6 +424,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "416 Requested Range Not Satisfiable");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(416);
 		return resp;
 	}
    /**
@@ -418,6 +438,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -431,6 +452,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
    /**
@@ -444,6 +466,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -457,6 +480,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -470,6 +494,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -483,6 +508,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -496,6 +522,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -509,6 +536,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -522,6 +550,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -535,6 +564,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -548,6 +578,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -561,6 +592,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -574,6 +606,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -587,6 +620,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "405 Method Not Allowed");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(405);
 		return resp;
 	}
   /**
@@ -600,6 +634,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "N/A");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(0);
 		return resp;
 	}
    /**
@@ -613,6 +648,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "411 Length Required");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(411);
 		return resp;
 	}
    /**
@@ -626,6 +662,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -639,6 +676,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -652,6 +690,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -665,6 +704,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
     /**
@@ -692,6 +732,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(404);
 		return resp;
 	}
 	/**
@@ -705,6 +746,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(404);
 		return resp;
 	}
 	/**
@@ -718,6 +760,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(404);
 		return resp;
 	}
     /**
@@ -731,6 +774,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(404);
 		return resp;
 	}
    /**
@@ -744,6 +788,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "501 NotImplemented");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(501);
 		return resp;
 	}
    /**
@@ -757,6 +802,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
    /**
@@ -770,6 +816,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(404);
 		return resp;
 	}
    /**
@@ -783,6 +830,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "409 Conflict");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(409);
 		return resp;
 	}
    /**
@@ -796,6 +844,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "301 Moved Permanently");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(301);
 		return resp;
 	}
    /**
@@ -809,6 +858,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "412 Precondition Failed");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(412);
 		return resp;
 	}
    /**
@@ -822,6 +872,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "307 Moved Temporarily");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(307);
 		return resp;
 	}
    /**
@@ -835,6 +886,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -848,6 +900,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -861,6 +914,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
    /**
@@ -874,6 +928,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -887,6 +942,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "403 Forbidden");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(403);
 		return resp;
 	}
    /**
@@ -900,6 +956,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "503 Service Unavailable");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(503);
 		return resp;
 	}
    /**
@@ -913,6 +970,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "503 Slow Down");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(503);
 		return resp;
 	}
    /**
@@ -926,6 +984,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "307 Moved Temporarily");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(307);
 		return resp;
 	}
 	/**
@@ -939,6 +998,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -952,6 +1012,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -965,6 +1026,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
    /**
@@ -978,6 +1040,7 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
 		return resp;
 	}
 	/**
@@ -991,6 +1054,36 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
+		return resp;
+	}
+   /**
+    * delete the bucket before delete all objects association with it
+    * @param req
+    * @return
+    */
+   public static ErrorResponse DeleteBucketBeforeDeleteObject(APIRequest req){
+	   
+	    ErrorResponse resp = new ErrorResponse("DeleteBucketBeforeDeleteObject", "delete the bucket before delete all objects association with it", req.Path, req.RequestID);
+		resp.getHeaders().put(CommonResponseHeader.STATUS, "400 Bad Request");
+		resp.Repr = new StringRepresentation(resp.getResponseText());
+		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(400);
+		return resp;
+	   
+   }
+   /**
+    * The object does not exist.
+    * @param req
+    * @return
+    */
+   public static ErrorResponse NoSuchObject(APIRequest req) {
+		
+		ErrorResponse resp = new ErrorResponse("NoSuchObject", "The object does not exist.", req.Path, req.RequestID);
+		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
+		resp.Repr = new StringRepresentation(resp.getResponseText());
+		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(404);
 		return resp;
 	}
 	
@@ -1000,8 +1093,12 @@ public class ErrorResponse extends APIResponse{
 		resp.getHeaders().put(CommonResponseHeader.STATUS, "404 Not Found");
 		resp.Repr = new StringRepresentation(resp.getResponseText());
 		resp.MediaType = Mimetypes.APPLICATION_XML;
+		resp.setHttp_status(404);
 		return resp;
 	}
+	
+	
+	
 	
 	
 	protected static String getErrorResponseText(String code, String message, String resource, String requestID) {
@@ -1042,5 +1139,13 @@ public class ErrorResponse extends APIResponse{
 
 	public String getRequestID() {
 		return requestID;
+	}
+	
+	public int getHttp_status() {
+		return http_status;
+	}
+
+	public void setHttp_status(int http_status) {
+		this.http_status = http_status;
 	}
 }
