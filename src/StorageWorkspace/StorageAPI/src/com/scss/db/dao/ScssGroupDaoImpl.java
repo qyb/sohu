@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
+import com.scss.db.exception.UserInGroupException;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssUser;
 
@@ -53,7 +54,12 @@ public class ScssGroupDaoImpl {
 		return su;
 	}
 
-	public void putUserToGroup(ScssUser user, ScssGroup sg) throws SQLException {
+	public void putUserToGroup(ScssUser user, ScssGroup sg)
+			throws SQLException, UserInGroupException {
+		String userIds = sg.getUserIds();
+		if (userIds.indexOf("," + user.getId() + ",") != -1) {
+			throw new UserInGroupException(user.getSohuId(), sg.getName());
+		}
 		putUserIdsToGroup(user.getId() + "", sg);
 	}
 
