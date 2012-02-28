@@ -5,16 +5,16 @@ from common.helper import KanError
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from folder.helper import create_or_get_folder_by_name, input_for_apiv2_add, \
-    convert_folder_to_etree, input_for_apiv2_list, select_folder_list, \
-    convert_folder_list_to_etree, input_for_apiv2_update, modify_folder_by_name, \
-    input_for_apiv2_delete, get_folder_by_name, delete_folder, \
-    input_for_apiv2_set_order, set_order_by_name
+from folder.helper import create_or_get_folder_by_name, input_for_api2_add, \
+    convert_folder_to_etree, input_for_api2_list, select_folder_list, \
+    convert_folder_list_to_etree, input_for_api2_update, modify_folder_by_name, \
+    input_for_api2_delete, get_folder_by_name, delete_folder, \
+    input_for_api2_set_order, set_order_by_name
 from lxml import etree
 from user.helper import KanUser
 
-def apiv2_list(request):
-    access_token_input = input_for_apiv2_list(request)
+def api2_list(request):
+    access_token_input = input_for_api2_list(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     mimetype = 'text/xml'
@@ -29,8 +29,8 @@ def apiv2_list(request):
     return HttpResponse(response, mimetype=mimetype)
 
 
-def apiv2_add(request): 
-    access_token_input, name = input_for_apiv2_add(request)
+def api2_add(request): 
+    access_token_input, name = input_for_api2_add(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     mimetype = 'text/xml'
@@ -45,8 +45,8 @@ def apiv2_add(request):
     return HttpResponse(response, mimetype=mimetype)
 
 
-def apiv2_update(request):
-    access_token_input, modify_info = input_for_apiv2_update(request)
+def api2_update(request):
+    access_token_input, modify_info = input_for_api2_update(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     mimetype = 'text/xml'
@@ -69,8 +69,8 @@ def apiv2_update(request):
     return HttpResponse(response, mimetype=mimetype)
 
 
-def apiv2_delete(request):
-    access_token_input, name = input_for_apiv2_delete(request)
+def api2_delete(request):
+    access_token_input, name = input_for_api2_delete(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     mimetype = 'text/xml'
@@ -94,8 +94,8 @@ def apiv2_delete(request):
     return HttpResponse(response, mimetype=mimetype)
 
 
-def apiv2_set_order(request):
-    access_token_input, order = input_for_apiv2_set_order(request)
+def api2_set_order(request):
+    access_token_input, order = input_for_api2_set_order(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     mimetype = 'text/xml'
