@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias alias="bucket" type="com.scss.db.model.ScssBucket" />
+	<!-- bean属性和数据库字段的对应关系 -->
+	<resultMap id="scssBucket" class="bucket">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+	   	<result property="ownerId" column="owner_id"/>
+	     <result property="exprirationEnabled" column="expriration_enabled"/>
+	     <result property="loggingEnabled" column="logging_enabled"/>
+	     <result property="meta" column="meta"/>
+	     <result property="deleted" column="deleted"/>
+	     <result property="createTime" column="create_time"/>
+	     <result property="modifyTime" column="modify_time"/>
+	</resultMap>
+	
+	
+	<statement id="getBucket" resultMap="scssBucket" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `name`,
+	        `owner_id`,
+	        `expriration_enabled`,
+	        `logging_enabled`,
+	        `meta`,
+	        `deleted`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_bucket`
+	    where `id`=#id#
+	</statement>
+	<statement id="getBucketByName" resultMap="scssBucket" parameterClass="String" cacheModel="myCache">
+		select
+	        `id`,
+	        `name`,
+	        `owner_id`,
+	        `expriration_enabled`,
+	        `logging_enabled`,
+	        `meta`,
+	        `deleted`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_bucket`
+	    where `name`=#name#
+	</statement>
+	
+	<statement id="updateBucket" parameterClass="bucket" cacheModel="myCache">
+		update
+			 `scss_bucket`
+		set
+	        `id`=#id#,
+	        `name`=#name#,
+	        `owner_id`=#ownerId#,
+	        `expriration_enabled`=#exprirationEnabled#,
+	        `logging_enabled`=#loggingEnabled#,
+	        `meta`=#meta#,
+	        `deleted`=#deleted#,
+	        `create_time`=#createTime#,
+	        `modify_time`=#modifyTime# 
+	    where `id`=#id#
+	</statement>
+	<statement id="deleteBucket" parameterClass="bucket" cacheModel="myCache">
+		delete from
+			 `scss_bucket`
+	    where `id`=#id#
+	</statement>
+	<statement id="getBuckets" resultMap="scssBucket" cacheModel="myCache">
+		select
+	        `id`,
+	        `name`,
+	        `owner_id`,
+	        `expriration_enabled`,
+	        `logging_enabled`,
+	        `meta`,
+	        `deleted`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_bucket`
+	</statement>
+	
+	<statement id="getBucketsByUser" resultMap="scssBucket" parameterClass="user" cacheModel="myCache">
+		select
+	        `id`,
+	        `name`,
+	        `owner_id`,
+	        `expriration_enabled`,
+	        `logging_enabled`,
+	        `meta`,
+	        `deleted`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_bucket`
+	    where `owner_id`=#id#
+	</statement>
+	<!--  -->
+	<insert id="putBucket" parameterClass="bucket">
+		insert into `scss_bucket`
+			(`name`,
+	        `owner_id`,
+	        `expriration_enabled`,
+	        `logging_enabled`,
+	        `meta`,
+	        `deleted`,
+	        `create_time`,
+	        `modify_time` ) 
+		values( #name#,
+	        #ownerId#,
+	        #exprirationEnabled#,
+	        #loggingEnabled#,
+	        #meta#,
+	        #deleted#,
+	        #createTime#,
+	        #modifyTime#)
+		<selectKey resultClass="long" keyProperty="id">
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+	</insert>
+</sqlMap>
+

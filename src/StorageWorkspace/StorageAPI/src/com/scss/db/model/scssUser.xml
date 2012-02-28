@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias alias="user" type="com.scss.db.model.ScssUser" />
+	<!-- bean属性和数据库字段的对应关系 -->
+	<resultMap id="scssUser" class="user">
+		<result property="id" column="id"/>
+		<result property="sohuId" column="sohu_id"/>
+		<result property="accessKey" column="access_key"/>
+		<result property="status" column="status"/>
+	</resultMap>
+	
+	<!-- 获得所有用户列表 -->
+	<statement id="getScssUsers" resultMap="scssUser" cacheModel="myCache">
+		select
+	        `id`,
+	        `Sohu_ID`,
+	        `access_key`,
+	        `status` 
+	    from
+	        `scss_user`  
+	</statement>
+	
+	<statement id="getUserBySohuId" resultMap="scssUser" parameterClass="String" cacheModel="myCache">
+		select
+	        `id`,
+	        `Sohu_ID`,
+	        `access_key`,
+	        `status` 
+	    from
+	        `scss_user` 
+	    where  `Sohu_ID`=#sohuId#
+	</statement>
+	
+	<statement id="getUserByAccessKey" resultMap="scssUser" parameterClass="String" cacheModel="myCache">
+		select
+	        `id`,
+	        `Sohu_ID`,
+	        `access_key`,
+	        `status` 
+	    from
+	        `scss_user` 
+	    where  `access_key`=#access_key#
+	</statement>
+	
+	<statement id="getUserById" resultMap="scssUser" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `Sohu_ID`,
+	        `access_key`,
+	        `status` 
+	    from
+	        `scss_user` 
+	    where `id`=#id#
+	</statement>
+	<statement id="updateUser" parameterClass="user" cacheModel="myCache">
+		update 
+			`scss_user` 
+		set 
+	        `id`=#id#,
+	        `Sohu_ID`=#sohuId#,
+	        `access_key`=#accessKey#,
+	        `status`=#status#  
+	    where  `id`=#id#
+	</statement>
+	
+	<statement id="deleteUser" parameterClass="Long" cacheModel="myCache">
+		delete from
+			`scss_user` 
+	    where  `id`=#id#
+	</statement>
+	
+	<!--  -->
+	<insert id="putUser" parameterClass="user">
+		insert into `scss_user`(`Sohu_ID`,`access_key`,`status`) 
+		values( #sohuId#,#accessKey#,#status#)
+		<selectKey resultClass="long" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+	</insert>
+</sqlMap>
+
