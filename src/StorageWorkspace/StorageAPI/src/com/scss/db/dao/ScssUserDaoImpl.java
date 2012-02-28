@@ -11,7 +11,7 @@ import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssUser;
 
-public class ScssUserDaoImpl {
+public class ScssUserDaoImpl implements ScssUserDaoInter {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssUserDaoImpl instance = new ScssUserDaoImpl();
 	private static ScssGroupDaoImpl groupDao = ScssGroupDaoImpl.getInstance();
@@ -19,6 +19,7 @@ public class ScssUserDaoImpl {
 	private ScssUserDaoImpl() {
 	}
 
+	@Override
 	public List getUserList() throws SQLException {
 		List userList = sqlMap.queryForList("getScssUsers");
 		return userList;
