@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from lxml import etree
 
 class KanError(object):
     """
@@ -7,6 +8,10 @@ class KanError(object):
     """
     
     error_messages = {
+              '1000': 'User verify failed',
+              '1001': 'Invalid or missing params',
+              '1002': 'Violated operation',
+    
               '1040': 'Rate-limit exceeded',
               '1041': 'Subscription account required',
               '1042': 'Application is suspended',
@@ -29,8 +34,21 @@ class KanError(object):
     def __init__(self, code):
         self.code = code
         
+        return self
+        
     def get_code(self):
+        
         return self.code
         
     def get_message(self):
-        return self.error_messages[self.code]
+        
+        return self.error_messages.get(self.code, 'Unknown error')
+    
+    def get_error_etree(self):
+        error_node = etree.Element('error')
+        code_node = etree.SubElement(error_node, 'code')
+        code_node.text = self.get_code()
+        message_node = etree.SubElement(error_node, 'message')
+        message_node.text = self.get_message()
+        
+        return error_node

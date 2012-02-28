@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from article.helper import generate_single_xml_etree
+from common.helper import KanError
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -12,7 +13,6 @@ from folder.helper import create_or_get_folder_by_name, input_for_apiv2_add, \
 from lxml import etree
 from user.helper import KanUser
 
-
 def apiv2_list(request):
     access_token_input = input_for_apiv2_list(request)
     kan_user = KanUser('', access_token_input)
@@ -23,8 +23,8 @@ def apiv2_list(request):
         folder_list_etree = convert_folder_list_to_etree(folder_list)
         response = etree.tostring(folder_list_etree, xml_declaration=True, encoding='utf-8')
     else:
-        status_etree = generate_single_xml_etree('status', 'invalid input')
-        response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         
     return HttpResponse(response, mimetype=mimetype)
 
@@ -39,8 +39,8 @@ def apiv2_add(request):
         folder_etree = convert_folder_to_etree(folder)
         response = etree.tostring(folder_etree, xml_declaration=True, encoding='utf-8')
     else:
-        status_etree = generate_single_xml_etree('status', 'invalid input')
-        response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
     
     return HttpResponse(response, mimetype=mimetype)
 
@@ -57,14 +57,14 @@ def apiv2_update(request):
                 folder_etree = convert_folder_to_etree(folder)
                 response = etree.tostring(folder_etree, xml_declaration=True, encoding='utf-8')
             else:
-                status_etree = generate_single_xml_etree('status', 'violated operation')
-                response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+                error_etree = KanError('1002').get_error_etree()
+                response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         else:
-            status_etree = generate_single_xml_etree('status', 'invalid input')
-            response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+            error_etree = KanError('1001').get_error_etree()
+            response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
     else:
-        status_etree = generate_single_xml_etree('status', 'verify failed')
-        response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
     
     return HttpResponse(response, mimetype=mimetype)
 
@@ -82,14 +82,14 @@ def apiv2_delete(request):
                 folder_etree = convert_folder_to_etree(None)
                 response = etree.tostring(folder_etree, xml_declaration=True, encoding='utf-8')
             else:
-                status_etree = generate_single_xml_etree('status', 'violated operation')
-                response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+                error_etree = KanError('1002').get_error_etree()
+                response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         else:
-            status_etree = generate_single_xml_etree('status', 'invalid input')
-            response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+            error_etree = KanError('1001').get_error_etree()
+            response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
     else:
-        status_etree = generate_single_xml_etree('status', 'verify failed')
-        response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         
     return HttpResponse(response, mimetype=mimetype)
 
@@ -106,10 +106,10 @@ def apiv2_set_order(request):
             folder_list_etree = convert_folder_list_to_etree(folder_list)
             response = etree.tostring(folder_list_etree, xml_declaration=True, encoding='utf-8')
         else:
-            status_etree = generate_single_xml_etree('status', 'invalid input')
-            response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+            error_etree = KanError('1001').get_error_etree()
+            response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
     else:
-        status_etree = generate_single_xml_etree('status', 'verify failed')
-        response = etree.tostring(status_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         
     return HttpResponse(response, mimetype=mimetype)
