@@ -146,7 +146,6 @@ def api2_count(request):
     kan_user.verify_and_login()
     response = None
     mimetype = 'text/xml'
-    count = 0
     if kan_user.is_logged_in():
         count = get_myarticle_list_count(kan_user.get_user_id(), folder_id)
         response_etree = output_for_api2_count_etree(count)
@@ -163,3 +162,171 @@ def api2_count_test(request, *args, **kwargs):
     
     return render_to_response('api2_bookmarks_count_test.html',
                               context_instance = RequestContext(request))
+
+
+def api2_list(request):
+    access_token_input, offset, limit, folder_name, order_by = input_for_api2_list(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_count(request):
+    access_token_input, folder_name = input_for_api2_count(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_update_read_progress(request):
+    access_token_input, bookmark_id, progress, progress_timestamp = input_for_api2_update_read_progress(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_add(request):
+    access_token_input, url, title, description, folder_name, content = input_for_api2_add(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_delete(request):
+    access_token_input, bookmark_id = input_for_api2_delete(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_update(request):
+    access_token_input, bookmark_id, title, description = input_for_api2_update(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_star(request):
+    access_token_input, bookmark_id = input_for_api2_star(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_unstar(request):
+    access_token_input, bookmark_id = input_for_api2_unstar(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_archive(request):
+    access_token_input, bookmark_id = input_for_api2_archive(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_unarchive(request):
+    access_token_input, bookmark_id = input_for_api2_unarchive(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_move(request):
+    access_token_input, bookmark_id, folder_name = input_for_api2_move(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)
+
+
+def api2_get_text(request):
+    access_token_input, bookmark_id = input_for_api2_get_text(request)
+    kan_user = KanUser('', access_token_input)
+    kan_user.verify_and_login()
+    response = None
+    mimetype = 'text/xml'
+    if kan_user.is_logged_in():
+        pass
+    else:
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+    return HttpResponse(response, mimetype=mimetype)

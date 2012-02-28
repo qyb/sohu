@@ -1,4 +1,4 @@
-package com.scss.db.service;
+package com.scss.db.service.test;
 
 import static org.junit.Assert.*;
 

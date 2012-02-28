@@ -169,7 +169,10 @@ LOGGING = {
 import djcelery
 djcelery.setup_loader()
 
-BROKER_HOST = "localhost"
+if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+    BROKER_HOST = "10.10.69.53"
+else:
+    BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
