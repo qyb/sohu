@@ -86,7 +86,7 @@ public class BucketBussiness {
 	 * @param bucketName
 	 * @return
 	 */
-	public static boolean deleteObject(String key, Long owner_ID, String bucketName)
+	public static String deleteObject(String key, Long owner_ID, String bucketName)
 	{
 		
 		ScssBucket  scssBucket=DBServiceHelper.getBucketByName(bucketName,owner_ID) ;
@@ -96,8 +96,16 @@ public class BucketBussiness {
 			
 			ScssObject obj = DBServiceHelper.getObject(bucketName, key);
 			
-			if(null!=obj&&null != obj.getKey() || null != obj.getBfsFile())
+			if(null!=obj&&null != obj.getKey() && null != obj.getBfsFile())
 			{
+				
+				try {
+					DBServiceHelper.deleteObject(key, owner_ID, scssBucket.getId());
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 				 try {
 					 
 					  BfsClientWrapper.getInstance().deleteFile(obj.getBfsFile());
@@ -105,18 +113,22 @@ public class BucketBussiness {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					
+					//如果失败需要记录下来
 				}
-				 
-				DBServiceHelper.deleteObject(key, owner_ID, scssBucket.getId());
 					
-				return true; 
+				return "ok"; 
 				
+			}
+			else
+			{
+				return "NoSuchObject"; 
 			}
 			
 		}
-		
-		return false;
+		else
+		{
+			return "NoSuchBucket";
+		}
 		
 	}
 	
@@ -124,9 +136,9 @@ public class BucketBussiness {
 	 * 删除bucket
 	 * @param owner_ID
 	 * @param bucketName
-	 * @return
+	 * @return error Message
 	 */
-	public static boolean deleteBucket(Long owner_ID, String bucketName)
+	public static String deleteBucket(Long owner_ID, String bucketName)
 	{
 		ScssBucket  scssBucket=DBServiceHelper.getBucketByName(bucketName,owner_ID);
 		
@@ -136,18 +148,22 @@ public class BucketBussiness {
 			
 			if(null!=scssObjectList&&scssObjectList.size()>0)
 			{
-				return false;
+				return "DeleteBucketBeforeDeleteObject";   //删除这个bucket前它下面的object必须为空
 			}
 			else
 			{
 				DBServiceHelper.deleteBucket(bucketName, owner_ID);
 				
-				return true;
+				return "ok";
 			}
 			
 		}
+		else
+		{
+			   return "NoSuchBucket";
+		}
 		
-		return false;
+		
 		
 	}
 	

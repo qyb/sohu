@@ -73,7 +73,8 @@ public class GET_OBJECT extends ObjectAPI {
 		
 		// set response headers
 		if (null != bfsresult.File) {
-			System.out.printf("Successfully read BFS file : %d (size=%d)\n", bfsresult.FileNumber, bfsresult.Size);
+			
+			logger.info(String.format("Successfully read BFS file : %d (size=%d)\n", bfsresult.FileNumber, bfsresult.Size));
 			
 			APIResponse resp = new BucketAPIResponse();
 			Map<String, String> resp_headers = resp.getHeaders();
