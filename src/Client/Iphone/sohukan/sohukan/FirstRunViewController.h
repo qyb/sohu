@@ -1,5 +1,5 @@
 //
-//  ListViewController.h
+//  FirstRunViewController.h
 //  sohukan
 //
 //  Created by  on 12-2-28.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ListViewController : UITableViewController
+@interface FirstRunViewController : UIViewController
 
 @end
