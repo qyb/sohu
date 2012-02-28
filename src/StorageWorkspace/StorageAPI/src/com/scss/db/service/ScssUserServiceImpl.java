@@ -7,7 +7,7 @@ import com.scss.db.model.ScssUser;
 import com.scss.db.service.inter.ScssUserService;
 
 public class ScssUserServiceImpl implements ScssUserService {
-	private ScssUserDaoInter sudi = ScssUserDaoImpl.getInstance();
+	private ScssUserDaoImpl sudi = ScssUserDaoImpl.getInstance();
 
 	public ScssUser putUser(ScssUser user) throws SameNameException {
 		return sudi.insertUser(user);
