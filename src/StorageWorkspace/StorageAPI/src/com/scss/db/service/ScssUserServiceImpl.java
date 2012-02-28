@@ -1,7 +1,6 @@
 package com.scss.db.service;
 
 import com.scss.db.dao.ScssUserDaoImpl;
-import com.scss.db.dao.inter.ScssUserDaoInter;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssUser;
 import com.scss.db.service.inter.ScssUserService;
