@@ -66,6 +66,8 @@ public class APIRequest {
 		this.BucketName = bucket_name.trim();
 		this.ObjectKey = path.trim();
 		
+		System.out.printf("BucketName=%s\n  ObjectKey=%s\n", this.BucketName, this.ObjectKey);
+		
 		// get content
 		Representation repr = request.getEntity();
 		try {
