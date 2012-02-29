@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias alias="sObject" type="com.scss.db.model.ScssObject" />
+	<!-- bean属性和数据库字段的对应关系 -->
+	<resultMap id="scssObject" class="sObject">
+		<result property="id" column="id"/>
+		<result property="key" column="key"/>
+		<result property="bfsFile" column="bfs_file"/>
+		<result property="ownerId" column="owner_id"/>
+        <result property="bucketId" column="bucket_id"/>
+        <result property="meta" column="meta"/>
+        <result property="sysMeta" column="sys_meta"/>
+        <result property="etag" column="etag"/>
+        <result property="size" column="size"/>
+        <result property="mediaType" column="media_type"/>
+        <result property="versionEnabled" column="version_enabled"/>
+        <result property="version" column="version"/>
+        <result property="deleted" column="deleted"/>
+        <result property="expirationTime" column="expiration_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+	</resultMap>
+	
+	<!-- 获得所有用户列表 -->
+	<statement id="getObjectsByUserId" resultMap="scssObject" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `key`,
+	        `bfs_file`,
+	        `owner_id`,
+	        `bucket_id`,
+	        `meta`,
+	        `sys_meta`,
+	        `etag`,
+	        `size`,
+	        `media_type`,
+	        `version_enabled`,
+	        `version`,
+	        `deleted`,
+	        `expiration_time`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_object`  
+        where `owner_id`=#owner_id#
+	</statement>
+	<statement id="getObjectsByBucketId" resultMap="scssObject" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `key`,
+	        `bfs_file`,
+	        `owner_id`,
+	        `bucket_id`,
+	        `meta`,
+	        `sys_meta`,
+	        `etag`,
+	        `size`,
+	        `media_type`,
+	        `version_enabled`,
+	        `version`,
+	        `deleted`,
+	        `expiration_time`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_object`  
+        where `bucket_id`=#bucket_id#
+	</statement>
+	
+	<statement id="getObjectByBFSFile" resultMap="scssObject" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `key`,
+	        `bfs_file`,
+	        `owner_id`,
+	        `bucket_id`,
+	        `meta`,
+	        `sys_meta`,
+	        `etag`,
+	        `size`,
+	        `media_type`,
+	        `version_enabled`,
+	        `version`,
+	        `deleted`,
+	        `expiration_time`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_object` 
+	    where `bfs_file`=#bfsFile#
+	</statement>
+	
+	<statement id="getObjectById" resultMap="scssObject" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `key`,
+	        `bfs_file`,
+	        `owner_id`,
+	        `bucket_id`,
+	        `meta`,
+	        `sys_meta`,
+	        `etag`,
+	        `size`,
+	        `media_type`,
+	        `version_enabled`,
+	        `version`,
+	        `deleted`,
+	        `expiration_time`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_object` 
+	    where `id`=#id#
+	</statement>
+	<statement id="updateObject" parameterClass="sObject" cacheModel="myCache">
+		update 
+			`scss_object` 
+		set 
+	        `key`=#key#,
+	        `bfs_file`=#bfsFile#,
+	        `owner_id`=#ownerId#,
+	        `bucket_id`=#bucketId#,
+	        `meta`=#meta#,
+	        `sys_meta`=#sysMeta#,
+	        `etag`=#etag#,
+	        `size`=#size#,
+	        `media_type`=#mediaType#,
+	        `version_enabled`=#versionEnabled#,
+	        `version`=#version#,
+	        `deleted`=#deleted#,
+	        `expiration_time`=#expirationTime#,
+	        `create_time`=#createTime#,
+	        `modify_time`=#modifyTime#
+	    where  `id`=#id#
+	</statement>
+	
+	<statement id="deleteObject" parameterClass="Long" cacheModel="myCache">
+		delete from
+			`scss_object` 
+	    where  `id`=#id#
+	</statement>
+	<statement id="deleteObjectByBFSKey" parameterClass="Long" cacheModel="myCache">
+		delete from
+			`scss_object` 
+	    where  `bfs_file`=#bfs_file#
+	</statement>
+	
+	
+	<!--  -->
+	<insert id="putObject" parameterClass="sObject">
+		insert into `scss_object`(
+	        `key`,
+	        `bfs_file`,
+	        `owner_id`,
+	        `bucket_id`,
+	        `meta`,
+	        `sys_meta`,
+	        `etag`,
+	        `size`,
+	        `media_type`,
+	        `version_enabled`,
+	        `version`,
+	        `deleted`,
+	        `expiration_time`,
+	        `create_time`,
+	        `modify_time`)
+        values(
+        	#key#,
+	        #bfsFile#,
+	        #ownerId#,
+	        #bucketId#,
+	        #meta#,
+	        #sysMeta#,
+	        #etag#,
+	        #size#,
+	        #mediaType#,
+	        #versionEnabled#,
+	        #version#,
+	        #deleted#,
+	        #expirationTime#,
+	        #createTime#,
+	        #modifyTime#)
+		<selectKey resultClass="long" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+	</insert>
+</sqlMap>
+

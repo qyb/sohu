@@ -26,7 +26,7 @@ public class DBServiceHelper {
 
 	static {
 		if (connPool == null)
-			connPool = new ConnectionPool("/db.properties");
+			connPool = new ConnectionPool("db.properties");
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class DBServiceHelper {
 	 * 
 	 * @param ScssObject
 	 *            object: Object 实例，除了ID之外其他全部要求有真实值.<br>
-	 * @return ScssObject :返回刚存入好的Object<br>
+	 * @return ScssObject :返回刚存入的Object<br>
 	 * @throws SameNameException
 	 */
 	public static ScssObject putObject(ScssObject object)
@@ -784,7 +784,7 @@ public class DBServiceHelper {
 			return result;
 		}
 		String[] split = userIds.split(",");
-		for (int i = 1; i < split.length - 1; ++i) {
+		for (int i = 1; i < split.length; ++i) {
 			result.add(getUserById(Long.parseLong(split[i])));
 		}
 		return result;
@@ -1533,27 +1533,25 @@ public class DBServiceHelper {
 		ScssBucket so = new ScssBucket();
 		try {
 			connection = connPool.getConnection();
-			String sql = "select `id`,`name`,`owner_ID`,`expriration_enabled`,"
-					+ "`Logging_enabled`,`Meta`,`deleted`,`create_time`,`Modify_time` "
+			String sql = "select `id`,`name`,`owner_id`,`expriration_enabled`,"
+					+ "`logging_enabled`,`meta`,`deleted`,`create_time`,`modify_time` "
 					+ "from `scss_bucket` as bucket  " + "where  bucket.id=?";
 			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, bucketId);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
-
-				so.setId(Long.valueOf(rs.getLong("ID")));
+				so.setId(Long.valueOf(rs.getLong("id")));
 				so.setName(rs.getString("name"));
-				so.setOwnerId(Long.valueOf(rs.getLong("owner_ID")));
-				so.setMeta(rs.getString("Meta"));
+				so.setOwnerId(Long.valueOf(rs.getLong("owner_id")));
+				so.setMeta(rs.getString("meta"));
 				so.setCreateTime(rs.getTimestamp("create_time"));
-				so.setModifyTime(rs.getTimestamp("Modify_time"));
+				so.setModifyTime(rs.getTimestamp("modify_time"));
 				so.setDeleted(Byte.valueOf(rs.getByte("deleted")));
 				so.setExprirationEnabled(Byte.valueOf(rs
 						.getByte("expriration_enabled")));
 				so.setLoggingEnabled(Byte
-						.valueOf(rs.getByte("Logging_enabled")));
+						.valueOf(rs.getByte("logging_enabled")));
 			}
-
 			rs.close();
 			stmt.close();
 			connection.close();

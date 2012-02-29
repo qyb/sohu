@@ -18,7 +18,6 @@ import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonRequestHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
-import com.scss.core.MD5DigestInputStream;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
 import com.scss.db.exception.SameNameException;
@@ -26,6 +25,7 @@ import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
+import com.scss.utility.Logger;
 
 
 /**
@@ -37,6 +37,8 @@ public class PUT_OBJECT extends ObjectAPI {
 	/* (non-Javadoc)
 	 * @see com.bfsapi.ICallable#Invoke(com.scss.core.APIRequest)
 	 */
+	
+	
 	@Override
 	public APIResponse Invoke(APIRequest req) {
 		// TODO: !!! need to re-organize. extract to pre-invoke post-invoke !!! 
@@ -104,7 +106,7 @@ public class PUT_OBJECT extends ObjectAPI {
 	
 				// TODO: consider which is first, insert db or insert file.
 				// TODO: do need to delete the old BFS file?
-				System.out.printf("BFS file no : %d (size=%d)\n", bfsresult.FileNumber, bfsresult.Size);
+				logger.info(String.format("BFS file no : %d (size=%d)\n", bfsresult.FileNumber, bfsresult.Size));
 				// TODO: db needs to lock the record?
 				obj = DBServiceHelper.getObject(req.BucketName, req.ObjectKey);
 				if (null != obj) {
@@ -154,7 +156,7 @@ public class PUT_OBJECT extends ObjectAPI {
 			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(bucket.getModifyTime()));
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0");
 			resp_headers.put(CommonResponseHeader.ETAG, etag);
-			System.out.printf("Computed ETAG : %s\n", etag );
+			logger.info(String.format("Computed ETAG : %s\n", etag ));
 
 			
 			// generate representation

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias alias="group" type="com.scss.db.model.ScssGroup" />
+	<!-- bean属性和数据库字段的对应关系 -->
+	<resultMap id="scssGroup" class="group">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="userIds" column="user_ids"/>
+	</resultMap>
+	
+	<!-- 获得所有用户列表 -->
+	<statement id="getScssGroups" resultMap="scssGroup" cacheModel="myCache">
+		select
+	        `id`,
+	        `name`,
+	        `user_ids` 
+	    from
+	        `scss_group`  
+	</statement>
+	
+	<statement id="getGroupByName" resultMap="scssGroup" parameterClass="String" cacheModel="myCache">
+		select
+	        `id`,
+	        `name`,
+	        `user_ids` 
+	    from
+	        `scss_group`  
+	    where  `name`=#name#
+	</statement>
+	
+	<statement id="updateGroup" parameterClass="group" cacheModel="myCache">
+		update
+			`scss_group`
+		set
+			`id`=#id#,
+	        `name`=#name#,
+	        `user_ids`=#userIds#
+	          
+	    where  `id`=#id#
+	</statement>
+	
+	<statement id="getGroupById" resultMap="scssGroup" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `name`,
+	        `user_ids` 
+	    from
+	        `scss_group`  
+	    where  `id`=#id#
+	</statement>
+	
+	<statement id="deleteGroup" parameterClass="Long" cacheModel="myCache">
+		delete from
+			`scss_group` 
+	    where  `id`=#id#
+	</statement>
+	<!--  -->
+	<insert id="putGroup" parameterClass="group">
+		insert into `scss_group`(`name`,`user_ids`) 
+		values( #name#,',')
+		<selectKey resultClass="long" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+	</insert>
+</sqlMap>
+

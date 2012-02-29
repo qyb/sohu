@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from article.models import MyArticleInstance
-from constants import LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, BUCKET_NAME_IMAGE, \
-    KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, FALSE_REPR
+from constants import KEY_FOLDER, LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
+    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, \
+    FALSE_REPR
 from datetime import datetime
-from django.core.cache import cache
 from image.models import MyImageInstance
 from lxml import etree
 from storage.helper import get_data_url
@@ -308,7 +308,7 @@ def input_for_modify_func(request):
     return access_token_input, modify_info
 
 
-def input_for_list_count_func(request):
+def input_for_api2_count(request):
     if request.method == 'POST':
         try:
             access_token_input = request.COOKIES['access_token']
@@ -337,7 +337,7 @@ def mark_article_as_done(update_article_info):
     return is_successful
 
 
-def output_for_list_count_func_etree(article_count):
+def output_for_api2_count_etree(article_count):
     meta = etree.Element('meta')
     
     count = etree.SubElement(meta, 'count')
