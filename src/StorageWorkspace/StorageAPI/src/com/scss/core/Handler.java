@@ -26,6 +26,9 @@ import org.restlet.resource.ServerResource;
 
 import com.scss.Operation;
 import com.scss.OperationResult;
+import com.scss.core.security.AuthorizationBase;
+import com.scss.core.security.AuthorizationTypes;
+import com.scss.core.security.IAuth;
 import com.scss.db.User;
 
 
@@ -179,13 +182,8 @@ public class Handler extends ServerResource {
 	 * TODO: convert to class or module
 	 */
 	protected Boolean Authorize(APIRequest req) {
-		// TODO: to invoke Authorization system
-		String auth_str = req.getHeaders().get(CommonRequestHeader.AUTHORIZATION);
-		//String[] keys = auth_str.split(":");
-		//System.out.printf("Access Key ID : %s - %s\n", keys[0], keys[1]);
-		//User user = new User(DBServiceHelper.getUserByAccessKey(keys[0]));
-		req.setUser(User.EveryOne);
-		return true;
+		IAuth auth = AuthorizationBase.createInstace(req, AuthorizationTypes.GENERAL);
+		return auth.authorize();
 	}
 	
 	/*
