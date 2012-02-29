@@ -13,6 +13,7 @@ from lxml import etree
 from page.tasks import PageFetchHandler
 from user.helper import KanUser
 import logging
+from common.helper import KanError
 
 
 def list(request, format):
@@ -151,8 +152,8 @@ def api2_count(request):
         response_etree = output_for_api2_count_etree(count)
         response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
     else:
-        response_etree = generate_single_xml_etree('status', 'verify failed')
-        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
     
     return HttpResponse(response, mimetype=mimetype)
     
@@ -166,20 +167,6 @@ def api2_count_test(request, *args, **kwargs):
 
 def api2_list(request):
     access_token_input, offset, limit, folder_name, order_by = input_for_api2_list(request)
-    kan_user = KanUser('', access_token_input)
-    kan_user.verify_and_login()
-    response = None
-    mimetype = 'text/xml'
-    if kan_user.is_logged_in():
-        pass
-    else:
-        error_etree = KanError('1000').get_error_etree()
-        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
-    return HttpResponse(response, mimetype=mimetype)
-
-
-def api2_count(request):
-    access_token_input, folder_name = input_for_api2_count(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     response = None

@@ -5,11 +5,13 @@ from constants import KEY_FOLDER, LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
     BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, \
     FALSE_REPR
 from datetime import datetime
+from django.core.cache import cache
 from image.models import MyImageInstance
 from lxml import etree
 from storage.helper import get_data_url
 import hashlib
 import logging
+import time
 
 
 class UpdateArticleInfo(object):
@@ -185,6 +187,7 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
             is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
         
             create_time = etree.SubElement(article, 'create_time')
+#            create_time.text = unicode(time.mktime(myarticle_instance.create_time.timetuple()))
             create_time.text = unicode(myarticle_instance.create_time)
         
     return article
@@ -288,7 +291,7 @@ def input_for_destroy_func(request):
     else:
         access_token_input = ''
         
-    return access_token_input    
+    return access_token_input
 
 
 def input_for_modify_func(request):
@@ -344,3 +347,134 @@ def output_for_api2_count_etree(article_count):
     count.text = str(article_count)
     
     return meta
+
+
+def input_for_api2_list(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+        offset = request.POST.get('offset', '')
+        try:
+            offset = int(offset)
+        except:
+            offset = 0
+        limit = request.POST.get('limit', '')
+        try:
+            limit = int(offset)
+        except:
+            limit = 20
+        folder_name = request.POST.get('folder_name', '')
+        order_by = request.POST.get('order_by', '')
+    else:
+        access_token_input = ''
+        offset = 0
+        limit = 20
+        folder_name = ''
+        order_by = ''
+        
+    return access_token_input, offset, limit, folder_name, order_by
+
+
+def input_for_api2_update_read_progress(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+        bookmark_id = request.POST.get('bookmark_id', '')
+        progress = request.POST.get('progress', '')
+        try:
+            progress = float(progress)
+        except:
+            progress = None
+        progress_timestamp = request.COOKIES.get('progress_timestamp')
+        try:
+            progress_timestamp = datetime.fromtimestamp(float(progress_timestamp))
+        except:
+            progress = None
+            progress_timestamp = None
+    else:
+        access_token_input = ''
+        bookmark_id = ''
+        progress = None
+        progress_timestamp = None
+    
+    return access_token_input, bookmark_id, progress, progress_timestamp
+
+
+def input_for_api2_add(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+        url = request.POST.get('url', '')
+    else:
+        pass
+    
+    return access_token_input, url, title, description, folder_name, content
+
+
+def input_for_api2_delete(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        pass
+    
+    return access_token_input, bookmark_id
+
+
+def input_for_api2_update(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        pass
+    
+    return access_token_input, bookmark_id, title, description
+
+
+def input_for_api2_star(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        pass
+    
+    return access_token_input, bookmark_id
+
+
+def input_for_api2_unstar(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        pass
+    
+    return access_token_input, bookmark_id
+
+
+def input_for_api2_archive(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        pass
+    
+    return access_token_input, bookmark_id
+
+
+def input_for_api2_unarchive(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        pass
+    
+    return access_token_input, bookmark_id
+
+
+def input_for_api2_move(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        pass
+    
+    return access_token_input, bookmark_id, folder_name
+
+
+def input_for_api2_get_text(request):
+    if request.method == 'POST':
+        access_token_input = request.COOKIES.get('access_token', '')
+    else:
+        pass
+    
+    return access_token_input, bookmark_id

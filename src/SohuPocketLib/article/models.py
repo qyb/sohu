@@ -15,11 +15,11 @@ class MyArticleInstance(MultiDB):
     cover = models.CharField(max_length=128, blank=True)        #网页HEADER图片
     is_star = models.BooleanField(default=False)                #是否标记星标
     is_delete = models.BooleanField(default=False)              #是否删除
-    create_time = models.DateTimeField(auto_now_add=True)       #文章创建时间
+    create_time = models.DateTimeField(null=True, blank=True)   #文章创建时间
     read_time = models.DateTimeField(null=True, blank=True)     #标记为已读时间
     delete_time = models.DateTimeField(null=True, blank=True)   #标记为删除时间
     is_ready = models.BooleanField(default=False)               #是否已处理完毕
-    folder_name = models.CharField(max_length=256)              #所属文件夹
+#    folder_name = models.CharField(max_length=256)              #所属文件夹
 
     def __unicode__(self):
         
