@@ -13,7 +13,7 @@ public class ScssUser implements java.io.Serializable {
 	private Long id;
 	private String sohuId;
 	private String accessKey;
-	private String status;
+	private String status="B";
 
 	// Constructors
 

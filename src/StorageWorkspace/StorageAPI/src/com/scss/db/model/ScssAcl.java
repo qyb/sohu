@@ -12,10 +12,10 @@ public class ScssAcl implements java.io.Serializable {
 
 	private Long id;
 	private Long resourceId;
-	private String resourceType;
+	private String resourceType = "O";
 	private Long accessorId;
-	private Long accessorType;
-	private String permission;
+	private String accessorType = "U";
+	private String permission = "R";
 
 	// Constructors
 
@@ -25,7 +25,7 @@ public class ScssAcl implements java.io.Serializable {
 
 	/** full constructor */
 	public ScssAcl(Long id, Long resourceId, String resourceType,
-			Long accessorId, Long accessorType, String permission) {
+			Long accessorId, String accessorType, String permission) {
 		this.id = id;
 		this.resourceId = resourceId;
 		this.resourceType = resourceType;
@@ -68,20 +68,20 @@ public class ScssAcl implements java.io.Serializable {
 		this.accessorId = accessorId;
 	}
 
-	public Long getAccessorType() {
-		return this.accessorType;
-	}
-
-	public void setAccessorType(Long accessorType) {
-		this.accessorType = accessorType;
-	}
-
 	public String getPermission() {
 		return this.permission;
 	}
 
 	public void setPermission(String permission) {
 		this.permission = permission;
+	}
+
+	public String getAccessorType() {
+		return accessorType;
+	}
+
+	public void setAccessorType(String accessorType) {
+		this.accessorType = accessorType;
 	}
 
 }
