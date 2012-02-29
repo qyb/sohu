@@ -3,11 +3,13 @@ package com.scss.db.ibatis;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.scss.db.dao.ScssAclDaoImpl;
 import com.scss.db.dao.ScssBucketDaoImpl;
 import com.scss.db.dao.ScssGroupDaoImpl;
 import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.dao.ScssUserDaoImpl;
 import com.scss.db.exception.SameNameException;
+import com.scss.db.model.ScssAcl;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssObject;
@@ -39,16 +41,19 @@ public class TestMain {
 		// Test Bucket
 		ScssBucketDaoImpl sbd = ScssBucketDaoImpl.getInstance();
 		List<ScssBucket> bucketsByUser = sbd.getBucketsByUser(scssUser);
-
-		ScssBucket bucket = sbd.getBucket("boto-test122111");
+		ScssBucket bucket = new ScssBucket();
+		bucket.setName("test_bucket");
+		bucket.setOwnerId(1l);
+		bucket.setMeta("Meta_test");
+		bucket.setDeleted((byte)1);
+		bucket.setLoggingEnabled((byte)1);
+		bucket = sbd.insertBucket(bucket);
+		bucket = sbd.getBucket(bucket.getName());
 		bucket = sbd.getBucket(bucket.getId());
 		bucket = sbd.getBucket(bucket);
-		bucket.setName("boto-test1111");
-		bucket = sbd.insertBucket(bucket);
-		sbd.deleteBucket(bucket);
-		bucket.setName("boto-test122111");
+		bucket.setName("test_bucket2");
 		sbd.updateBucket(bucket);
-//		sbd.deleteBucket(bucket);
+		sbd.deleteBucket(bucket);
 
 		// Test Object
 		ScssObjectDaoImpl sod = ScssObjectDaoImpl.getInstance();
@@ -61,6 +66,20 @@ public class TestMain {
 		object.setKey("/test");
 		object = sod.insertObject(object);
 		sod.deleteObject(object);
+
+		// Test Acl
+		ScssAclDaoImpl sad = ScssAclDaoImpl.getInstance();
+		ScssAcl acl = new ScssAcl();
+		acl.setResourceId(43l);
+		acl.setAccessorId(1l);
+		acl.setResourceType("O");
+		acl.setAccessorType("U");
+		acl.setPermission("R");
+		acl = sad.insertAcl(acl);
+		acl.setPermission("W");
+		sad.updateAcl(acl);
+		acl = sad.getAcl(acl.getId());
+		sad.deleteAcl(acl);
 	}
 
 }

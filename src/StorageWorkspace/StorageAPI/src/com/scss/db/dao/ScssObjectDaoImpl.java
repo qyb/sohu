@@ -7,11 +7,13 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssObject;
+import com.scss.utility.Logger;
 
 public class ScssObjectDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssObjectDaoImpl instance = new ScssObjectDaoImpl();
-
+	private static final Logger logger = Logger.getLogger("DAO/SCSSOBJECT", 0,
+			true);
 	private ScssObjectDaoImpl() {
 	}
 
@@ -34,8 +36,19 @@ public class ScssObjectDaoImpl {
 	public ScssObject insertObject(ScssObject object) throws SameNameException {
 		try {
 			object.setId((Long) sqlMap.insert("putObject", object));
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+			SameNameException ename = new SameNameException("ObjectExists",
+					"Object is exists in  the bucket Which id is "
+							+ object.getBucketId() + "");
+			throw ename;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			String message = e.getMessage();
+			logger.debugT(message);
+			if (message.indexOf("Duplicate entry") != -1) {
+				SameNameException ename = new SameNameException(
+						"key,user and BucketName", "Duplicate entry");
+				throw ename;
+			}
 		}
 		return object;
 	}

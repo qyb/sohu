@@ -20,12 +20,13 @@ public class ScssObject implements java.io.Serializable {
 	private String meta;
 	private String sysMeta;
 	private String etag;
-	private Long size;
+	private Long size = 0l;
 	private String mediaType;
-	private Byte versionEnabled;
-	private String version;
+	private Byte versionEnabled = (byte) 0;
+	private String version = "";
 	private Byte deleted;
-	private Date expirationTime;
+	private Date expirationTime = new Date(System.currentTimeMillis() + 1000
+			* 60 * 60 * 24 * 7);
 	private Date createTime;
 	private Date modifyTime;
 

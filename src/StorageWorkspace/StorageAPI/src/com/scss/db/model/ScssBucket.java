@@ -15,12 +15,12 @@ public class ScssBucket implements java.io.Serializable {
 	private Long id;
 	private String name;
 	private Long ownerId;
-	private Byte exprirationEnabled;
-	private Byte loggingEnabled;
-	private String meta;
-	private Byte deleted;
-	private Date createTime;
-	private Date modifyTime;
+	private Byte exprirationEnabled = (byte) 1;
+	private Byte loggingEnabled = (byte) 0;
+	private String meta = "";
+	private Byte deleted = (byte) 0;
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 
 	// Constructors
 
