@@ -17,7 +17,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -131,12 +131,22 @@ public class Handler extends ServerResource {
 					resp_headers = new Form();  
 					getResponse().getAttributes().put("org.restlet.http.headers", resp_headers);  
 				} 
+				
 				for (String key: resp.getHeaders().keySet()) {
 					//TODO: fix the warning
 					//2012-2-20 12:05:47 org.restlet.engine.http.header.HeaderUtils addExtensionHeaders
 					//警告: Addition of the standard header "Content-Length" is not allowed. Please use the equivalent property in the Restlet API.
-					resp_headers.set(key, resp.getHeaders().get(key));
+					//resp_headers.set(key, resp.getHeaders().get(key));
+					resp_headers.add(key, resp.getHeaders().get(key));
+					
 				}
+				
+				getResponse().getServerInfo().setAgent("SohuS4");
+				getResponse().setLocationRef("/" + req.BucketName);
+				
+			
+				
+				
 			} else {
 				ErrorResponse err_resp = (ErrorResponse)resp;
 				this.getResponse().setStatus(new Status(err_resp.getHttp_status()));
@@ -193,7 +203,7 @@ public class Handler extends ServerResource {
 	 * TODO : Promote per resource.
 	 */
 	protected void Init () {
-		Set<Method> allowedMethods = new HashSet<Method>();
+		Set<Method> allowedMethods = new HashSet<Method>(); 
 		allowedMethods.add(Method.GET);
 		allowedMethods.add(Method.PUT);
 		allowedMethods.add(Method.POST);

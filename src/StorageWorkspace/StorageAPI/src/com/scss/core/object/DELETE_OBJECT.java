@@ -65,10 +65,7 @@ public class DELETE_OBJECT extends ObjectAPI {
 					//如果失败需要记录下来
 				}
 				 
-				resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
-				resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");	
-				resp_headers.put(CommonResponseHeader.CONNECTION, "close");
-				resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
+				CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
 				resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0");
 				//TODO: set user meta
 				// user_meta key-value pair -> header
