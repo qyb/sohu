@@ -9,11 +9,14 @@ import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssUser;
+import com.scss.utility.Logger;
 
 public class ScssUserDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssUserDaoImpl instance = new ScssUserDaoImpl();
 	private static ScssGroupDaoImpl groupDao = ScssGroupDaoImpl.getInstance();
+	private static final Logger logger = Logger.getLogger("DAO/SCSSUSER", 0,
+			true);
 
 	private ScssUserDaoImpl() {
 	}
@@ -38,8 +41,25 @@ public class ScssUserDaoImpl {
 	public ScssUser insertUser(ScssUser user) throws SameNameException {
 		try {
 			user.setId((Long) sqlMap.insert("putUser", user));
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+			SameNameException ename = new SameNameException("UserExists",
+					"User name or User`accesskey is exists");
+			throw ename;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			String message = e.getMessage();
+			logger.debugT(message);
+			if (message.indexOf("Duplicate entry") != -1) {
+				if (message.indexOf("access_key") != -1) {
+					SameNameException ename = new SameNameException(
+							"access_key", message);
+					throw ename;
+				}
+				if (message.indexOf("Sohu_ID") != -1) {
+					SameNameException ename = new SameNameException("Sohu_ID",
+							message);
+					throw ename;
+				}
+			}
 		}
 		return user;
 	}

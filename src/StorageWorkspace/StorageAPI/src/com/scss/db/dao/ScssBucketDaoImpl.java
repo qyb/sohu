@@ -17,11 +17,22 @@ public class ScssBucketDaoImpl {
 	private ScssBucketDaoImpl() {
 	}
 
-	public ScssBucket insertBucket(ScssBucket bucket) throws SameNameException {
+	public ScssBucket insertBucket(ScssBucket bucket) throws SameNameException, SQLException {
 		try {
 			bucket.setId((Long) sqlMap.insert("putBucket", bucket));
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
+			SameNameException ename = new SameNameException("BucketExists",
+					"Bucket name is exists");
+			throw ename;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			String message = e.getMessage();
+			if ((message.indexOf("Duplicate entry") != -1)
+					&& (message.indexOf("'name'") != -1)) {
+				SameNameException ename = new SameNameException(
+						"name and user", "Duplicate entry name and user");
+				throw ename;
+			}
+			throw e;
 		}
 		return bucket;
 	}
@@ -49,6 +60,7 @@ public class ScssBucketDaoImpl {
 	public void updateBucket(ScssBucket sb) throws SQLException {
 		sqlMap.update("updateBucket", sb);
 	}
+
 	public void deleteBucket(ScssBucket sb) throws SQLException {
 		sqlMap.update("deleteBucket", sb);
 	}

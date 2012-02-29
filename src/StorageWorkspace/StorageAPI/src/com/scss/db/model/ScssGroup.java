@@ -12,7 +12,7 @@ public class ScssGroup implements java.io.Serializable {
 
 	private Long id;
 	private String name;
-	private String userIds;
+	private String userIds=",";
 
 	// Constructors
 
