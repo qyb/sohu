@@ -7,7 +7,7 @@ from folder.models import Folder
 from lxml import etree
 
 
-def input_for_api2_list(request):
+def api2_input_for_list(request):
     if request.method == 'POST':
         access_token_input = request.COOKIES.get('access_token', '')
     else:
@@ -16,7 +16,7 @@ def input_for_api2_list(request):
     return access_token_input
 
 
-def input_for_api2_add(request):
+def api2_input_for_add(request):
     """
     param: name
         name must not start with '_' or have ',' inside
@@ -33,7 +33,7 @@ def input_for_api2_add(request):
     return access_token_input, name
 
 
-def input_for_api2_update(request):
+def api2_input_for_update(request):
     if request.method == 'POST':
         access_token_input = request.COOKIES.get('access_token', '')
         modify_info = dict()
@@ -50,7 +50,7 @@ def input_for_api2_update(request):
     return access_token_input, modify_info
 
 
-def input_for_api2_delete(request):
+def api2_input_for_delete(request):
     if request.method == 'POST':
         access_token_input = request.COOKIES.get('access_token', '')
         name = request.POST.get('name', '')
@@ -61,7 +61,7 @@ def input_for_api2_delete(request):
     return access_token_input, name
 
 
-def input_for_api2_set_order(request):
+def api2_input_for_set_order(request):
     if request.method == 'POST':
         access_token_input = request.COOKIES.get('access_token', '')
         order_string = request.POST.get('order', '')
@@ -142,6 +142,7 @@ def modify_folder_by_name(user_id, folder_name, modify_info):
     if folder_name:
         folder = get_folder_by_name(user_id, folder_name)
         if folder is not None:
+            folder.delete_cache()
             folder.name = modify_info['new_name']
             folder.save()
     else:

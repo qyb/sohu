@@ -23,7 +23,8 @@ class Folder(MultiDB):
         return None
     
     def delete_cache(self):
-        cache.delete(self.key)
+        key = generate_folder_key(self.user_id, self.name)
+        cache.delete(key)
         
         return None
     
