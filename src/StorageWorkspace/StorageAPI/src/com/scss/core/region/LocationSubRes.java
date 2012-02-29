@@ -16,7 +16,7 @@ import com.scss.SubResource;
 public class LocationSubRes extends SubResource {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.IOperatable#Operate(com.bfsapi.Operation)
+	 * @see com.scss.IOperatable#Operate(com.scss.Operation)
 	 */
 	@Override
 	public OperationResult Operate(Operation op) {
