@@ -271,3 +271,9 @@ def update_kan_user_instance(kan_user, modify_info):
         kan_user.set_kan_self_description(modify_info['description'])
         
     return None
+
+
+def api2_input_for_access_token_common(request):
+    access_token_input = request.COOKIES.get('access_token', '')
+    
+    return access_token_input

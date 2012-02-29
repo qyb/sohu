@@ -7,11 +7,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.data.MediaType;
+import org.restlet.representation.StringRepresentation;
+
 import com.scss.Const;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
-import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
@@ -56,23 +58,23 @@ public class GET_SERVICE extends BucketAPI {
 			
 			// set common response header
 			// TODO: change the temporary values
-			resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
-			resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");				
-			resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.APPLICATION_XML);
-			resp_headers.put(CommonResponseHeader.CONNECTION, "close");
-			resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
+			CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
 			
 			// Set API response header
-			resp_headers.put(APIResponseHeader.LOCATION, "/" + req.BucketName);
+			//resp_headers.put(APIResponseHeader.LOCATION, );
 
 			//TODO: set user meta
 			// user_meta key-value pair -> header
 			
 			// TODO: set system meta
-			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // GET_SERVICE has no content
+			//resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // GET_SERVICE has no content
 			
 			// generate representation
-			resp.Repr = new org.restlet.representation.StringRepresentation(this.getResponseText(req, buckets));
+			
+			StringRepresentation stringRepresentation=new org.restlet.representation.StringRepresentation(this.getResponseText(req, buckets),MediaType.TEXT_PLAIN);
+			
+			resp.Repr = stringRepresentation;
+			
 			resp.MediaType = Mimetypes.APPLICATION_XML;
 			return resp;
 		}

@@ -5,11 +5,14 @@ from constants import KEY_FOLDER, LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
     BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, \
     FALSE_REPR
 from datetime import datetime
+from django.core.cache import cache
 from image.models import MyImageInstance
 from lxml import etree
 from storage.helper import get_data_url
+from user.helper import api2_input_for_access_token_common
 import hashlib
 import logging
+import time
 
 
 class UpdateArticleInfo(object):
@@ -185,6 +188,7 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
             is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
         
             create_time = etree.SubElement(article, 'create_time')
+#            create_time.text = unicode(int(time.mktime(myarticle_instance.create_time.timetuple())))
             create_time.text = unicode(myarticle_instance.create_time)
         
     return article
@@ -227,6 +231,21 @@ def generate_single_xml_etree(tag, text, **kwargs):
     element.text = text
     
     return element
+
+
+def mark_article_as_done(update_article_info):
+    is_successful = True
+    try:
+        chosen_db = choose_a_db(update_article_info.user_id)
+        article_instance = MyArticleInstance.objects \
+                                            .using(chosen_db) \
+                                            .get(id=update_article_info.article_id)
+        article_instance.is_ready = True
+        article_instance.save()
+    except MyArticleInstance.DoesNotExist:
+        is_successful = False
+    
+    return is_successful
 
 
 def input_for_list_func(request):
@@ -288,7 +307,7 @@ def input_for_destroy_func(request):
     else:
         access_token_input = ''
         
-    return access_token_input    
+    return access_token_input
 
 
 def input_for_modify_func(request):
@@ -308,39 +327,221 @@ def input_for_modify_func(request):
     return access_token_input, modify_info
 
 
-def input_for_api2_count(request):
+##############################
+# api2 input
+##############################
+
+    
+def api2_input_for_bookmark_id_common(request):
     if request.method == 'POST':
-        try:
-            access_token_input = request.COOKIES['access_token']
-        except:
-            access_token_input = request.POST.get('access_token', '') 
+        bookmark_id = request.POST.get('bookmark_id', '')
+    else:
+        bookmark_id = ''
+    access_token_input = api2_input_for_access_token_common(request)
+    
+    return access_token_input, bookmark_id
+
+
+def api2_input_for_count(request):
+    if request.method == 'POST':
         folder_id = request.POST.get('folder_id', '')
     else:
-        access_token_input = ''
         folder_id = ''
+    access_token_input = api2_input_for_access_token_common(request)
     
     return access_token_input, folder_id
 
 
-def mark_article_as_done(update_article_info):
-    is_successful = True
-    try:
-        chosen_db = choose_a_db(update_article_info.user_id)
-        article_instance = MyArticleInstance.objects \
-                                            .using(chosen_db) \
-                                            .get(id=update_article_info.article_id)
-        article_instance.is_ready = True
-        article_instance.save()
-    except MyArticleInstance.DoesNotExist:
-        is_successful = False
+def api2_input_for_list(request):
+    if request.method == 'POST':
+        offset = request.POST.get('offset', '')
+        try:
+            offset = int(offset)
+        except:
+            offset = 0
+        limit = request.POST.get('limit', '')
+        try:
+            limit = int(offset)
+        except:
+            limit = 20
+        folder_name = request.POST.get('folder_name', '')
+        order_by = request.POST.get('order_by', '')
+    else:
+        offset = 0
+        limit = 20
+        folder_name = ''
+        order_by = ''
+    access_token_input = api2_input_for_access_token_common(request)
+        
+    return access_token_input, offset, limit, folder_name, order_by
+
+
+def api2_input_for_update_read_progress(request):
+    if request.method == 'POST':
+        progress = request.POST.get('progress', '')
+        try:
+            progress = float(progress)
+        except:
+            progress = None
+        progress_timestamp = request.COOKIES.get('progress_timestamp')
+        try:
+            progress_timestamp = datetime.fromtimestamp(float(progress_timestamp))
+        except:
+            progress = None
+            progress_timestamp = None
+    else:
+        progress = None
+        progress_timestamp = None
+    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
     
-    return is_successful
+    return access_token_input, bookmark_id, progress, progress_timestamp
 
 
-def output_for_api2_count_etree(article_count):
+def api2_input_for_add(request):
+    if request.method == 'POST':
+        url = request.POST.get('url', '')
+        title = request.POST.get('title', '')
+        description = request.POST.get('description', '')
+        folder_name = request.POST.get('folder_name', '')
+        content = request.POST.get('content', '')
+    else:
+        url = ''
+        title = ''
+        description = ''
+        folder_name = ''
+        content = ''
+    access_token_input = api2_input_for_access_token_common(request)
+    
+    return access_token_input, url, title, description, folder_name, content
+
+
+def api2_input_for_delete(request):
+    
+    return api2_input_for_bookmark_id_common(request)
+
+
+def api2_input_for_update(request):
+    if request.method == 'POST':
+        title = request.POST.get('title', '')
+        description = request.POST.get('description', '')
+    else:
+        title = ''
+        description = ''
+    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
+    
+    return access_token_input, bookmark_id, title, description
+
+
+def api2_input_for_view(request):
+    
+    return api2_input_for_bookmark_id_common(request)
+
+
+def api2_input_for_star(request):
+    
+    return api2_input_for_bookmark_id_common(request)
+
+
+def api2_input_for_unstar(request):
+    
+    return api2_input_for_bookmark_id_common(request)
+
+
+def api2_input_for_archive(request):
+    
+    return api2_input_for_bookmark_id_common(request)
+
+
+def api2_input_for_unarchive(request):
+    
+    return api2_input_for_bookmark_id_common(request)
+
+
+def api2_input_for_move(request):
+    if request.method == 'POST':
+        folder_name = request.POST.get('folder_name', '')
+    else:
+        folder_name = ''
+    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
+    
+    return access_token_input, bookmark_id, folder_name
+
+
+def api2_input_for_get_text(request):
+    
+    return api2_input_for_bookmark_id_common(request)
+
+
+##############################
+# api2 process
+##############################
+
+
+def generate_article_key(article_id):
+    article_key = KEY_FOLDER % article_id
+    
+    return article_key
+
+def api2_convert_count_to_etree(article_count):
     meta = etree.Element('meta')
     
     count = etree.SubElement(meta, 'count')
     count.text = str(article_count)
     
     return meta
+
+
+def api2_select_article_list(user_id, folder_name, order_by, offset, limit):
+    chosen_db = choose_a_db(user_id)
+    article_list = MyArticleInstance.objects \
+                                      .using(chosen_db) \
+                                      .filter(user_id=user_id, is_delete=False, is_ready=True)
+    if folder_name == '_archive':
+        article_list = article_list.filter(is_archive=True)
+    else:
+        article_list = article_list.fileter(is_archive=False)
+        if folder_name == '_recent_read':
+            article_list = article_list.filter(is_read=True).order_by('-read_time')
+        else:
+            if folder_name in ('_read', '_unread'):
+                is_read = True if '_read' else False
+                article_list = article_list.filter(is_read=is_read)
+            elif folder_name == 'starred':
+                article_list = article_list.filter(is_star=True)
+            elif folder_name == '_recent_read':
+                article_list = article_list.filter(is_read)
+            if order_by in ('create_time', '-create_time',
+                            'read_time', '-read_time',
+                            'url', '-url',
+                            'title', '-title'):
+                article_list = article_list.order_by(order_by)
+    article_list = article_list[offset : offset + limit]
+    for article in article_list:
+        article.update_cache()
+    
+    return article_list
+        
+
+##############################
+# api2 output
+##############################
+
+
+def convert_article_list_to_etree(article_list):
+    package_node = etree.Element('package')
+    
+    for article in article_list:
+        bookmark_node = etree.SubElement(package_node, id=article.id)
+        
+        url = etree.SubElement(bookmark_node)
+        url.text = article.url
+        
+        title = etree.SubElement(bookmark_node)
+        title.text = article.title
+    
+    pass    
+    
+    
+    
+    
+    

@@ -4,6 +4,9 @@
  */
 package com.scss.core;
 
+import java.util.Map;
+import java.util.UUID;
+
 /**
  * The common headers enumerations for response.
  * 
@@ -37,7 +40,7 @@ public class CommonResponseHeader {
 	 * Valid Values: open | close
 	 * Default: None
 	 */
-	public static final String CONNECTION = "Connection";
+	public static final String CONNECTION = "connection";
 	
 	/*
 	 * The date and time we responded, 
@@ -115,5 +118,18 @@ public class CommonResponseHeader {
 	public static final String STATUS = "Status";
 	
 	public static final String MEDIA_TYPE = "MediaType";
+	
+	/**
+	 * 公有的头信息加入到header
+	 * @param resp_headers
+	 */
+	public static void setCommHeaderInfoToRespHeader(Map<String, String> resp_headers,APIRequest req)
+	{
+		
+		resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, req.getUser().getSohuId());
+	    resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, UUID.randomUUID().toString());			
+		resp_headers.put(CommonResponseHeader.CONNECTION, "close");
+		
+	}
 
 }
