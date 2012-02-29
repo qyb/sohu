@@ -13,6 +13,7 @@ from user.helper import get_kan_user_to_xml_etree, \
     update_kan_user_instance
 import logging
 import datetime
+from common.helper import KanError
 
 
 def verify(request):
@@ -101,8 +102,8 @@ def api2_access_token(request):
                                  expires=datetime.datetime.now() + datetime.timedelta(days=1),
                                  httponly=False)
     else:
-        response_etree = generate_single_xml_etree('status', request.GET.get('status', ''))
-        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
         
     return http_response
@@ -120,10 +121,13 @@ def api2_verify_credentials(request):
         if kan_user_etree is not None:
             response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
-        http_response.set_cookie('access_token', kan_user.get_access_token(), httponly=False)
+        http_response.set_cookie('access_token',
+                                 kan_user.get_access_token(),
+                                 expires=datetime.datetime.now() + datetime.timedelta(days=1),
+                                 httponly=False)
     else:
-        response_etree = generate_single_xml_etree('status', 'verify failed')
-        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
         
     return http_response
@@ -144,8 +148,8 @@ def api2_update(request):
         http_response = HttpResponse(response, mimetype=mimetype)
         http_response.set_cookie('access_token', kan_user.get_access_token())
     else:
-        response_etree = generate_single_xml_etree('status', 'verify failed')
-        response = etree.tostring(response_etree, xml_declaration=True, encoding='utf-8')
+        error_etree = KanError('1000').get_error_etree()
+        response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
         
     return http_response
