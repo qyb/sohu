@@ -141,6 +141,11 @@ def modify_or_destroy_base(access_token_input, modify_info, key, format):
     return HttpResponse(response, mimetype=mimetype)
 
 
+##############################
+# views for api2
+##############################
+
+
 def api2_count(request):
     access_token_input, folder_id = input_for_api2_count(request)
     kan_user = KanUser('', access_token_input)

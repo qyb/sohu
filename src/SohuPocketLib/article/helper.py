@@ -187,7 +187,7 @@ def get_myarticle_instance_to_xml_etree(user_id, key):
             is_read.text = TRUE_REPR if myarticle_instance.is_read else FALSE_REPR
         
             create_time = etree.SubElement(article, 'create_time')
-#            create_time.text = unicode(time.mktime(myarticle_instance.create_time.timetuple()))
+#            create_time.text = unicode(int(time.mktime(myarticle_instance.create_time.timetuple())))
             create_time.text = unicode(myarticle_instance.create_time)
         
     return article
@@ -230,6 +230,30 @@ def generate_single_xml_etree(tag, text, **kwargs):
     element.text = text
     
     return element
+
+
+def mark_article_as_done(update_article_info):
+    is_successful = True
+    try:
+        chosen_db = choose_a_db(update_article_info.user_id)
+        article_instance = MyArticleInstance.objects \
+                                            .using(chosen_db) \
+                                            .get(id=update_article_info.article_id)
+        article_instance.is_ready = True
+        article_instance.save()
+    except MyArticleInstance.DoesNotExist:
+        is_successful = False
+    
+    return is_successful
+
+
+def output_for_api2_count_etree(article_count):
+    meta = etree.Element('meta')
+    
+    count = etree.SubElement(meta, 'count')
+    count.text = str(article_count)
+    
+    return meta
 
 
 def input_for_list_func(request):
@@ -311,47 +335,39 @@ def input_for_modify_func(request):
     return access_token_input, modify_info
 
 
+##############################
+# input for api2
+##############################
+
+
+def input_for_api2_access_token_common(request):
+    access_token_input = request.COOKIES.get('access_token', '')
+    
+    return access_token_input
+    
+    
+def input_for_api2_bookmark_id_common(request):
+    if request.method == 'POST':
+        bookmark_id = request.POST.get('bookmark_id', '')
+    else:
+        bookmark_id = ''
+    access_token_input = input_for_api2_access_token_common(request)
+    
+    return access_token_input, bookmark_id
+
+
 def input_for_api2_count(request):
     if request.method == 'POST':
-        try:
-            access_token_input = request.COOKIES['access_token']
-        except:
-            access_token_input = request.POST.get('access_token', '') 
         folder_id = request.POST.get('folder_id', '')
     else:
-        access_token_input = ''
         folder_id = ''
+    access_token_input = input_for_api2_access_token_common(request)
     
     return access_token_input, folder_id
 
 
-def mark_article_as_done(update_article_info):
-    is_successful = True
-    try:
-        chosen_db = choose_a_db(update_article_info.user_id)
-        article_instance = MyArticleInstance.objects \
-                                            .using(chosen_db) \
-                                            .get(id=update_article_info.article_id)
-        article_instance.is_ready = True
-        article_instance.save()
-    except MyArticleInstance.DoesNotExist:
-        is_successful = False
-    
-    return is_successful
-
-
-def output_for_api2_count_etree(article_count):
-    meta = etree.Element('meta')
-    
-    count = etree.SubElement(meta, 'count')
-    count.text = str(article_count)
-    
-    return meta
-
-
 def input_for_api2_list(request):
     if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
         offset = request.POST.get('offset', '')
         try:
             offset = int(offset)
@@ -365,19 +381,17 @@ def input_for_api2_list(request):
         folder_name = request.POST.get('folder_name', '')
         order_by = request.POST.get('order_by', '')
     else:
-        access_token_input = ''
         offset = 0
         limit = 20
         folder_name = ''
         order_by = ''
+    access_token_input = input_for_api2_access_token_common(request)
         
     return access_token_input, offset, limit, folder_name, order_by
 
 
 def input_for_api2_update_read_progress(request):
     if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
-        bookmark_id = request.POST.get('bookmark_id', '')
         progress = request.POST.get('progress', '')
         try:
             progress = float(progress)
@@ -390,91 +404,78 @@ def input_for_api2_update_read_progress(request):
             progress = None
             progress_timestamp = None
     else:
-        access_token_input = ''
-        bookmark_id = ''
         progress = None
         progress_timestamp = None
+    access_token_input, bookmark_id = input_for_api2_bookmark_id_common(request)
     
     return access_token_input, bookmark_id, progress, progress_timestamp
 
 
 def input_for_api2_add(request):
     if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
         url = request.POST.get('url', '')
+        title = request.POST.get('title', '')
+        description = request.POST.get('description', '')
+        folder_name = request.POST.get('folder_name', '')
+        content = request.POST.get('content', '')
     else:
-        pass
+        url = ''
+        title = ''
+        description = ''
+        folder_name = ''
+        content = ''
+    access_token_input = input_for_api2_access_token_common(request)
     
     return access_token_input, url, title, description, folder_name, content
 
 
 def input_for_api2_delete(request):
-    if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
-    else:
-        pass
     
-    return access_token_input, bookmark_id
+    return input_for_api2_bookmark_id_common(request)
 
 
 def input_for_api2_update(request):
     if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
+        title = request.POST.get('title', '')
+        description = request.POST.get('description', '')
     else:
-        pass
+        title = ''
+        description = ''
+    access_token_input, bookmark_id = input_for_api2_bookmark_id_common(request)
     
     return access_token_input, bookmark_id, title, description
 
 
 def input_for_api2_star(request):
-    if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
-    else:
-        pass
     
-    return access_token_input, bookmark_id
+    return input_for_api2_bookmark_id_common(request)
 
 
 def input_for_api2_unstar(request):
-    if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
-    else:
-        pass
     
-    return access_token_input, bookmark_id
+    return input_for_api2_bookmark_id_common(request)
 
 
 def input_for_api2_archive(request):
-    if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
-    else:
-        pass
     
-    return access_token_input, bookmark_id
+    return input_for_api2_bookmark_id_common(request)
 
 
 def input_for_api2_unarchive(request):
-    if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
-    else:
-        pass
     
-    return access_token_input, bookmark_id
+    return input_for_api2_bookmark_id_common(request)
 
 
 def input_for_api2_move(request):
     if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
+        folder_name = request.POST.get('folder_name', '')
     else:
-        pass
+        folder_name = ''
+    access_token_input, bookmark_id = input_for_api2_bookmark_id_common(request)
     
     return access_token_input, bookmark_id, folder_name
 
 
 def input_for_api2_get_text(request):
-    if request.method == 'POST':
-        access_token_input = request.COOKIES.get('access_token', '')
-    else:
-        pass
     
-    return access_token_input, bookmark_id
+    return input_for_api2_bookmark_id_common(request)
