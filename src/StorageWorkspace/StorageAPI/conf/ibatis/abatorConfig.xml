@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<abatorConfiguration >
+  <abatorContext >
+    <jdbcConnection driverClass="org.gjt.mm.mysql.Driver" connectionURL="jdbc:mysql://127.0.0.1:3306/BFSAPI" userId="sohu.com" password="sohu.com" >
+      <classPathEntry location="E:\project\BFSAPI\WebRoot\WEB-INF\lib\mysql-connector-java-5.1.7-bin.jar" />
+    </jdbcConnection>
+   	<javaModelGenerator targetPackage="com.test.db.model" targetProject="StorageAPI/src" />
+    <sqlMapGenerator targetPackage="com.test.db.model" targetProject="StorageAPI/src" />
+    <daoGenerator targetPackage="com.test.db.dao" targetProject="StorageAPI/src" type="IBATIS"/>
+    <table schema="BFSAPI" tableName="scss_acl">  
+    </table>  
+  </abatorContext>
+</abatorConfiguration>

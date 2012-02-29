@@ -1,4 +1,4 @@
-package com.scss.db.service;
+package com.scss.db.service.test;
 
 import java.util.Date;
 import java.util.List;
@@ -10,6 +10,7 @@ import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssObject;
 import com.scss.db.model.ScssUser;
+import com.scss.db.service.DBServiceHelper;
 
 public class DBUnitTest {
 	private Logger log = Logger.getLogger(DBUnitTest.class);

@@ -51,7 +51,7 @@ public class Handler extends ServerResource {
 		Request req = this.getRequest();
 		
 		// TODO: Assign a monitor to monitor the tracfic, request times and so on.
-		// com.bfsapi.utility.Monitor montior = new com.bfsapi.utility.Monitor(req);
+		// com.scss.utility.Monitor montior = new com.scss.utility.Monitor(req);
 
 		// header process
 		Map<String, String> headers = this.getRequestHeaders();
@@ -106,7 +106,7 @@ public class Handler extends ServerResource {
 		APIRequest req = new APIRequest(this.getRequest());
 		
 		// TODO: Assign a monitor to monitor the tracfic, request times and so on.
-		// com.bfsapi.utility.Monitor montior = new com.bfsapi.utility.Monitor(req);
+		// com.scss.utility.Monitor montior = new com.scss.utility.Monitor(req);
 		
 		
 		// header process

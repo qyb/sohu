@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias alias="acl" type="com.scss.db.model.ScssAcl" />
+	<!-- bean属性和数据库字段的对应关系 -->
+	<resultMap id="scssAcl" class="acl">
+		<result property="id" column="id"/>
+		<result property="resourceId" column="resource_id"/>
+        <result property="resourceType" column="resource_type"/>
+        <result property="accessorId" column="accessor_id"/>
+        <result property="accessorType" column="accessor_type"/>
+        <result property="permission" column="permission"/>
+	</resultMap>
+	
+	
+	<statement id="getAcl" resultMap="scssAcl" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `resource_id`,
+	        `resource_type`,
+	        `accessor_id`,
+	        `accessor_type`,
+	        `permission` 
+	    from
+	        `scss_acl`
+	    where `id`=#id#
+	</statement>
+	
+	<statement id="updateAcl" parameterClass="acl" cacheModel="myCache">
+		update
+			 `scss_acl`
+		set
+	        `resource_id`=#resourceId#,
+	        `resource_type`=#resourceType#,
+	        `accessor_id`=#accessorId#,
+	        `accessor_type`=#accessorType#,
+	        `permission`=#permission#
+	    where `id`=#id#
+	</statement>
+	<statement id="deleteAcl" parameterClass="acl" cacheModel="myCache">
+		delete from
+			 `scss_acl`
+	    where `id`=#id#
+	</statement>
+	<!--  -->
+	<insert id="putAcl" parameterClass="acl">
+		insert into `scss_acl`
+			(
+	        `resource_id`,
+	        `resource_type`,
+	        `accessor_id`,
+	        `accessor_type`,
+	        `permission` ) 
+		values( 
+	        #resourceId#,
+	        #resourceType#,
+	        #accessorId#,
+	        #accessorType#,
+	        #permission#)
+		<selectKey resultClass="long" keyProperty="id">
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+	</insert>
+</sqlMap>
+
