@@ -25,7 +25,7 @@ import com.scss.utility.CommonUtilities;
 public class PUT_BUCKET extends BucketAPI {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#Invoke(java.lang.Object)
+	 * @see com.scss.ICallable#Invoke(java.lang.Object)
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
@@ -89,7 +89,7 @@ public class PUT_BUCKET extends BucketAPI {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#CanInvoke(com.scss.core.APIRequest, com.bfsapi.IAccessor)
+	 * @see com.scss.ICallable#CanInvoke(com.scss.core.APIRequest, com.scss.IAccessor)
 	 */
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {
