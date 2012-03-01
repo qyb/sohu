@@ -62,6 +62,18 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `scss_user` 
 	    where `id`=#id#
 	</statement>
+	<statement id="getUserByAccessId" resultMap="scssUser" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `Sohu_ID`,
+	        `access_id`,
+	        `access_key`,
+	        `status` 
+	    from
+	        `scss_user` 
+	    where `access_id`=#access_id#
+	</statement>
+	
 	<statement id="updateUser" parameterClass="user" cacheModel="myCache">
 		update 
 			`scss_user` 
