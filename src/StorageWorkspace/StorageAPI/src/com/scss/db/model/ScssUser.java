@@ -12,21 +12,25 @@ public class ScssUser implements java.io.Serializable {
 
 	private Long id;
 	private String sohuId;
+	private String accessId;
 	private String accessKey;
 	private String status="B";
 
 	// Constructors
+	public ScssUser(Long id, String sohuId, String accessId, String accessKey,
+			String status) {
+		super();
+		this.id = id;
+		this.sohuId = sohuId;
+		this.accessId = accessId;
+		this.accessKey = accessKey;
+		this.status = status;
+	}
 
 	/** default constructor */
 	public ScssUser() {
 	}
 
-	/** full constructor */
-	public ScssUser(String sohuId, String accessKey, String status) {
-		this.sohuId = sohuId;
-		this.accessKey = accessKey;
-		this.status = status;
-	}
 
 	// Property accessors
 
@@ -60,6 +64,14 @@ public class ScssUser implements java.io.Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getAccessId() {
+		return accessId;
+	}
+
+	public void setAccessId(String accessId) {
+		this.accessId = accessId;
 	}
 
 }

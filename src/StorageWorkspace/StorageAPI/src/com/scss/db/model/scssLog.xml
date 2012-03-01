@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias alias="log" type="com.scss.db.model.ScssLog" />
+	<typeAlias alias="resource" type="com.scss.db.model.Resource" />
+	<typeAlias alias="map" type="java.util.Map" />
+	<!-- bean属性和数据库字段的对应关系 -->
+	<resultMap id="scssLog" class="log">
+		<result property="id" column="id"/>
+		<result property="level" column="level"/>
+        <result property="action" column="action"/>
+        <result property="userId" column="user_id"/>
+        <result property="resourceType" column="resource_type"/>
+        <result property="resourceId" column="resource_id"/>
+        <result property="server" column="server"/>
+        <result property="clientName" column="client_name"/>
+        <result property="clientAddr" column="client_addr"/>
+        <result property="timestamp" column="timestamp"/>
+        <result property="message" column="message"/>
+	</resultMap>
+	<statement id="getLog" resultMap="scssLog" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `level`,
+	        `action`,
+	        `user_id`,
+	        `resource_type`,
+	        `resource_id`,
+	        `server`,
+	        `client_name`,
+	        `client_addr`,
+	        `timestamp`,
+	        `message` 
+	    from
+	        `scss_log`
+	    where `id`=#id#
+	</statement>
+	
+	<statement id="getLogsByUserId" resultMap="scssLog" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `level`,
+	        `action`,
+	        `user_id`,
+	        `resource_type`,
+	        `resource_id`,
+	        `server`,
+	        `client_name`,
+	        `client_addr`,
+	        `timestamp`,
+	        `message` 
+	    from
+	        `scss_log`
+	    where `user_id`=#id#
+	</statement>
+	<statement id="getLogsByAction" resultMap="scssLog" parameterClass="String" cacheModel="myCache">
+		select
+	        `id`,
+	        `level`,
+	        `action`,
+	        `user_id`,
+	        `resource_type`,
+	        `resource_id`,
+	        `server`,
+	        `client_name`,
+	        `client_addr`,
+	        `timestamp`,
+	        `message` 
+	    from
+	        `scss_log`
+	    where `action`=#action#
+	</statement>
+	
+	<statement id="getLogsByLevel" resultMap="scssLog" parameterClass="String" cacheModel="myCache">
+		select
+	        `id`,
+	        `level`,
+	        `action`,
+	        `user_id`,
+	        `resource_type`,
+	        `resource_id`,
+	        `server`,
+	        `client_name`,
+	        `client_addr`,
+	        `timestamp`,
+	        `message` 
+	    from
+	        `scss_log`
+	    where `level`=#level#
+	</statement>
+	<statement id="getLogsByDateRange" resultMap="scssLog" parameterClass="map" cacheModel="myCache">
+		select
+	        `id`,
+	        `level`,
+	        `action`,
+	        `user_id`,
+	        `resource_type`,
+	        `resource_id`,
+	        `server`,
+	        `client_name`,
+	        `client_addr`,
+	        `timestamp`,
+	        `message` 
+	    from
+	        `scss_log`
+	    where `timestamp` between #start# and #end# 
+	</statement>
+	<statement id="getLogsOnResource" resultMap="scssLog" parameterClass="resource" cacheModel="myCache">
+		select
+	        `id`,
+	        `level`,
+	        `action`,
+	        `user_id`,
+	        `resource_type`,
+	        `resource_id`,
+	        `server`,
+	        `client_name`,
+	        `client_addr`,
+	        `timestamp`,
+	        `message` 
+	    from
+	        `scss_log`
+	    where `resource_type`=#type# and 
+	        `resource_id`=#id#
+	</statement>
+	
+	<statement id="updateLog" parameterClass="log" cacheModel="myCache">
+	</statement>
+	<statement id="deleteLog" parameterClass="log" cacheModel="myCache">
+		delete from
+			 `scss_log`
+	    where `id`=#id#
+	</statement>
+	<!--  -->
+	<insert id="putLog" parameterClass="log">
+		insert into `scss_log`
+			(
+	        `level`,
+	        `action`,
+	        `user_id`,
+	        `resource_type`,
+	        `resource_id`,
+	        `server`,
+	        `client_name`,
+	        `client_addr`,
+	        `timestamp`,
+	        `message` ) 
+		values( 
+	        #level#,
+	        #action#,
+	        #userId#,
+	        #resourceType#,
+	        #resourceId#,
+	        #server#,
+	        #clientName#,
+	        #clientAddr#,
+	        #timestamp#,
+	        #message#)
+		<selectKey resultClass="long" keyProperty="id">
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+	</insert>
+</sqlMap>
+

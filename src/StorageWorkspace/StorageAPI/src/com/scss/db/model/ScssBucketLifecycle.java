@@ -6,7 +6,7 @@ package com.scss.db.model;
  * @author Jack.wu.xu
  */
 
-public class ScssBucketLifecycle implements java.io.Serializable {
+public class ScssBucketLifecycle extends Resource implements java.io.Serializable {
 
 	// Fields
 

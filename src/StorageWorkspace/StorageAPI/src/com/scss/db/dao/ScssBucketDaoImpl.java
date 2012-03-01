@@ -12,7 +12,6 @@ import com.scss.db.model.ScssUser;
 public class ScssBucketDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssBucketDaoImpl instance = new ScssBucketDaoImpl();
-	private static ScssGroupDaoImpl groupDao = ScssGroupDaoImpl.getInstance();
 
 	private ScssBucketDaoImpl() {
 	}

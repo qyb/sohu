@@ -103,7 +103,7 @@ public class ScssUserDaoImpl {
 		return su;
 	}
 
-	public static ScssUser getUserBySohuId(String sohuId) {
+	public ScssUser getUserBySohuId(String sohuId) {
 		ScssUser su = null;
 		try {
 			su = (ScssUser) sqlMap.queryForObject("getUserBySohuId", sohuId);

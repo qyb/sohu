@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias alias="bucketLifecycle" type="com.scss.db.model.ScssBucketLifecycle" />
+	<!-- bean属性和数据库字段的对应关系 -->
+	<resultMap id="scssBucketLifecycle" class="bucketLifecycle">
+		<result property="id" column="id"/>
+		<result property="bucketId" column="bucket_id"/>
+        <result property="expirationRule" column="expiration_rule"/>
+	</resultMap>
+	
+	
+	<statement id="getBucketLifecycle" resultMap="scssBucketLifecycle" parameterClass="Long" cacheModel="myCache">
+		select
+	        `id`,
+	        `bucket_id`,
+	        `expiration_rule` 
+	    from
+	        `scss_bucket_lifecycle`
+		    where `id`=#id#
+	</statement>
+	
+	<statement id="updateBucketLifecycle" parameterClass="bucketLifecycle" cacheModel="myCache">
+		update
+			 `scss_bucket_lifecycle`
+		set
+	        `bucket_id`=#bucketId#,
+	        `expiration_rule`=#expirationRule#
+	    where `id`=#id#
+	</statement>
+	<statement id="deleteBucketLifecycle" parameterClass="bucketLifecycle" cacheModel="myCache">
+		delete from
+			 `scss_bucket_lifecycle`
+	    where `id`=#id#
+	</statement>
+	<!--  -->
+	<insert id="putBucketLifecycle" parameterClass="bucketLifecycle">
+		insert into `scss_bucket_lifecycle`
+			(
+	        `bucket_id`,
+	        `expiration_rule` ) 
+		values( 
+	        #bucketId#,
+	        #expirationRule#)
+		<selectKey resultClass="long" keyProperty="id">
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+	</insert>
+</sqlMap>
+

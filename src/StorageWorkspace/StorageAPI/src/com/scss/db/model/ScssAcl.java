@@ -6,7 +6,7 @@ package com.scss.db.model;
  * @author Jack.wu.xu
  */
 
-public class ScssAcl implements java.io.Serializable {
+public class ScssAcl extends Resource implements java.io.Serializable {
 
 	// Fields
 
