@@ -6,7 +6,10 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucketLifecycle;
-
+/**
+ * 
+ * @author Jack.wu.xu
+ */
 public class ScssBucketLifecycleDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssBucketLifecycleDaoImpl instance = new ScssBucketLifecycleDaoImpl();

@@ -77,7 +77,16 @@ public class ScssUserDaoImpl {
 		}
 		return su;
 	}
-
+	public ScssUser getUserByAccessId(String access_id) {
+		ScssUser su = null;
+		try {
+			su = (ScssUser) sqlMap.queryForObject("getUserByAccessId",
+					access_id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return su;
+	}
 	public List<ScssUser> getUsersByGroupId(Long groupId) {
 		ScssGroup groupById = groupDao.getGroupById(groupId);
 		return getUsersByGroup(groupById);
