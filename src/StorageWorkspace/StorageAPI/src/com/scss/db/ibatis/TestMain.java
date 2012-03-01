@@ -21,7 +21,10 @@ import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssLog;
 import com.scss.db.model.ScssObject;
 import com.scss.db.model.ScssUser;
-
+/**
+ * 
+ * @author Jack.wu.xu
+ */
 public class TestMain {
 	@SuppressWarnings( { "unused", "unchecked", "deprecation" })
 	public static void main(String args[]) throws SQLException,
