@@ -1,6 +1,6 @@
 package com.scss.utility;
 /**
- * ²Ù×÷ÕßÀàĞÍ 
+ * æ“ä½œè€…ç±»å‹ 
  * @author Jack.wu.xu
  */
 public enum AccessorType {
