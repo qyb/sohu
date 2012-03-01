@@ -3,7 +3,7 @@
 from article.models import MyArticleInstance
 from constants import KEY_FOLDER, LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
     BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, \
-    FALSE_REPR
+    FALSE_REPR, KEY_RESOURCE
 from datetime import datetime
 from django.core.cache import cache
 from image.models import MyImageInstance
@@ -17,7 +17,7 @@ import time
 
 class UpdateArticleInfo(object):
     """
-    stores variables used when update article
+    stores variables used when processing article
     """
     
     def __init__(self, user_id):
@@ -32,6 +32,73 @@ class UpdateArticleInfo(object):
         
         return None
 
+
+class ArticleResource(object):
+    """
+    caching article related resource
+    """
+    
+    def __init__(self, user_id, article_id):
+        self.user_id = user_id
+        self.article_id = article_id
+        self.key = api2_generate_resource_key(self.article_id)
+        self.images = None
+        self.audios = None
+        self.videos = None
+    
+    def get_images(self):
+        article = self._get_article() 
+        self.images = None
+        if article.is_ready:
+            self.images = self._select_images() 
+            self._update_cache(self)
+        
+        return self.images
+    
+    def get_audios(self):
+        pass
+    
+    def ge_videos(self):
+        pass
+    
+    def _get_article(self):
+        article = api2_select_article(self.user_id, self.article_id)
+        
+        return article
+    
+    def _update_cache(self):
+        cache.set(self.key, self)
+        
+        return None
+    
+    def _delete_cache(self):
+        cache.delete(self.key)
+    
+    def _select_images(self):
+        chosen_db = choose_a_db(self.user_id)
+        images = MyImageInstance.objects \
+                                .using(chosen_db) \
+                                .filter(myarticle_instance_id=self.article_id)
+        return images
+
+
+def api2_generate_resource_key(article_id):
+    resource_key = KEY_RESOURCE % article_id
+    
+    return resource_key
+
+
+def get_or_create_article_resource(user_id, article_id):
+    resource_key = api2_generate_resource_key(article_id)
+    resource = cache.get(resource_key, None)
+    if resource is None:
+        resource = ArticleResource(user_id, article_id)
+        
+    return resource
+
+
+def generate_resource_package_etree(images=None, audios=None, videos=None):
+    pass
 
 def choose_a_db(user_id):
     if user_id <= LIMIT_USERS_ONE_DB:
@@ -332,21 +399,21 @@ def input_for_modify_func(request):
 ##############################
 
     
-def api2_input_for_bookmark_id_common(request):
+def api2_input_for_article_id_common(request):
     if request.method == 'POST':
-        bookmark_id = request.POST.get('bookmark_id', '')
+        article_id = long(request.POST.get('bookmark_id', ''))
     else:
-        bookmark_id = ''
+        article_id = None
     access_token_input = api2_input_for_access_token_common(request)
     
-    return access_token_input, bookmark_id
+    return access_token_input, article_id
 
 
 def api2_input_for_count(request):
     if request.method == 'POST':
-        folder_id = request.POST.get('folder_id', '')
+        folder_id = long(request.POST.get('folder_id', ''))
     else:
-        folder_id = ''
+        folder_id = None
     access_token_input = api2_input_for_access_token_common(request)
     
     return access_token_input, folder_id
@@ -391,9 +458,9 @@ def api2_input_for_update_read_progress(request):
     else:
         progress = None
         progress_timestamp = None
-    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
+    access_token_input, article_id = api2_input_for_article_id_common(request)
     
-    return access_token_input, bookmark_id, progress, progress_timestamp
+    return access_token_input, article_id, progress, progress_timestamp
 
 
 def api2_input_for_add(request):
@@ -416,7 +483,7 @@ def api2_input_for_add(request):
 
 def api2_input_for_delete(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_update(request):
@@ -426,34 +493,34 @@ def api2_input_for_update(request):
     else:
         title = ''
         description = ''
-    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
+    access_token_input, article_id = api2_input_for_article_id_common(request)
     
-    return access_token_input, bookmark_id, title, description
+    return access_token_input, article_id, title, description
 
 
 def api2_input_for_view(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_star(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_unstar(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_archive(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_unarchive(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_move(request):
@@ -461,26 +528,26 @@ def api2_input_for_move(request):
         folder_name = request.POST.get('folder_name', '')
     else:
         folder_name = ''
-    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
+    access_token_input, article_id = api2_input_for_article_id_common(request)
     
-    return access_token_input, bookmark_id, folder_name
+    return access_token_input, article_id, folder_name
 
 
 def api2_input_for_get_text(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_get_resource(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 ##############################
 # api2 process
 ##############################
 
 
-def generate_article_key(article_id):
+def api2_generate_article_key(article_id):
     article_key = KEY_FOLDER % article_id
     
     return article_key

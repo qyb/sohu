@@ -8,12 +8,14 @@ KEY_ARTICLE_INSTANCE = 'key-article-instance-%s-%s-v1' # require user_id, url_ha
 KEY_IMAGE_TOBEDONE = 'key-image-tobedone-%s-v1' # require article_id 
 KEY_IMAGE_INSTANCE = 'key-image-instance-%s-%s-v1' # require article_id, image_url_hash
 
-
 KEY_ARTICLE = 'article-%s-v2' # require article_id
 KEY_FOLDER = 'folder-%s-%s-v2' # require user_id, folder_name
+KEY_RESOURCE = 'resource-%s-v2' # require article_id
 
 BUCKET_NAME_ARTICLE = 'bucket-sohukan-article-v1'
 BUCKET_NAME_IMAGE = 'bucket-sohukan-image-v1'
+
+BUCKET_NAME_SOHUKAN = 'sohukan'
 
 TRUE_REPR = '1'
 FALSE_REPR = '0'
