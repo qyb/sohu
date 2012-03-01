@@ -12,8 +12,9 @@ class MyArticleInstance(MultiDB):
     key = models.CharField(max_length=256)
     title = models.CharField(max_length=512)
     url = models.URLField()
-    is_read = models.BooleanField(default=False)   
-    cover = models.CharField(max_length=128, blank=True)
+#    description = models.CharField(max_length=1024)
+    is_read = models.BooleanField(default=False) # will be removed in the future
+    cover = models.CharField(max_length=128, blank=True) # will be removed in the future
     is_star = models.BooleanField(default=False)
 #    is_archive = models.BooleanField(default=False)
     is_delete = models.BooleanField(default=False)
@@ -22,6 +23,8 @@ class MyArticleInstance(MultiDB):
     delete_time = models.DateTimeField(null=True, blank=True)
     is_ready = models.BooleanField(default=False)
 #    folder_name = models.CharField(max_length=256)
+    version = models.IntegerField(null=True, blank=True)
+    text_version = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         
