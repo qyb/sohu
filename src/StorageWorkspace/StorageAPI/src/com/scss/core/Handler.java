@@ -17,7 +17,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -26,6 +26,9 @@ import org.restlet.resource.ServerResource;
 
 import com.scss.Operation;
 import com.scss.OperationResult;
+import com.scss.core.security.AuthorizationBase;
+import com.scss.core.security.AuthorizationTypes;
+import com.scss.core.security.IAuth;
 import com.scss.db.User;
 
 
@@ -51,7 +54,7 @@ public class Handler extends ServerResource {
 		Request req = this.getRequest();
 		
 		// TODO: Assign a monitor to monitor the tracfic, request times and so on.
-		// com.bfsapi.utility.Monitor montior = new com.bfsapi.utility.Monitor(req);
+		// com.scss.utility.Monitor montior = new com.scss.utility.Monitor(req);
 
 		// header process
 		Map<String, String> headers = this.getRequestHeaders();
@@ -106,7 +109,7 @@ public class Handler extends ServerResource {
 		APIRequest req = new APIRequest(this.getRequest());
 		
 		// TODO: Assign a monitor to monitor the tracfic, request times and so on.
-		// com.bfsapi.utility.Monitor montior = new com.bfsapi.utility.Monitor(req);
+		// com.scss.utility.Monitor montior = new com.scss.utility.Monitor(req);
 		
 		
 		// header process
@@ -131,12 +134,22 @@ public class Handler extends ServerResource {
 					resp_headers = new Form();  
 					getResponse().getAttributes().put("org.restlet.http.headers", resp_headers);  
 				} 
+				
 				for (String key: resp.getHeaders().keySet()) {
 					//TODO: fix the warning
 					//2012-2-20 12:05:47 org.restlet.engine.http.header.HeaderUtils addExtensionHeaders
 					//警告: Addition of the standard header "Content-Length" is not allowed. Please use the equivalent property in the Restlet API.
-					resp_headers.set(key, resp.getHeaders().get(key));
+					//resp_headers.set(key, resp.getHeaders().get(key));
+					resp_headers.add(key, resp.getHeaders().get(key));
+					
 				}
+				
+				getResponse().getServerInfo().setAgent("SohuS4");
+				getResponse().setLocationRef("/" + req.BucketName);
+				
+			
+				
+				
 			} else {
 				ErrorResponse err_resp = (ErrorResponse)resp;
 				this.getResponse().setStatus(new Status(err_resp.getHttp_status()));
@@ -179,13 +192,8 @@ public class Handler extends ServerResource {
 	 * TODO: convert to class or module
 	 */
 	protected Boolean Authorize(APIRequest req) {
-		// TODO: to invoke Authorization system
-		String auth_str = req.getHeaders().get(CommonRequestHeader.AUTHORIZATION);
-		//String[] keys = auth_str.split(":");
-		//System.out.printf("Access Key ID : %s - %s\n", keys[0], keys[1]);
-		//User user = new User(DBServiceHelper.getUserByAccessKey(keys[0]));
-		req.setUser(User.EveryOne);
-		return true;
+		IAuth auth = AuthorizationBase.createInstace(req, AuthorizationTypes.GENERAL);
+		return auth.authorize();
 	}
 	
 	/*
@@ -193,7 +201,7 @@ public class Handler extends ServerResource {
 	 * TODO : Promote per resource.
 	 */
 	protected void Init () {
-		Set<Method> allowedMethods = new HashSet<Method>();
+		Set<Method> allowedMethods = new HashSet<Method>(); 
 		allowedMethods.add(Method.GET);
 		allowedMethods.add(Method.PUT);
 		allowedMethods.add(Method.POST);

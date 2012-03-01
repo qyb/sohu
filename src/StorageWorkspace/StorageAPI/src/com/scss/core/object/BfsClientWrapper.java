@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.util.Properties;
 
 import com.bladefs.client.BladeFSClient;
 import com.bladefs.client.exception.BladeFSException;
@@ -30,7 +31,7 @@ public class BfsClientWrapper {
 		
 		if (null == BfsClientWrapper.instance) {
 			// TODO: make it configurated. conf.get ...
-			BfsClientWrapper.instance = new BfsClientWrapper(".\\conf\\client.properties");
+			BfsClientWrapper.instance = new BfsClientWrapper("client.properties");
 		}
 
 		return BfsClientWrapper.instance;
@@ -41,7 +42,10 @@ public class BfsClientWrapper {
 		if (null == this.client) {
 		
 			try {
-				this.client = new BladeFSClient(conf);
+				Properties prop = new Properties();
+				InputStream ins = Thread.currentThread().getContextClassLoader().getResourceAsStream("client.properties");
+				prop.load(ins);
+				this.client = new BladeFSClient(prop);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -23,7 +23,7 @@ public class ObjectResource extends Resource {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.IAccessable#CanAccess(com.bfsapi.Operation)
+	 * @see com.scss.IAccessable#CanAccess(com.scss.Operation)
 	 */
 	@Override
 	public Boolean CanAccess(Operation op) {
@@ -33,7 +33,7 @@ public class ObjectResource extends Resource {
 
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.IOperatable#Operate(com.bfsapi.Operation)
+	 * @see com.scss.IOperatable#Operate(com.scss.Operation)
 	 */
 	@Override
 	public OperationResult Operate(Operation op) {

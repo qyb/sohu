@@ -25,7 +25,7 @@ import com.scss.db.service.DBServiceHelper;
 public class DELETE_BUCKET extends BucketAPI {
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#Invoke(com.scss.core.APIRequest)
+	 * @see com.scss.ICallable#Invoke(com.scss.core.APIRequest)
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
@@ -47,11 +47,7 @@ public class DELETE_BUCKET extends BucketAPI {
 			{
 				DBServiceHelper.deleteBucket(req.BucketName, req.getUser().getId());
 				
-				resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, "test_id_remember_to_change");
-				resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, "test_id_remember_to_change");	
-				resp_headers.put(CommonResponseHeader.CONTENT_TYPE, Mimetypes.APPLICATION_XML);
-				resp_headers.put(CommonResponseHeader.CONNECTION, "close");
-				resp_headers.put(CommonResponseHeader.SERVER, "SohuS4");
+				CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
 				
 				//TODO: set user meta
 				// user_meta key-value pair -> header
@@ -76,7 +72,7 @@ public class DELETE_BUCKET extends BucketAPI {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bfsapi.ICallable#CanInvoke(com.scss.core.APIRequest, com.bfsapi.IAccessor)
+	 * @see com.scss.ICallable#CanInvoke(com.scss.core.APIRequest, com.scss.IAccessor)
 	 */
 	@Override
 	public Boolean CanInvoke(APIRequest req, IAccessor invoker) {

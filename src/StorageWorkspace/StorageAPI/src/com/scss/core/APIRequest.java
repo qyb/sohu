@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.restlet.Request;
+import org.restlet.data.Form;
 import org.restlet.representation.Representation;
 
 import com.scss.Const;
@@ -30,6 +31,7 @@ public class APIRequest {
 	public String Method = "GET";
 	public String RequestID = null; // TODO: how to get?
 	private long ContentSize = -1;
+	public Map<String, String> Querys = new HashMap<String, String>();
 	
 	public APIRequest(Request request) throws InvaildRequestException {
 		this.Method = request.getMethod().getName();
@@ -39,6 +41,12 @@ public class APIRequest {
 			//TODO: try get absolute uri & path
 		}
 		
+		Form query_form =  request.getOriginalRef().getQueryAsForm();
+		for (String key: query_form.getNames()) {
+			this.Querys.put(key, query_form.getValues(key));
+		}
+		
+		
 		String path = this.Path;
 		URI uri = this.URI;
 
@@ -46,6 +54,7 @@ public class APIRequest {
 		String bucket_name = uri.getHost();
 		if (null != bucket_name) {
 			bucket_name = bucket_name.replace(Const.HOST, "");
+			bucket_name = bucket_name.replace(Const.AMAZON_HOST, "");
 			if (bucket_name.endsWith("."))
 				bucket_name = bucket_name.substring(0, bucket_name.length()-1);
 		}

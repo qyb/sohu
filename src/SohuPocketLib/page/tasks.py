@@ -104,6 +104,7 @@ class StoreArticleInfoHandler(Task):
             article_instance = create_myarticle_instance(update_article_info.user_id, article_instance_key, update_article_info.article_title, update_article_info.url)
             article_id = article_instance.id
         except Exception:
+            raise
             pass
         else:
             update_article_info.article_id = article_id
