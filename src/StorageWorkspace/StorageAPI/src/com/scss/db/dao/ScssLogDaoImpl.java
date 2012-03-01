@@ -9,7 +9,10 @@ import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.model.Resource;
 import com.scss.db.model.ScssLog;
 import com.scss.db.model.ScssUser;
-
+/**
+ * 
+ * @author Jack.wu.xu
+ */
 public class ScssLogDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssLogDaoImpl instance = new ScssLogDaoImpl();
@@ -77,6 +80,11 @@ public class ScssLogDaoImpl {
 		}
 		return logs;
 	}
+	/**
+	 * 
+	 * @param map:map must constion startTime(Date) and endTime(Date)<br>
+	 * @return List<ScssLog>
+	 */
 	public List<ScssLog> getLogsByDateRange(Map map) {
 		List logs = null;
 		try {

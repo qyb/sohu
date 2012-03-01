@@ -7,7 +7,10 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssAcl;
-
+/**
+ * 
+ * @author Jack.wu.xu
+ */
 public class ScssAclDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssAclDaoImpl instance = new ScssAclDaoImpl();
