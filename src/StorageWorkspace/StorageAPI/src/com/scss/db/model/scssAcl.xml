@@ -29,7 +29,45 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `scss_acl`
 	    where `id`=#id#
 	</statement>
-	
+	<statement id="getAclByAccessor" resultMap="scssAcl" parameterClass="acl" cacheModel="myCache">
+		select
+	        `id`,
+	        `resource_id`,
+	        `resource_type`,
+	        `accessor_id`,
+	        `accessor_type`,
+	        `permission` 
+	    from
+	        `scss_acl`
+	    where `accessor_id`=#accessorId# and `accessor_type`=#accessorType#  
+	</statement>
+	<statement id="getAclOnResouce" resultMap="scssAcl" parameterClass="acl" cacheModel="myCache">
+		select
+	        `id`,
+	        `resource_id`,
+	        `resource_type`,
+	        `accessor_id`,
+	        `accessor_type`,
+	        `permission` 
+	    from
+	        `scss_acl`
+	    where `resource_id`=#resourceId# and 
+	        `resource_type`=#resourceType# 
+	</statement>
+	<statement id="getAclByAccessorOnResouce" resultMap="scssAcl" parameterClass="acl" cacheModel="myCache">
+		select
+	        `id`,
+	        `resource_id`,
+	        `resource_type`,
+	        `accessor_id`,
+	        `accessor_type`,
+	        `permission` 
+	    from
+	        `scss_acl`
+	    where `accessor_id`=#accessorId# and `accessor_type`=#accessorType# and 
+	    	`resource_id`=#resourceId# and 
+	        `resource_type`=#resourceType# 
+	</statement>
 	<statement id="updateAcl" parameterClass="acl" cacheModel="myCache">
 		update
 			 `scss_acl`
