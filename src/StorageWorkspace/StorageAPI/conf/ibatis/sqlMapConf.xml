@@ -23,4 +23,6 @@ PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
 	<sqlMap resource="com/scss/db/model/scssBucket.xml" />
 	<sqlMap resource="com/scss/db/model/scssObject.xml" />
 	<sqlMap resource="com/scss/db/model/scssAcl.xml" />
+	<sqlMap resource="com/scss/db/model/scssLog.xml" />
+	<sqlMap resource="com/scss/db/model/scssBucketLifecycle.xml" />
 </sqlMapConfig>
