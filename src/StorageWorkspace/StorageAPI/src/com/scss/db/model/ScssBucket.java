@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Jack.wu.xu
  */
 
-public class ScssBucket extends Resource implements java.io.Serializable {
+public class ScssBucket implements java.io.Serializable {
 
 	// Fields
 
@@ -26,13 +26,11 @@ public class ScssBucket extends Resource implements java.io.Serializable {
 
 	/** default constructor */
 	public ScssBucket() {
-		super.setType("B");
 	}
 
 	/** minimal constructor */
 	public ScssBucket(String name, Long ownerId, Byte exprirationEnabled,
 			Byte deleted, Date createTime, Date modifyTime) {
-		super.setType("B");
 		this.name = name;
 		this.ownerId = ownerId;
 		this.exprirationEnabled = exprirationEnabled;
@@ -45,7 +43,6 @@ public class ScssBucket extends Resource implements java.io.Serializable {
 	public ScssBucket(String name, Long ownerId, Byte exprirationEnabled,
 			Byte loggingEnabled, String meta, Byte deleted, Date createTime,
 			Date modifyTime) {
-		super.setType("B");
 		this.name = name;
 		this.ownerId = ownerId;
 		this.exprirationEnabled = exprirationEnabled;

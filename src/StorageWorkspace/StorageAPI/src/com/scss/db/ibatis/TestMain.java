@@ -1,6 +1,8 @@
 package com.scss.db.ibatis;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.scss.db.dao.ScssAclDaoImpl;
@@ -19,9 +21,12 @@ import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssLog;
 import com.scss.db.model.ScssObject;
 import com.scss.db.model.ScssUser;
-
+/**
+ * 
+ * @author Jack.wu.xu
+ */
 public class TestMain {
-	@SuppressWarnings( { "unused", "unchecked" })
+	@SuppressWarnings( { "unused", "unchecked", "deprecation" })
 	public static void main(String args[]) throws SQLException,
 			SameNameException, UserInGroupException {
 
@@ -96,6 +101,9 @@ public class TestMain {
 		acl.setAccessorType("U");
 		acl.setPermission("R");
 		acl = sad.insertAcl(acl);
+		List<ScssAcl> acls = sad.getAclByAccessor(acl.getAccessorId(), acl.getAccessorType());
+		acls = sad.getAclOnResouce(acl.getResourceId(), acl.getResourceType());
+		acls = sad.getAclByAccessorOnResouce(acl.getAccessorId(), acl.getAccessorType(),acl.getResourceId(), acl.getResourceType());
 		acl.setPermission("W");
 		sad.updateAcl(acl);
 		acl = sad.getAcl(acl.getId());
@@ -126,7 +134,6 @@ public class TestMain {
 		sud.deleteUser(user);
 		sgd.deleteGroup(group);
 		sad.deleteAcl(acl);
-		
 		
 	}
 

@@ -7,7 +7,10 @@ import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.UserInGroupException;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssUser;
-
+/**
+ * 
+ * @author Jack.wu.xu
+ */
 public class ScssGroupDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssGroupDaoImpl instance = new ScssGroupDaoImpl();

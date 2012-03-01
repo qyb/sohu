@@ -8,7 +8,10 @@ import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssUser;
-
+/**
+ * 
+ * @author Jack.wu.xu
+ */
 public class ScssBucketDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssBucketDaoImpl instance = new ScssBucketDaoImpl();
