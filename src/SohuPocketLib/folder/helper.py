@@ -90,10 +90,12 @@ def select_folder_list(user_id):
 
 def convert_folder_to_etree(folder):
 #    always have root node instead of None by default
-    node_folder = etree.Element('folder', id=folder.id)
     if folder:
+        node_folder = etree.Element('folder', id=folder.id)
         node_name = etree.SubElement(node_folder, 'name')
         node_name.text = folder.name
+    else:
+        node_folder = etree.Element('folder')
     
     return node_folder
 

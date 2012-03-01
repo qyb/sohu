@@ -378,16 +378,15 @@ def api2_input_for_list(request):
 
 def api2_input_for_update_read_progress(request):
     if request.method == 'POST':
-        progress = request.POST.get('progress', '')
+        progress = request.POST.get('read_progress', '')
         try:
             progress = float(progress)
         except:
             progress = None
-        progress_timestamp = request.COOKIES.get('progress_timestamp')
+        progress_timestamp = request.COOKIES.get('read_progress_timestamp')
         try:
             progress_timestamp = datetime.fromtimestamp(float(progress_timestamp))
         except:
-            progress = None
             progress_timestamp = None
     else:
         progress = None
@@ -472,6 +471,10 @@ def api2_input_for_get_text(request):
     return api2_input_for_bookmark_id_common(request)
 
 
+def api2_input_for_get_resource(request):
+    
+    return api2_input_for_bookmark_id_common(request)
+
 ##############################
 # api2 process
 ##############################
@@ -495,7 +498,7 @@ def api2_select_article_list(user_id, folder_name, order_by, offset, limit):
     chosen_db = choose_a_db(user_id)
     article_list = MyArticleInstance.objects \
                                       .using(chosen_db) \
-                                      .filter(user_id=user_id, is_delete=False, is_ready=True)
+                                      .filter(user_id=user_id, is_delete=False)
     if folder_name == '_archive':
         article_list = article_list.filter(is_archive=True)
     else:
@@ -522,26 +525,79 @@ def api2_select_article_list(user_id, folder_name, order_by, offset, limit):
     return article_list
         
 
+def api2_select_article(user_id, article_id):
+    chosen_db = choose_a_db(user_id)
+    try:
+        article = MyArticleInstance.objects \
+                                   .using(chosen_db) \
+                                   .get(user_id=user_id, id=article_id, is_delete=False)
+    except:
+        article = None
+    
+    return article
+
+
+def api2_modify_article_common(article, modify_info):
+    pass
+
+
 ##############################
 # api2 output
 ##############################
 
 
-def convert_article_list_to_etree(article_list):
+def api2_convert_article_to_etree(article):
+#    always have root node instead of None by default
+    if article:
+        bookmark_node = etree.Element('bookmark', id=article.id)
+        
+        url_node = etree.SubElement(bookmark_node)
+        url_node.text = article.url
+        
+        title_node = etree.SubElement(bookmark_node)
+        title_node.text = article.title
+        
+        description_node = etree.SubElement(bookmark_node)
+        description_node.text = article.description
+        
+        is_star_node = etree.SubElement(bookmark_node)
+        is_star_node.text = TRUE_REPR if article.is_star else FALSE_REPR
+        
+        is_read_node = etree.SubElement(bookmark_node)
+        is_read_node.text = TRUE_REPR if article.is_read else FALSE_REPR
+        
+        create_time_node = etree.SubElement(bookmark_node)
+        create_time_node.text = unicode(int(time.mktime(article.create_time.timetuple())))
+        
+        read_time_node = etree.SubElement(bookmark_node)
+        read_time_node.text = unicode(int(time.mktime(article.read_time.timetuple())))
+        
+        folder_name_node = etree.SubElement(bookmark_node)
+        folder_name_node.text = article.folder_name
+        
+        progress_node = etree.SubElement(bookmark_node)
+        progress_node.text = unicode(article.progress)
+        
+        version_node = etree.SubElement(bookmark_node)
+        version_node.text = unicode(article.version)
+        
+        text_version_node = etree.SubElement(bookmark_node)
+        text_version_node.text = unicode(article.text_version)
+        
+        is_ready_node = etree.SubElement(bookmark_node)
+        is_ready_node.text = TRUE_REPR if article.is_ready else FALSE_REPR
+    else:
+        bookmark_node = etree.Element('bookmark')
+    
+    return bookmark_node
+
+
+def api2_convert_article_list_to_etree(article_list):
+#    always have root node instead of None by default
     package_node = etree.Element('package')
-    
     for article in article_list:
-        bookmark_node = etree.SubElement(package_node, id=article.id)
-        
-        url = etree.SubElement(bookmark_node)
-        url.text = article.url
-        
-        title = etree.SubElement(bookmark_node)
-        title.text = article.title
+        article_node = api2_convert_article_to_etree(article)
+        package_node.append(article_node)
     
-    pass    
-    
-    
-    
-    
+    return package_node
     
