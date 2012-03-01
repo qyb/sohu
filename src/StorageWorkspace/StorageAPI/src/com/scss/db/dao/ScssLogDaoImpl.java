@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
-import com.scss.db.model.Resource;
 import com.scss.db.model.ScssLog;
 import com.scss.db.model.ScssUser;
 /**
@@ -96,15 +95,15 @@ public class ScssLogDaoImpl {
 	}
 	
 	
-	public List<ScssLog> getLogsOnResource(Resource r) {
-		List logs = null;
-		try {
-			logs = sqlMap.queryForList("getLogsOnResource", r);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return logs;
-	}
+//	public List<ScssLog> getLogsOnResource(Resource r) {
+//		List logs = null;
+//		try {
+//			logs = sqlMap.queryForList("getLogsOnResource", r);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return logs;
+//	}
 	public void deleteLog(ScssLog log) throws SQLException {
 		sqlMap.update("deleteLog", log);
 	}
