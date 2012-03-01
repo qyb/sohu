@@ -40,15 +40,12 @@ public class ScssGroupDaoImpl {
 	}
 
 	public ScssGroup insertGroup(ScssGroup group) {
-		ScssGroup su = null;
 		try {
-			su.setId((Long) sqlMap.queryForObject("putGroup", group));
-			if (su.getUserIds() == null)
-				su.setUserIds(",");
+			group.setId((Long) sqlMap.insert("putGroup", group));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return su;
+		return group;
 	}
 
 	public void putUserToGroup(ScssUser user, ScssGroup sg)
@@ -58,6 +55,13 @@ public class ScssGroupDaoImpl {
 			throw new UserInGroupException(user.getSohuId(), sg.getName());
 		}
 		putUserIdsToGroup(user.getId() + "", sg);
+	}
+
+	public void removeUserFromGroup(ScssUser user, ScssGroup sg) throws SQLException {
+		String userIds = sg.getUserIds();
+		userIds = userIds.replaceAll("," + user.getId() + ",", ",");
+		sg.setUserIds(userIds);
+		sqlMap.update("updateGroup", sg);
 	}
 
 	public void updateGroup(ScssGroup sg) throws SQLException {
