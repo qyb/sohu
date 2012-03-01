@@ -8,26 +8,29 @@ import java.util.Date;
  * @author Jack.wu.xu
  */
 
-public class ScssLog implements java.io.Serializable {
+public class ScssLog extends Resource implements java.io.Serializable {
 
 	// Fields
 
 	private Long id;
-	private Integer level;
-	private String action;
+	private Integer level = Log.INFO;
+	private String action = "R";
 	private Long userId;
-	private String resourceType;
+	private String resourceType = "O";
 	private String resourceId;
-	private String server;
-	private String clientName;
+	private String server = "";
+	private String clientName = "Andriod";
 	private String clientAddr;
-	private Date timestamp;
+	private Date timestamp = new Date();
 	private String message;
 
 	// Constructors
 
 	/** default constructor */
 	public ScssLog() {
+	}
+	
+	public ScssLog(Resource r,Accessor a) {
 	}
 
 	/** minimal constructor */

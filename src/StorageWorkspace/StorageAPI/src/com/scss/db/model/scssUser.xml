@@ -10,6 +10,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	<resultMap id="scssUser" class="user">
 		<result property="id" column="id"/>
 		<result property="sohuId" column="sohu_id"/>
+		<result property="accessId" column="access_id"/>
 		<result property="accessKey" column="access_key"/>
 		<result property="status" column="status"/>
 	</resultMap>
@@ -19,6 +20,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		select
 	        `id`,
 	        `Sohu_ID`,
+	        `access_id`,
 	        `access_key`,
 	        `status` 
 	    from
@@ -29,6 +31,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		select
 	        `id`,
 	        `Sohu_ID`,
+	        `access_id`,
 	        `access_key`,
 	        `status` 
 	    from
@@ -40,6 +43,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		select
 	        `id`,
 	        `Sohu_ID`,
+	        `access_id`,
 	        `access_key`,
 	        `status` 
 	    from
@@ -51,6 +55,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		select
 	        `id`,
 	        `Sohu_ID`,
+	        `access_id`,
 	        `access_key`,
 	        `status` 
 	    from
@@ -63,6 +68,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		set 
 	        `id`=#id#,
 	        `Sohu_ID`=#sohuId#,
+	        `access_id`=#accessId#,
 	        `access_key`=#accessKey#,
 	        `status`=#status#  
 	    where  `id`=#id#
@@ -76,8 +82,8 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	
 	<!--  -->
 	<insert id="putUser" parameterClass="user">
-		insert into `scss_user`(`Sohu_ID`,`access_key`,`status`) 
-		values( #sohuId#,#accessKey#,#status#)
+		insert into `scss_user`(`Sohu_ID`,`access_id`,`access_key`,`status`) 
+		values( #sohuId#,#accessId#,#accessKey#,#status#)
 		<selectKey resultClass="long" keyProperty="id" >
             SELECT @@IDENTITY AS ID
         </selectKey>
