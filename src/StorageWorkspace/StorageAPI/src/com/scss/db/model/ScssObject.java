@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Jack.wu.xu
  */
 
-public class ScssObject extends Resource implements java.io.Serializable {
+public class ScssObject  implements java.io.Serializable {
 
 	// Fields
 
@@ -35,13 +35,11 @@ public class ScssObject extends Resource implements java.io.Serializable {
 	/** default constructor */
 	public ScssObject() {
 		super();
-		super.setType("O");
 	}
 
 	/** minimal constructor */
 	public ScssObject(String key, Long bfsFile, Long ownerId, Long bucketId) {
 		super();
-		super.setType("O");
 		this.key = key;
 		this.bfsFile = bfsFile;
 		this.ownerId = ownerId;

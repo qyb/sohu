@@ -8,7 +8,7 @@ import java.util.Date;
  * @author Jack.wu.xu
  */
 
-public class ScssLog extends Resource implements java.io.Serializable {
+public class ScssLog  implements java.io.Serializable {
 
 	// Fields
 
@@ -30,8 +30,6 @@ public class ScssLog extends Resource implements java.io.Serializable {
 	public ScssLog() {
 	}
 	
-	public ScssLog(Resource r,Accessor a) {
-	}
 
 	/** minimal constructor */
 	public ScssLog(Long id, Integer level, String action, Long userId,
