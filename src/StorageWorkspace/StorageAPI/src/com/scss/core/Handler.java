@@ -116,9 +116,12 @@ public class Handler extends ServerResource {
 		req.setHeaders(this.getRequestHeaders());
 		
 		// Authorize
-		if (!this.Authorize(req))
+		if (!this.Authorize(req)) {
 			System.out.printf(">> Fail to authorize.\n");
-		else
+			ErrorResponse err_resp = ErrorResponse.AccessDenied(req);
+			this.getResponse().setStatus(new Status(err_resp.getHttp_status()));
+			return err_resp.Repr;
+		} else
 			System.out.printf(">> Request authorized.\n");
 			// TODO: process to quit flow.
 		

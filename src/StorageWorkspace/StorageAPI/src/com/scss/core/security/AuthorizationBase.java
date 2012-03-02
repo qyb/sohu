@@ -14,6 +14,7 @@ import java.util.TreeSet;
 import com.scss.core.APIRequest;
 import com.scss.core.CommonRequestHeader;
 import com.scss.db.User;
+import com.scss.db.dao.ScssUserDaoImpl;
 import com.scss.db.model.ScssUser;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -67,11 +68,11 @@ public class AuthorizationBase implements IAuth {
 				String access_id = authes[1];
 				String signature = authes[2];
 				
-				ScssUser user = DBServiceHelper.getUserByAccessKey(access_id); //TODO: ByAccessID not availible yet
-				
+				ScssUser suser = ScssUserDaoImpl.getInstance().getUserByAccessId(access_id);
 				try {
-					if (null != user && this.getSignature(user.getAccessKey()) == signature) {
-						request.setUser((User) user); //TODO: change the User type later depends on DB design.
+					User user = new User(suser);
+					if (null != user && this.getSignature(user.getAccessKey()).equals(signature)) {
+						request.setUser(user);
 						return true;
 					}
 				} catch (SignatureException e) {
@@ -83,9 +84,9 @@ public class AuthorizationBase implements IAuth {
 		return false;
 	}
 	
-	private String getSignature(String access_id) throws SignatureException {
+	private String getSignature(String access_secret_key) throws SignatureException {
 		String str_to_sign = this.getStringToSign();
-		return CommonUtilities.calculateRFC2104HMAC(str_to_sign, access_id);
+		return Credential.calculateRFC2104HMAC(str_to_sign, access_secret_key);
 	}
 	
 	private String getStringToSign() {
@@ -95,17 +96,13 @@ public class AuthorizationBase implements IAuth {
 		StringBuilder sb = new StringBuilder();
 		String val = "";
 		
-		sb.append(this.request.Method);
-		sb.append("\n");
+		sb.append(this.request.Method).append("\n");
 		val = headers.get(CommonRequestHeader.CONTENT_MD5);
-		sb.append(null==val?"":val);
-		sb.append("\n");
+		sb.append(null==val?"":val).append("\n");
 		val = headers.get(CommonRequestHeader.CONTENT_TYPE);
-		sb.append(null==val?"":val);
-		sb.append("\n");
+		sb.append(null==val?"":val).append("\n");
 		val = headers.get(CommonRequestHeader.DATE);
-		sb.append(null==val?"":val);
-		sb.append("\n");
+		sb.append(null==val?"":val).append("\n");
 		sb.append(canonical_headers);
 		sb.append(canonical_res);
 		
@@ -124,20 +121,17 @@ public class AuthorizationBase implements IAuth {
 		if (this.request.Querys.size()>0) {
 			// sort the querys
 			TreeSet<String> keys = new TreeSet<String> (this.request.Querys.keySet());
-			sb.append("?");
+			char separator = '?';
 			for (String key: keys) {
 				String k = key.toLowerCase();
 				if (AuthorizationBase.AcceptedResources.contains(k)) {
-					sb.append(key);
-					sb.append("&");
-					sb.append(this.request.Querys.get(key));
+					sb.append(separator).append(k).append("=").append(this.request.Querys.get(key));
 				}
+				separator = '&';
 			}
 		}
 		
 		String rc = sb.toString();
-		if (rc.equals("?"))
-			rc = "";
 		
 		return rc;
 	}
@@ -150,9 +144,8 @@ public class AuthorizationBase implements IAuth {
 		for (String key: keys) {
 			String k = key.toLowerCase();
 			if (k.startsWith(AuthorizationBase.CanonicalizedHeaderPrefix)){
-				sb.append(k);
-				sb.append(":");
-				sb.append(headers.get(key).trim()); //TODO: Combine all values of this header
+				//TODO: Need to combine all values with "," of this header
+				sb.append(k).append(":").append(headers.get(key).trim()).append("\n"); 
 			}
 		}
 		
