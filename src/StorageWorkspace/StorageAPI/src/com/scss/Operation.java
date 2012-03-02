@@ -3,7 +3,7 @@
  */
 package com.scss;
 
-import java.net.URI;
+import org.apache.log4j.Logger;
 
 import com.scss.core.APIRequest;
 import com.scss.core.InvaildRequestException;
@@ -17,6 +17,7 @@ import com.scss.core.object.ObjectResource;
  */
 public class Operation {
 	// TODO: make it thread safe.
+	private static final Logger logger = Logger.getLogger(Operation.class);
 	
 	public IOperatable Target;
 	public IAccessor Performer;
@@ -92,6 +93,7 @@ public class Operation {
 				throw new InvaildRequestException("Invaild HTTP method on object.");
 		}
 		
+		logger.debug(String.format("Operation %s is created.", op.Operator.getClass().getName()));
 		return op;
 	}
 }

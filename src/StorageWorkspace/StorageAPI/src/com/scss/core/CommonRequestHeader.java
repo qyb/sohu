@@ -47,7 +47,7 @@ public class CommonRequestHeader {
 	 * Default: None
 	 * Required: No
 	 */
-	public static final String CONTENT_MD5 = "CONTENT-MD5";	
+	public static final String CONTENT_MD5 = "Content-MD5";	
 	
 	/*
 	 * The current date and time according to the requester.

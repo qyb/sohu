@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 import com.scss.ICallable;
 import com.scss.core.bucket.DELETE_BUCKET;
@@ -28,7 +29,7 @@ import com.scss.utility.CommonUtilities;
 public abstract class OpenAPI implements ICallable {
 	
 	private MD5DigestInputStream md5DigestStream = null;
-	
+	protected Logger logger = Logger.getLogger(this.getClass());
 	
 	public void setSystemMeta() {
 	
@@ -44,9 +45,10 @@ public abstract class OpenAPI implements ICallable {
         try {
             md5DigestStream = new MD5DigestInputStream(stream);
         } catch (NoSuchAlgorithmException e) {
-        	System.out.println("No MD5 digest algorithm available.  Unable to calculate " +
+        	logger.error("No MD5 digest algorithm available.  Unable to calculate " +
                      "checksum and verify data integrity.");
-        	e.printStackTrace();
+        	logger.debug(e.getMessage());
+        	//e.printStackTrace();
         }
         
         return this.md5DigestStream;

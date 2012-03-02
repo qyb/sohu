@@ -1,7 +1,5 @@
 ﻿package com.scss.db.connpool;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -20,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sql.DataSource;
 
-import com.scss.utility.Logger;
+import org.apache.log4j.Logger;
 
 /**
  * @Title:数据库连接池:<br>
@@ -112,8 +110,9 @@ public class ConnectionPool implements Runnable, DataSource {
 			countThread, 60 * 2, TimeUnit.SECONDS,
 			new ArrayBlockingQueue<Runnable>(countThread + 1),
 			new ThreadPoolExecutor.DiscardOldestPolicy());;
-	private static final Logger logger = Logger.getLogger("scss/pool",
-			Logger.ALL, true);
+//	private static final Logger logger = Logger.getLogger("scss/pool",
+//			Logger.ALL, true);
+	private static final Logger logger = Logger.getLogger(ConnectionPool.class);
 	private boolean lock = false;
 	private PrintWriter logWriter;
 
@@ -239,7 +238,7 @@ public class ConnectionPool implements Runnable, DataSource {
 					// long et = System.currentTimeMillis();
 				}
 			} catch (Exception e) {
-				logger.exception(e);
+				logger.debug(e);
 			}
 		}
 
