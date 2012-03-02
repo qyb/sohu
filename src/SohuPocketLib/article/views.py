@@ -11,8 +11,8 @@ from article.helper import api2_generate_article_key, api2_select_article, \
     api2_input_for_update_read_progress, api2_input_for_add, api2_input_for_delete, \
     api2_input_for_update, api2_input_for_star, api2_input_for_unstar, \
     api2_input_for_archive, api2_input_for_unarchive, api2_input_for_move, \
-    api2_input_for_get_text, get_or_create_article_resource, \
-    generate_resource_package_etree
+    api2_input_for_get_text, api2_get_or_create_article_resource, \
+    api2_generate_resource_package_etree
 from common.helper import KanError
 from constants import BUCKET_NAME_SOHUKAN, TRUE_REPR
 from django.http import HttpResponse, HttpResponsePermanentRedirect
@@ -189,7 +189,6 @@ def api2_count(request):
     return HttpResponse(response, mimetype=mimetype)
     
 
-
 def api2_count_test(request, *args, **kwargs):
     
     return render_to_response('api2_bookmarks_count_test.html',
@@ -204,7 +203,7 @@ def api2_modify_common(request, modify_info):
     if kan_user.is_logged_in():
         article = api2_select_article(kan_user.get_user_id(), modify_info['article_id'])
         if article:
-            article = api2_modify_article_common(article, modify_info)
+            article = api2_modify_article_common(kan_user.get_user_id(), article, modify_info)
             if article:
                 article_etree = api2_convert_article_to_etree(article)
                 response = etree.tostring(article_etree, xml_declaration=True, encoding='utf-8')
@@ -354,9 +353,9 @@ def api2_get_resource(request):
     response = None
     mimetype = 'text/xml'
     if kan_user.is_logged_in():
-        article_resource = get_or_create_article_resource(kan_user.get_user_id(), article_id)
+        article_resource = api2_get_or_create_article_resource(kan_user.get_user_id(), article_id)
         images = article_resource.get_images()
-        resource_package_etree = generate_resource_package_etree(images=images)
+        resource_package_etree = api2_generate_resource_package_etree(images=images)
         response = etree.tostring(resource_package_etree, xml_declaration=True, encoding='utf-8')
     else:
         error_etree = KanError('1000').get_error_etree()
