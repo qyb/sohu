@@ -3,6 +3,7 @@
  */
 package com.scss.core.bucket;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,9 @@ import com.scss.core.APIResponse;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
+import com.scss.db.dao.ScssBucketDaoImpl;
 import com.scss.db.model.ScssBucket;
-import com.scss.db.service.DBServiceHelper;
+import com.scss.db.model.ScssUser;
 import com.scss.utility.CommonUtilities;
 
 /**
@@ -49,7 +51,17 @@ public class GET_SERVICE extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		List<ScssBucket> buckets = DBServiceHelper.getBucketsByUserID(req.getUser().getId());
+		ScssUser scssUser=new ScssUser();
+		
+		scssUser.setId(req.getUser().getId());
+		
+		List<ScssBucket> buckets=null;
+		try {
+			buckets = ScssBucketDaoImpl.getInstance().getBucketsByUser(scssUser);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// set response headers
 		if (null != buckets) {

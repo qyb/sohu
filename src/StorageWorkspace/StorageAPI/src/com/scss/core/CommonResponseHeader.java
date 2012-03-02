@@ -128,7 +128,7 @@ public class CommonResponseHeader {
 		
 		resp_headers.put(CommonResponseHeader.X_SOHU_ID_2, req.getUser().getSohuId());
 	    resp_headers.put(CommonResponseHeader.X_SOHU_REQUEST_ID, UUID.randomUUID().toString());			
-		resp_headers.put(CommonResponseHeader.CONNECTION, "close");
+		//resp_headers.put(CommonResponseHeader.CONNECTION, "close");
 		
 	}
 
