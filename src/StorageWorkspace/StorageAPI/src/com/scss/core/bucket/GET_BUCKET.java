@@ -73,10 +73,8 @@ public class GET_BUCKET extends BucketAPI {
 	
 			
 			// generate representation
-			resp.Repr = new org.restlet.representation.StringRepresentation(this.getResponseText(req, bucket_objects),MediaType.TEXT_PLAIN);
-			
-			resp.MediaType = Mimetypes.APPLICATION_XML;
-			
+			resp.Repr = new org.restlet.representation.StringRepresentation(this.getResponseText(req, bucket_objects), MediaType.TEXT_XML);
+			resp.MediaType = Mimetypes.MIMETYPE_XML;		
 			return resp;
 		}
 

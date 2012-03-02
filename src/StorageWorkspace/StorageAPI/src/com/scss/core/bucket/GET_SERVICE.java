@@ -32,7 +32,7 @@ public class GET_SERVICE extends BucketAPI {
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
-		
+		logger.info("Invoking GET_SERVICE ...");
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
@@ -53,6 +53,8 @@ public class GET_SERVICE extends BucketAPI {
 		
 		// set response headers
 		if (null != buckets) {
+			logger.debug(String.format("%d buckets found", buckets.size()));
+			
 			APIResponse resp = new BucketAPIResponse();
 			Map<String, String> resp_headers = resp.getHeaders();
 			
@@ -70,12 +72,11 @@ public class GET_SERVICE extends BucketAPI {
 			//resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // GET_SERVICE has no content
 			
 			// generate representation
-			
-			StringRepresentation stringRepresentation=new org.restlet.representation.StringRepresentation(this.getResponseText(req, buckets),MediaType.TEXT_PLAIN);
-			
-			resp.Repr = stringRepresentation;
-			
-			resp.MediaType = Mimetypes.APPLICATION_XML;
+			String resp_xml = this.getResponseText(req, buckets);
+			logger.debug(String.format("GET_SERVICE Response : \n%s", resp_xml));
+			StringRepresentation repr = new StringRepresentation(resp_xml, MediaType.TEXT_XML);
+			resp.Repr = repr;
+			resp.MediaType = Mimetypes.MIMETYPE_XML;
 			return resp;
 		}
 

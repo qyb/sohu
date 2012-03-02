@@ -153,7 +153,7 @@ public class Handler extends ServerResource {
 					
 				}
 				
-				getResponse().getServerInfo().setAgent("SohuS4");
+				getResponse().getServerInfo().setAgent("s3.itc.cn");
 				getResponse().setLocationRef("/" + req.BucketName);
 				
 				
@@ -162,9 +162,11 @@ public class Handler extends ServerResource {
 				this.getResponse().setStatus(new Status(err_resp.getHttp_status()));
 				logger.info(String.format("Operation failed. (%d %s)", err_resp.getHttp_status(), err_resp.code));
 			}
+			
+			logger.debug(" >>>>> Successfully return <<<<<");
 			return resp.Repr;
 		} 
-		
+		logger.debug(" >>>>> Failure return <<<<<");
 		return null;
 	}
 	
@@ -198,7 +200,9 @@ public class Handler extends ServerResource {
 	 * TODO: convert to class or module
 	 */
 	protected Boolean Authorize(APIRequest req) {
-		ScssUser suser = ScssUserDaoImpl.getInstance().getUserByAccessId("AKIAIXEPRIJSQA4A2KOA");
+		logger.debug("Start fake authorization.");
+		ScssUser suser = ScssUserDaoImpl.getInstance().getUserByAccessId("FAKE_ACCESS_ID_00002");
+		logger.debug(String.format("Authorized user : %s", suser));
 		req.setUser(new User(suser));
 		return true;
 		//IAuth auth = AuthorizationBase.createInstace(req, AuthorizationTypes.GENERAL);
