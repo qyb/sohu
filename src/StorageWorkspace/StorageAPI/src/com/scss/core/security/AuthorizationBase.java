@@ -4,20 +4,18 @@
 package com.scss.core.security;
 
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.apache.log4j.Logger;
 
 import com.scss.core.APIRequest;
 import com.scss.core.CommonRequestHeader;
 import com.scss.db.User;
 import com.scss.db.dao.ScssUserDaoImpl;
 import com.scss.db.model.ScssUser;
-import com.scss.db.service.DBServiceHelper;
-import com.scss.utility.CommonUtilities;
 
 /**
  * General authorization implementation
@@ -39,7 +37,7 @@ public class AuthorizationBase implements IAuth {
 		for (String val: resources)
 			AcceptedResources.add(val);
 	}
-	
+	private final Logger logger = Logger.getLogger(getClass());
 	
 	private APIRequest request;
 	
@@ -74,9 +72,11 @@ public class AuthorizationBase implements IAuth {
 					if (null != user && this.getSignature(user.getAccessKey()).equals(signature)) {
 						request.setUser(user);
 						return true;
-					}
+					} else
+						logger.info(String.format("User of access_id (%s) is not found.", access_id));
 				} catch (SignatureException e) {
 					// TODO: Add post-process for SignatureException.
+					logger.debug(e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -86,6 +86,9 @@ public class AuthorizationBase implements IAuth {
 	
 	private String getSignature(String access_secret_key) throws SignatureException {
 		String str_to_sign = this.getStringToSign();
+		logger.debug(" --- String to sign --- ");
+		logger.debug(str_to_sign);
+		logger.debug(" ----------------------");
 		return Credential.calculateRFC2104HMAC(str_to_sign, access_secret_key);
 	}
 	

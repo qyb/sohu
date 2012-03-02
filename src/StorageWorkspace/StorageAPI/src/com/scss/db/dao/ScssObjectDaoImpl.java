@@ -3,11 +3,12 @@ package com.scss.db.dao;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssObject;
-import com.scss.utility.Logger;
 /**
  * 
  * @author Jack.wu.xu
@@ -15,8 +16,10 @@ import com.scss.utility.Logger;
 public class ScssObjectDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssObjectDaoImpl instance = new ScssObjectDaoImpl();
-	private static final Logger logger = Logger.getLogger("DAO/SCSSOBJECT", 0,
-			true);
+//	private static final Logger logger = Logger.getLogger("DAO/SCSSOBJECT", 0,
+//			true);
+	
+	private final Logger logger = Logger.getLogger(this.getClass());
 	private ScssObjectDaoImpl() {
 	}
 
@@ -46,7 +49,7 @@ public class ScssObjectDaoImpl {
 			throw ename;
 		} catch (SQLException e) {
 			String message = e.getMessage();
-			logger.debugT(message);
+			logger.debug(message);
 			if (message.indexOf("Duplicate entry") != -1) {
 				SameNameException ename = new SameNameException(
 						"key,user and BucketName", "Duplicate entry");

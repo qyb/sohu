@@ -9,21 +9,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.scss.db.connpool.ConnectionPool;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssObject;
 import com.scss.db.model.ScssUser;
-import com.scss.utility.Logger;
 
 public class DBServiceHelper {
 	private static ConnectionPool connPool;
 
-	private static final Logger logger = Logger
-			.getLogger("DB/SERVICE", 0, true);
+//	private static final Logger logger = Logger
+//			.getLogger("DB/SERVICE", 0, true);
 	private static DBServiceHelper DBHelper;
-
+	private static final Logger logger = Logger.getLogger(DBServiceHelper.class);
+	
 	static {
 		if (connPool == null)
 			connPool = new ConnectionPool("db.properties");
@@ -145,7 +147,7 @@ public class DBServiceHelper {
 			throw ename;
 		} catch (SQLException e) {
 			String message = e.getMessage();
-			logger.debugT(message);
+			logger.debug(message);
 			if (message.indexOf("Duplicate entry") != -1) {
 				SameNameException ename = new SameNameException(
 						"key,user and BucketName", "Duplicate entry");
@@ -676,7 +678,7 @@ public class DBServiceHelper {
 			throw ename;
 		} catch (SQLException e) {
 			String message = e.getMessage();
-			logger.debugT(message);
+			logger.debug(message);
 			if (message.indexOf("Duplicate entry") != -1) {
 				if (message.indexOf("access_key") != -1) {
 					SameNameException ename = new SameNameException(

@@ -25,7 +25,6 @@ import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
-import com.scss.utility.Logger;
 
 
 /**
