@@ -6,7 +6,12 @@ import socket
 PRODUCTION_SERVER_HOSTNAMES = ('tc_69_53', 'tc_69_54')
 
 if  socket.gethostname() in PRODUCTION_SERVER_HOSTNAMES:
-    DEBUG = TEMPLATE_DEBUG = True
+    IS_PRODUCTION_SERVER = True
+else:
+    IS_PRODUCTION_SERVER = False
+    
+if IS_PRODUCTION_SERVER:
+    DEBUG = TEMPLATE_DEBUG = False
 else:
     DEBUG = TEMPLATE_DEBUG = True
 
@@ -171,7 +176,7 @@ LOGGING = {
 import djcelery
 djcelery.setup_loader()
 
-if  socket.gethostname() in PRODUCTION_SERVER_HOSTNAMES:
+if  IS_PRODUCTION_SERVER:
     BROKER_HOST = "10.10.69.53"
 else:
     BROKER_HOST = "localhost"

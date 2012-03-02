@@ -6,11 +6,11 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from helper import KanUser, serialize
 from lxml import etree
-from user.helper import get_kan_user_to_xml_etree, \
-    input_for_api2_access_token_func, input_for_verify_func, input_for_show_func, \
+from user.helper import api2_convert_kan_user_to_xml_etree, \
+    api2_input_for_access_token_func, input_for_verify_func, input_for_show_func, \
     extract_class_instance_to_dict, input_for_update_func, \
-    input_for_api2_verify_credentials_func, input_for_api2_update_func, \
-    update_kan_user_instance
+    api2_input_for_verify_credentials_func, api2_input_for_update_func, \
+    api2_modify_kan_user_common
 import logging
 import datetime
 from common.helper import KanError
@@ -87,13 +87,13 @@ def update_test(request):
 
 def api2_access_token(request):
     
-    sohupassport_uuid = input_for_api2_access_token_func(request)
+    sohupassport_uuid = api2_input_for_access_token_func(request)
     kan_user = KanUser(sohupassport_uuid, '')
     kan_user.verify_and_login()
     response = None
     mimetype = 'text/xml'
     if kan_user.is_logged_in():
-        kan_user_etree = get_kan_user_to_xml_etree(kan_user)
+        kan_user_etree = api2_convert_kan_user_to_xml_etree(kan_user)
         if kan_user_etree is not None:
             response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
@@ -111,13 +111,13 @@ def api2_access_token(request):
 
 def api2_verify_credentials(request):
     
-    access_token_input = input_for_api2_verify_credentials_func(request)
+    access_token_input = api2_input_for_verify_credentials_func(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     response = None
     mimetype = 'text/xml'
     if kan_user.is_logged_in():
-        kan_user_etree = get_kan_user_to_xml_etree(kan_user)
+        kan_user_etree = api2_convert_kan_user_to_xml_etree(kan_user)
         if kan_user_etree is not None:
             response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
@@ -135,14 +135,14 @@ def api2_verify_credentials(request):
 
 def api2_update(request):
     
-    access_token_input, modify_info = input_for_api2_update_func(request)
+    access_token_input, modify_info = api2_input_for_update_func(request)
     kan_user = KanUser('', access_token_input)
     kan_user.verify_and_login()
     response = None
     mimetype = 'text/xml'
     if kan_user.is_logged_in():
-        update_kan_user_instance(kan_user, modify_info)
-        kan_user_etree = get_kan_user_to_xml_etree(kan_user)
+        api2_modify_kan_user_common(kan_user, modify_info)
+        kan_user_etree = api2_convert_kan_user_to_xml_etree(kan_user)
         if kan_user_etree is not None:
             response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
