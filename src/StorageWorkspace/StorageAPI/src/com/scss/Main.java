@@ -3,6 +3,8 @@
  */
 package com.scss;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -13,6 +15,8 @@ import com.scss.server.CloudServer;
  * @author Samuel
  */
 public class Main {
+	
+	private static final Logger logger = Logger.getRootLogger();
 
 	/**
 	 * @param args
@@ -32,8 +36,11 @@ public class Main {
 			 else if (Integer.parseInt(args[0]) > 0)
 				 new Server(Protocol.HTTP, Integer.parseInt(args[0]), Handler.class).start();
 		 } 
-		 else 
+		 else {
+			 DOMConfigurator.configureAndWatch("./log4j.xml");
+			 logger.info("Starting DEBUG server...");
 			 new Server(Protocol.HTTP, 80, Handler.class).start();
+		 }
 	}
 
 }

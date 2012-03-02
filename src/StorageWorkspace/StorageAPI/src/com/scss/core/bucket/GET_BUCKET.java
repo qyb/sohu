@@ -100,30 +100,35 @@ public class GET_BUCKET extends BucketAPI {
 	}
 	
 	private String getResponseText(APIRequest req, List<ScssObject> bucket_objects) {
+		
+		int maxkeys = 1000;
+		String prefix = req.Querys.get("prefix");
+		
 		// TODO: Use template? or make the string static
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		sb.append("<ListBucketResult xmlns=\"" + Const.XMLNS + "\">");
-		sb.append("  <Name>" + req.BucketName + "</Name>");
-		sb.append("  <Prefix />"); // TODO: Not implemented
+		sb.append("<ListBucketResult xmlns=\"").append(Const.XMLNS).append("\">");
+		sb.append("  <Name>").append(req.BucketName).append("</Name>");
+		sb.append("  <Prefix>").append(prefix).append(" (Not implemented)</Prefix>"); // TODO: Not implemented
 		sb.append("  <Marker />"); // TODO: Not implemented
-		sb.append("  <MaxKeys />"); // TODO: Not implemented
-		sb.append("  <IsTruncated />"); // TODO: Not implemented
+		sb.append("  <MaxKeys>").append(maxkeys).append("</MaxKeys>"); // TODO: Not implemented
+		sb.append("  <MaxKeysIsNotImplemented />"); // TODO: Not implemented
+		sb.append("  <IsTruncated>false</IsTruncated>"); // TODO: Not implemented
 		
 		sb.append("  <Contents>");
 		for(ScssObject obj: bucket_objects){
-		    sb.append("    <Key>" + obj.getKey() + "</Key>");
-		    sb.append("    <LastModified>" + CommonUtilities.formatResponseTextDate(obj.getModifyTime())+ "</LastModified>");
-		    sb.append("    <ETag />"); // TODO: Not implemented
-		    sb.append("    <Size>" + obj.getSize().toString() + "</Size>");
+		    sb.append("    <Key>").append(obj.getKey()).append("</Key>");
+		    sb.append("    <LastModified>").append(CommonUtilities.formatResponseTextDate(obj.getModifyTime())).append("</LastModified>");
+		    sb.append("    <ETag>").append(obj.getEtag()).append("</ETag>"); 
+		    sb.append("    <Size>").append(obj.getSize()).append("</Size>");
 		    sb.append("    <StorageClass />"); // TODO: Not implemented
 			sb.append("    <Owner>");
-			sb.append("      <ID>" + req.getUser().getSohuId() + "</ID>");
-			sb.append("      <DisplayName>" + req.getUser().getSohuId() + "</DisplayName>");
+			sb.append("      <ID>").append(req.getUser().getAccessId()).append("</ID>");
+			sb.append("      <DisplayName>").append(req.getUser().getSohuId()).append("</DisplayName>");
 			sb.append("    </Owner>");		    
 		}
 		sb.append("  </Contents>");
-		sb.append("</ListBucketResult>");
+		sb.append("</ListBucketResult>"); 
 		return sb.toString();
 	}
 

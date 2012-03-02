@@ -17,6 +17,6 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.18-bin.jar"/>
 	<classpathentry kind="lib" path="lib/org.restlet.ext.jaxrs.jar"/>
 	<classpathentry kind="lib" path="lib/org.restlet.ext.xml.jar"/>
-	<classpathentry kind="lib" path="lib/org.restlet.jar"/>
+	<classpathentry kind="lib" path="lib/org.restlet.jar" sourcepath="E:/Libs/restlet-jee-2.0.11"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

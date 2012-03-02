@@ -85,24 +85,24 @@ public class S3Sample {
              * You can optionally specify a location for your bucket if you want to
              * keep your data closer to your applications or users.
              */
-            System.out.println("Creating bucket " + bucketName + "\n");
-            Bucket b = s3.createBucket(bucketName);
-            if (b != null) {
-            	System.out.printf("bucket <%s> created or existed\n", b.getName());
-            }
+//            System.out.println("Creating bucket " + bucketName + "\n");
+//            Bucket b = s3.createBucket(bucketName);
+//            if (b != null) {
+//            	System.out.printf("bucket <%s> created or existed\n", b.getName());
+//            }
             
             /*
              * List the buckets in your account
              */
-            try {
-	            System.out.println("Listing buckets");
-	            for (Bucket bucket : s3.listBuckets()) {
-	                System.out.println(" - " + bucket.getName());
-	            }
-	            System.out.println();
-            } catch (Exception e) {
-            	e.printStackTrace();
-            }
+//            try {
+//	            System.out.println("Listing buckets");
+//	            for (Bucket bucket : s3.listBuckets()) {
+//	                System.out.println(" - " + bucket.getName());
+//	            }
+//	            System.out.println();
+//            } catch (Exception e) {
+//            	e.printStackTrace();
+//            }
 
             /*
              * Upload an object to your bucket - You can easily upload a file to

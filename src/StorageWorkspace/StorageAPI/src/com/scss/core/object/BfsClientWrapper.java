@@ -47,14 +47,11 @@ public class BfsClientWrapper {
 				prop.load(ins);
 				this.client = new BladeFSClient(prop);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (BladeFSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (NameServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			}
 
 		}
@@ -78,33 +75,26 @@ public class BfsClientWrapper {
 			byte[] buf = new byte[size];
 			//ByteBuffer buffer = ByteBuffer.allocate(BfsClientWrapper.DEFAULT_BUFFER_CAPACITY);
 			try {
-				while (stream.available() > 0) {
-					len = stream.read(buf, off, size - off);
+				while ((len = stream.read(buf, off, size - off)) > 0) {
 					off += len;
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			}
 			
 			try {
 				result.Size = off;
 				result.FileNumber = this.client.write(buf, off);
 			} catch (BladeFSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (NameServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			}
 			
 		}
@@ -126,17 +116,13 @@ public class BfsClientWrapper {
 			result.Size = data.length;
 			result.File = data;	
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (NameServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (BladeFSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		}
 		return result;
 	}
@@ -145,17 +131,13 @@ public class BfsClientWrapper {
 		try {
 			this.client.delete(file_num);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (NameServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (BladeFSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		}
 	}
 }
