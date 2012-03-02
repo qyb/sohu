@@ -5,6 +5,7 @@ package com.scss.core.object;
 
 import java.io.InputStream;
 import java.nio.BufferOverflowException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 
@@ -20,6 +21,8 @@ import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
+import com.scss.db.dao.ScssBucketDaoImpl;
+import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
@@ -76,11 +79,18 @@ public class PUT_OBJECT extends ObjectAPI {
 			return ErrorResponse.EntityTooLarge(req);
 		
 		
-		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
+		//ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
+		ScssBucket bucket = null;
+		try {
+			bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
+		} catch (SQLException e) {
+			logger.error(String.format("Fail to retrive bucket %s", req.BucketName), e);
+		}
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
 		
 		ScssObject obj = null;
+
 		InputStream stream = this.hookMD5Stream(req.ContentStream);
 		BfsClientResult bfsresult = BfsClientWrapper.getInstance().putFromStream(stream, (int)size);
 		String etag = null;
@@ -112,9 +122,15 @@ public class PUT_OBJECT extends ObjectAPI {
 					long old_bfs = obj.getBfsFile();
 					obj.setBfsFile(bfsresult.FileNumber);
 					obj.setEtag(etag);
-					DBServiceHelper.modifyObject(obj);
-					//if (modify_succeed && old_bfs > 0)
-					//	BfsClientWrapper.getInstance().deleteFile(obj.getBfsFile());
+					boolean modify_succeed = false;
+					try {
+						ScssObjectDaoImpl.getInstance().updateObject(obj);
+						modify_succeed = true;
+					} catch (SQLException e) {
+						// do nothing
+					}
+//					if (modify_succeed && old_bfs > 0)
+//						BfsClientWrapper.getInstance().deleteFile(obj.getBfsFile());
 					
 				} else 
 //					obj = DBServiceHelper.putObject(req.ObjectKey, bfsresult.FileNumber, 
@@ -151,7 +167,7 @@ public class PUT_OBJECT extends ObjectAPI {
 			resp_headers.put(CommonResponseHeader.DATE, CommonUtilities.formatResponseHeaderDate(bucket.getModifyTime()));
 			resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0");
 			resp_headers.put(CommonResponseHeader.ETAG, etag);
-			logger.info(String.format("Computed ETAG : %s\n", etag ));
+			logger.debug(String.format("Computed ETAG : %s\n", etag ));
 
 			
 			// generate representation

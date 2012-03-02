@@ -45,6 +45,9 @@ public class AuthorizationBase implements IAuth {
 		this.request = req;
 	}
 	
+	public static IAuth createInstace(APIRequest req) {
+		return AuthorizationBase.createInstace(req, AuthorizationTypes.GENERAL);
+	}
 	public static IAuth createInstace(APIRequest req, AuthorizationTypes auth_type) {
 		switch(auth_type) {
 			case GENERAL:
@@ -69,15 +72,15 @@ public class AuthorizationBase implements IAuth {
 				ScssUser suser = ScssUserDaoImpl.getInstance().getUserByAccessId(access_id);
 				try {
 					User user = new User(suser);
-					if (null != user && this.getSignature(user.getAccessKey()).equals(signature)) {
+					String our_signature = this.getSignature(user.getAccessKey());
+					logger.debug(String.format("Computed Signature : %s", our_signature));
+					if (null != user && our_signature.equals(signature)) {
 						request.setUser(user);
 						return true;
 					} else
 						logger.info(String.format("User of access_id (%s) is not found.", access_id));
 				} catch (SignatureException e) {
-					// TODO: Add post-process for SignatureException.
-					logger.debug(e.getMessage());
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 		}
@@ -86,9 +89,7 @@ public class AuthorizationBase implements IAuth {
 	
 	private String getSignature(String access_secret_key) throws SignatureException {
 		String str_to_sign = this.getStringToSign();
-		logger.debug(" --- String to sign --- ");
-		logger.debug(str_to_sign);
-		logger.debug(" ----------------------");
+		logger.debug(String.format(" String to sign : \n%s", str_to_sign));
 		return Credential.calculateRFC2104HMAC(str_to_sign, access_secret_key);
 	}
 	

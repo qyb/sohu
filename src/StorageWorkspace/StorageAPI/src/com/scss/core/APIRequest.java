@@ -77,7 +77,7 @@ public class APIRequest {
 		
 		this.BucketName = bucket_name.trim();
 		this.ObjectKey = path.trim();
-		logger.debug(String.format("BucketName=%s  ObjectKey=%s\n", this.BucketName, this.ObjectKey));
+		logger.debug(String.format("BucketName=%s  ObjectKey=%s", this.BucketName, this.ObjectKey));
 		
 		// get content
 		Representation repr = request.getEntity();
