@@ -14,24 +14,35 @@ from user.helper import api2_input_for_access_token_common
 import hashlib
 import logging
 import time
+import urlparse
 
 
-class UpdateArticleInfo(object):
+class RuntimeArticleInfo(object):
     """
     stores variables used when processing article
     """
     
-    def __init__(self, user_id):
+    def __init__(self, user_id, url, title, description, folder_name, content):
         self.user_id = user_id
-        self.url = None
-        self.article_title = None
-        self.article_content = None
+        self.url = url
+        self.article_title = title
+        self.article_description = description
+        self.article_folder_name = folder_name
+        self.article_content = content
         self.mime = None
         self.article_id = None
         self.article_instance_key = None
         self.image_url_list = None
         
         return None
+    
+    def is_param_valid(self):
+        is_valid = True
+        scheme, netloc, path, params, query, fragment = urlparse.urlparse(self.url)
+        if not scheme or not netloc:
+            is_valid = False
+        
+        return is_valid
 
 
 def choose_a_db(user_id):

@@ -120,7 +120,8 @@ def get_expire_data_url(bucket_name, key_name, expires_seconds):#该URL地址有
 
 
 def get_data_url(bucket_name, key_name):
-    domain = 's3.amazonaws.com'
+    #domain = 's3.amazonaws.com'
+    domain = 's3.itc.cn:8888'
     url = 'http://%s.%s/%s' % (bucket_name, domain, key_name)
 
     return url

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.conf import settings
 from lxml import etree
 from models import Access, User
 import anyjson
@@ -210,7 +211,7 @@ def input_for_api2_access_token_func(request):
     import socket
     
     sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
-    if  not socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+    if  not socket.gethostname() in settings.PRODUCTION_SERVER_HOSTNAMES:
         sohupassport_uuid = '81215bb13f2f497u'
     
     return sohupassport_uuid

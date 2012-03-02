@@ -6,7 +6,7 @@ from article.helper import api2_generate_article_key, api2_select_article, \
     get_myarticle_list_to_xml_etree, input_for_list_func, \
     get_myarticle_instance_to_xml_etree, input_for_show_func, input_for_update_func, \
     generate_single_xml_etree, input_for_destroy_func, input_for_modify_func, \
-    modify_or_destroy_myarticle_instance, UpdateArticleInfo, api2_input_for_count, \
+    modify_or_destroy_myarticle_instance, RuntimeArticleInfo, api2_input_for_count, \
     get_myarticle_list_count, api2_convert_count_to_etree, api2_input_for_list, \
     api2_input_for_update_read_progress, api2_input_for_add, api2_input_for_delete, \
     api2_input_for_update, api2_input_for_star, api2_input_for_unstar, \
@@ -85,9 +85,9 @@ def update(request, response_format):
     logging.warning(str(request.POST))
     mimetype = 'text/plain'
     if kan_user.is_logged_in():
-        update_article_info = UpdateArticleInfo(kan_user.get_user_id())
+        update_article_info = RuntimeArticleInfo(kan_user.get_user_id(), url)
         try:
-            PageFetchHandler.delay(url, update_article_info)
+            PageFetchHandler.delay(update_article_info)
         except Exception:
             pass
         else:
@@ -241,7 +241,24 @@ def api2_add(request):
     response = None
     mimetype = 'text/xml'
     if kan_user.is_logged_in():
-        pass
+        runtime_article_info = RuntimeArticleInfo(kan_user.get_user_id(),
+                                                  title,
+                                                  description,
+                                                  folder_name,
+                                                  content)
+        if runtime_article_info.is_param_valid():
+            article_result = PageFetchHandler.delay(runtime_article_info)
+#            wait until the task is done
+            article = article_result.get()
+            if article:
+                article_etree = api2_convert_article_to_etree(article)
+                response = etree.tostring(article_etree, xml_declaration=True, encoding='utf-8')
+            else:
+                error_etree = KanError('1002').get_error_etree()
+                response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
+        else:
+            error_etree = KanError('1001').get_error_etree()
+            response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
     else:
         error_etree = KanError('1000').get_error_etree()
         response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
@@ -277,7 +294,6 @@ def api2_view(request):
     modify_info['article_id'] = article_id
 
     return api2_modify_common(request, modify_info)
-
     
 
 def api2_star(request):

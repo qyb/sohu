@@ -8,9 +8,9 @@ class KanError(object):
     """
     
     error_messages = {
-              '1000': 'User verify failed',
+              '1000': 'User verification failed',
               '1001': 'Invalid or missing params',
-              '1002': 'Violated operation',
+              '1002': 'Operation failed',
     
               '1040': 'Rate-limit exceeded',
               '1041': 'Subscription account required',
