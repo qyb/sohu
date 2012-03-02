@@ -47,11 +47,11 @@ class ArticleResource(object):
         self.videos = None
     
     def get_images(self):
-        article = self._get_article() 
-        self.images = None
-        if article.is_ready:
-            self.images = self._select_images() 
-            self._update_cache(self)
+        if self.images is None:
+            article = self._get_article()
+            if article.is_ready:
+                self.images = self._select_images()
+                self._update_cache(self)
         
         return self.images
     
