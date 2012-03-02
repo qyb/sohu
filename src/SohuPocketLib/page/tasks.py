@@ -30,9 +30,9 @@ class PageFetchHandler(Task):
     ignore_result = True
     store_errors_even_if_ignored = True
     
-    def run(self, url, update_article_info):
+    def run(self, update_article_info):
         try:
-            resource = urllib2.urlopen(url)
+            resource = urllib2.urlopen(update_article_info.url)
             raw_html = resource.read() 
             try:
                 mime = resource.info()['Content-Type']
@@ -44,7 +44,6 @@ class PageFetchHandler(Task):
             except Exception, e:
                 logging.warning(str(type(e)))
         else:
-            update_article_info.url = url
             update_article_info.mime = mime
 #            call next step
             ReadableArticleHandler.delay(raw_html,

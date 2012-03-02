@@ -3,6 +3,7 @@
  */
 package com.scss.core.bucket;
 
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,8 @@ import com.scss.core.APIResponse;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
+import com.scss.db.dao.ScssBucketDaoImpl;
+import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
@@ -33,11 +36,23 @@ public class DELETE_BUCKET extends BucketAPI {
 		APIResponse resp = new BucketAPIResponse();
 		Map<String, String> resp_headers = resp.getHeaders();
 		
-        ScssBucket  scssBucket=DBServiceHelper.getBucketByName(req.BucketName,req.getUser().getId());
+        ScssBucket scssBucket=null;
+		try {
+			scssBucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if(null!= scssBucket)
 		{
-			List<ScssObject> scssObjectList = DBServiceHelper.getBucket(req.BucketName);
+			List<ScssObject> scssObjectList=null;
+			try {
+				scssObjectList = ScssObjectDaoImpl.getObjectsByBucketId(scssBucket.getId());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			if(null!=scssObjectList&&scssObjectList.size()>0)
 			{

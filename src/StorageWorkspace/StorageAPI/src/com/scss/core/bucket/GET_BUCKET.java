@@ -3,6 +3,7 @@
  */
 package com.scss.core.bucket;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import com.scss.core.APIResponseHeader;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
+import com.scss.db.dao.ScssBucketDaoImpl;
+import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
@@ -51,10 +54,22 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
 		
-		ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName);
+		ScssBucket bucket=null;
+		try {
+			bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
-		List<ScssObject> bucket_objects = (List<ScssObject>) DBServiceHelper.getBucket(req.getUser().getId(), req.BucketName);
+		List<ScssObject> bucket_objects=null;
+		try {
+			bucket_objects = (List<ScssObject>)ScssObjectDaoImpl.getObjectsByBucketId(bucket.getId());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// set response headers
 		if (null != bucket_objects) {

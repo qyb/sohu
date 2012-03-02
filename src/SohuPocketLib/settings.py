@@ -3,7 +3,9 @@
 import os
 import socket
 
-if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+PRODUCTION_SERVER_HOSTNAMES = ('tc_69_53', 'tc_69_54')
+
+if  socket.gethostname() in PRODUCTION_SERVER_HOSTNAMES:
     DEBUG = TEMPLATE_DEBUG = True
 else:
     DEBUG = TEMPLATE_DEBUG = True
@@ -136,7 +138,7 @@ INSTALLED_APPS = (
     'south'
 )
 
-if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+if  socket.gethostname() in PRODUCTION_SERVER_HOSTNAMES:
     CACHE_BACKEND = 'memcached://10.10.69.53:11211;10.10.69.54:11211/?timeout=60'
 else:
 #    CACHE_BACKEND = 'memcached://localhost/?timeout=60'
@@ -169,7 +171,7 @@ LOGGING = {
 import djcelery
 djcelery.setup_loader()
 
-if  socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+if  socket.gethostname() in PRODUCTION_SERVER_HOSTNAMES:
     BROKER_HOST = "10.10.69.53"
 else:
     BROKER_HOST = "localhost"

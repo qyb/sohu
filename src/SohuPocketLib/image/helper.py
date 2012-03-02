@@ -13,9 +13,9 @@ import urlparse
 import logging
 
 
-class UpdateImageInfo(object):
+class RuntimeImageInfo(object):
     """
-    stores variables used when update image
+    stores variables used when processing image
     """
     
     def __init__(self, image_url):
