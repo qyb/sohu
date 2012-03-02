@@ -6,7 +6,6 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 <sqlMap>
 
 	<typeAlias alias="log" type="com.scss.db.model.ScssLog" />
-	<typeAlias alias="resource" type="com.scss.db.model.Resource" />
 	<typeAlias alias="map" type="java.util.Map" />
 	<!-- bean属性和数据库字段的对应关系 -->
 	<resultMap id="scssLog" class="log">
@@ -108,24 +107,6 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	    from
 	        `scss_log`
 	    where `timestamp` between #start# and #end# 
-	</statement>
-	<statement id="getLogsOnResource" resultMap="scssLog" parameterClass="resource" cacheModel="myCache">
-		select
-	        `id`,
-	        `level`,
-	        `action`,
-	        `user_id`,
-	        `resource_type`,
-	        `resource_id`,
-	        `server`,
-	        `client_name`,
-	        `client_addr`,
-	        `timestamp`,
-	        `message` 
-	    from
-	        `scss_log`
-	    where `resource_type`=#type# and 
-	        `resource_id`=#id#
 	</statement>
 	
 	<statement id="updateLog" parameterClass="log" cacheModel="myCache">
