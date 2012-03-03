@@ -24,8 +24,14 @@ public class ScssUserDaoImpl {
 	private ScssUserDaoImpl() {
 	}
 
-	public List getUserList() throws SQLException {
-		List userList = sqlMap.queryForList("getScssUsers");
+	public List getUserList() {
+		List userList = null;
+		try {
+			userList = sqlMap.queryForList("getScssUsers");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return userList;
 	}
 

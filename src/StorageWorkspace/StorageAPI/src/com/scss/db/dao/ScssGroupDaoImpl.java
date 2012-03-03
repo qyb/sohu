@@ -52,10 +52,10 @@ public class ScssGroupDaoImpl {
 	}
 
 	public void putUserToGroup(ScssUser user, ScssGroup sg)
-			throws SQLException, UserInGroupException {
+			throws SQLException {
 		String userIds = sg.getUserIds();
 		if (userIds.indexOf("," + user.getId() + ",") != -1) {
-			throw new UserInGroupException(user.getSohuId(), sg.getName());
+			return;
 		}
 		putUserIdsToGroup(user.getId() + "", sg);
 	}
