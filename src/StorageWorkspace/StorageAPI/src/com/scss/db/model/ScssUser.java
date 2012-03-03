@@ -6,6 +6,7 @@ package com.scss.db.model;
  * @author Jack.wu.xu
  */
 
+@SuppressWarnings("serial")
 public class ScssUser implements java.io.Serializable {
 
 	// Fields
@@ -14,7 +15,8 @@ public class ScssUser implements java.io.Serializable {
 	private String sohuId;
 	private String accessId;
 	private String accessKey;
-	private String status="B";
+	private String status = "B";
+	private Byte deleted = (byte) 0;
 
 	// Constructors
 	public ScssUser(Long id, String sohuId, String accessId, String accessKey,
@@ -30,7 +32,6 @@ public class ScssUser implements java.io.Serializable {
 	/** default constructor */
 	public ScssUser() {
 	}
-
 
 	// Property accessors
 
@@ -74,4 +75,11 @@ public class ScssUser implements java.io.Serializable {
 		this.accessId = accessId;
 	}
 
+	public Byte getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Byte deleted) {
+		this.deleted = deleted;
+	}
 }

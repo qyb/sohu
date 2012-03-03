@@ -11,6 +11,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		<result property="id" column="id"/>
 		<result property="bucketId" column="bucket_id"/>
         <result property="expirationRule" column="expiration_rule"/>
+        <result property="deleted" column="deleted"/>
 	</resultMap>
 	
 	
@@ -21,7 +22,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `expiration_rule` 
 	    from
 	        `scss_bucket_lifecycle`
-		    where `id`=#id#
+		    where `id`=#id# 
 	</statement>
 	
 	<statement id="updateBucketLifecycle" parameterClass="bucketLifecycle" cacheModel="myCache">
@@ -30,12 +31,12 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		set
 	        `bucket_id`=#bucketId#,
 	        `expiration_rule`=#expirationRule#
-	    where `id`=#id#
+	    where `id`=#id# 
 	</statement>
 	<statement id="deleteBucketLifecycle" parameterClass="bucketLifecycle" cacheModel="myCache">
-		delete from
-			 `scss_bucket_lifecycle`
-	    where `id`=#id#
+		delete from 
+			`scss_bucket_lifecycle` 
+	    where `id`=#id# 
 	</statement>
 	<!--  -->
 	<insert id="putBucketLifecycle" parameterClass="bucketLifecycle">

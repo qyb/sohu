@@ -8,6 +8,7 @@ import java.util.Date;
  * @author Jack.wu.xu
  */
 
+@SuppressWarnings("serial")
 public class ScssBucket implements java.io.Serializable {
 
 	// Fields

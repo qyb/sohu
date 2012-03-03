@@ -33,7 +33,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `modify_time` 
 	    from
 	        `scss_bucket`
-	    where `id`=#id#
+	    where `id`=#id# 
 	</statement>
 	<statement id="getBucketByName" resultMap="scssBucket" parameterClass="String" cacheModel="myCache">
 		select
@@ -48,7 +48,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `modify_time` 
 	    from
 	        `scss_bucket`
-	    where `name`=#name#
+	    where `name`=#name# 
 	</statement>
 	
 	<statement id="updateBucket" parameterClass="bucket" cacheModel="myCache">
@@ -64,7 +64,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `deleted`=#deleted#,
 	        `create_time`=#createTime#,
 	        `modify_time`=#modifyTime# 
-	    where `id`=#id#
+	    where `id`=#id# 
 	</statement>
 	<statement id="deleteBucket" parameterClass="bucket" cacheModel="myCache">
 		delete from
@@ -84,6 +84,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `modify_time` 
 	    from
 	        `scss_bucket`
+	    where  `deleted`=0
 	</statement>
 	
 	<statement id="getBucketsByUser" resultMap="scssBucket" parameterClass="user" cacheModel="myCache">

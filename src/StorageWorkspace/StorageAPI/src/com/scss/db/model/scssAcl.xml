@@ -14,6 +14,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
         <result property="accessorId" column="accessor_id"/>
         <result property="accessorType" column="accessor_type"/>
         <result property="permission" column="permission"/>
+        <result property="deleted" column="deleted"/>
 	</resultMap>
 	
 	
@@ -27,7 +28,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `permission` 
 	    from
 	        `scss_acl`
-	    where `id`=#id#
+	    where `id`=#id# 
 	</statement>
 	<statement id="getAclByAccessor" resultMap="scssAcl" parameterClass="acl" cacheModel="myCache">
 		select
@@ -39,7 +40,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `permission` 
 	    from
 	        `scss_acl`
-	    where `accessor_id`=#accessorId# and `accessor_type`=#accessorType#  
+	    where `accessor_id`=#accessorId# and `accessor_type`=#accessorType#   
 	</statement>
 	<statement id="getAclOnResouce" resultMap="scssAcl" parameterClass="acl" cacheModel="myCache">
 		select
@@ -52,7 +53,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	    from
 	        `scss_acl`
 	    where `resource_id`=#resourceId# and 
-	        `resource_type`=#resourceType# 
+	        `resource_type`=#resourceType#  
 	</statement>
 	<statement id="getAclByAccessorOnResouce" resultMap="scssAcl" parameterClass="acl" cacheModel="myCache">
 		select
@@ -66,7 +67,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `scss_acl`
 	    where `accessor_id`=#accessorId# and `accessor_type`=#accessorType# and 
 	    	`resource_id`=#resourceId# and 
-	        `resource_type`=#resourceType# 
+	        `resource_type`=#resourceType#  
 	</statement>
 	<statement id="updateAcl" parameterClass="acl" cacheModel="myCache">
 		update
@@ -77,7 +78,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `accessor_id`=#accessorId#,
 	        `accessor_type`=#accessorType#,
 	        `permission`=#permission#
-	    where `id`=#id#
+	    where `id`=#id# 
 	</statement>
 	<statement id="deleteAcl" parameterClass="acl" cacheModel="myCache">
 		delete from

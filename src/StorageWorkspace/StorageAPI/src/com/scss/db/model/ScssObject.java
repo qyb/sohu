@@ -8,7 +8,8 @@ import java.util.Date;
  * @author Jack.wu.xu
  */
 
-public class ScssObject  implements java.io.Serializable {
+@SuppressWarnings("serial")
+public class ScssObject implements java.io.Serializable {
 
 	// Fields
 
@@ -24,11 +25,11 @@ public class ScssObject  implements java.io.Serializable {
 	private String mediaType;
 	private Byte versionEnabled = (byte) 0;
 	private String version = "";
-	private Byte deleted;
+	private Byte deleted = (byte) 0;
 	private Date expirationTime = new Date(System.currentTimeMillis() + 1000
 			* 60 * 60 * 24 * 7);
-	private Date createTime;
-	private Date modifyTime;
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 
 	// Constructors
 
