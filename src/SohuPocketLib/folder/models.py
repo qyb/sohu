@@ -17,13 +17,13 @@ class Folder(MultiDB):
         return u'name' % self.name
     
     def update_cache(self):
-        key = generate_folder_key(self.user_id, self.name)
+        self.generate_key()
         cache.set(key, self)
         
         return None
     
     def delete_cache(self):
-        key = generate_folder_key(self.user_id, self.name)
+        self.generate_key()
         cache.delete(key)
         
         return None
@@ -37,5 +37,11 @@ class Folder(MultiDB):
     def delete(self):
         super(Folder, self).save()
         self.delete_cache()
+        
+        return None
+    
+    def generate_key(self):
+        if self.key:
+            self.key = generate_folder_key(self.user_id, self.name)
         
         return None

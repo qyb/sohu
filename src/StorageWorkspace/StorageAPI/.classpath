@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="lib/org.restlet.ext.xml.jar"/>
 	<classpathentry kind="lib" path="lib/org.restlet.jar"/>
 	<classpathentry kind="lib" path="lib/bonecp-0.6.2.jar"/>
+
 	<classpathentry kind="output" path="bin"/>
 </classpath>

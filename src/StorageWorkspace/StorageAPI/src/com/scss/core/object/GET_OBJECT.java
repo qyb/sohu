@@ -101,7 +101,7 @@ public class GET_OBJECT extends ObjectAPI {
 			//resp.Repr = new ReadableRepresentation((ReadableByteChannel) buffer, MediaType.APPLICATION_OCTET_STREAM);
 			ByteArrayInputStream stream = new ByteArrayInputStream(bfsresult.File);
 			resp.Repr = new DynamicStreamRepresentation(stream, MediaType.APPLICATION_OCTET_STREAM);
-			resp.Repr.setTag(new Tag(obj.getEtag()));
+			resp.Repr.setTag(new Tag(obj.getEtag(), false)); // must be false
 			resp.Repr.setMediaType(MediaType.valueOf(obj.getMediaType()));
 			resp.MediaType = obj.getMediaType();
 			return resp;

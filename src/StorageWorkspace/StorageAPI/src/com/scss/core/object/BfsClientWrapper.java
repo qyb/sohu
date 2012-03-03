@@ -3,16 +3,16 @@ package com.scss.core.object;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
-import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
 
 import com.bladefs.client.BladeFSClient;
 import com.bladefs.client.exception.BladeFSException;
 import com.bladefs.client.exception.NameServiceException;
 
 public class BfsClientWrapper {
-	
+	private final static Logger logger = Logger.getLogger(BfsClientWrapper.class);
 	public final static long BFS_ERROR_UNKNOW = -1; 
 	
 	public final static int DEFAULT_BUFFER_CAPACITY = 4096;
@@ -47,14 +47,11 @@ public class BfsClientWrapper {
 				prop.load(ins);
 				this.client = new BladeFSClient(prop);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (BladeFSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (NameServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			}
 
 		}
@@ -71,40 +68,33 @@ public class BfsClientWrapper {
 		int off = 0;
 		//byte[] buf = new byte[512];
 		
-		System.out.printf("data length to write to BFS : %d\n", size);
+		logger.info(String.format("data length to write to BFS : %d\n", size));
 		
 		// TODO: !!! BFS client should able to return a stream !!!
 		if (null != stream) {
 			byte[] buf = new byte[size];
 			//ByteBuffer buffer = ByteBuffer.allocate(BfsClientWrapper.DEFAULT_BUFFER_CAPACITY);
 			try {
-				while (stream.available() > 0) {
-					len = stream.read(buf, off, size - off);
+				while ((len = stream.read(buf, off, size - off)) > 0) {
 					off += len;
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			}
 			
 			try {
 				result.Size = off;
 				result.FileNumber = this.client.write(buf, off);
 			} catch (BladeFSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (NameServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e, e);
 			}
 			
 		}
@@ -126,17 +116,13 @@ public class BfsClientWrapper {
 			result.Size = data.length;
 			result.File = data;	
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (NameServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (BladeFSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		}
 		return result;
 	}
@@ -145,17 +131,13 @@ public class BfsClientWrapper {
 		try {
 			this.client.delete(file_num);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (NameServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		} catch (BladeFSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e, e);
 		}
 	}
 }

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from SohuPocketLib.folder.helper import get_folder_by_name
 from article.models import MyArticleInstance
-from constants import KEY_FOLDER, LIMIT_USERS_ONE_DB, BUCKET_NAME_ARTICLE, \
-    BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, \
-    FALSE_REPR
+from constants import ABSOLUTE_FLOAT_ERROR, KEY_FOLDER, LIMIT_USERS_ONE_DB, \
+    BUCKET_NAME_ARTICLE, BUCKET_NAME_IMAGE, KEY_ARTICLE_INSTANCE, \
+    DEFAULT_ARTICLE_LIST_LIMIT, TRUE_REPR, FALSE_REPR, KEY_RESOURCE
 from datetime import datetime
 from django.core.cache import cache
 from image.models import MyImageInstance
@@ -13,24 +14,35 @@ from user.helper import api2_input_for_access_token_common
 import hashlib
 import logging
 import time
+import urlparse
 
 
-class UpdateArticleInfo(object):
+class RuntimeArticleInfo(object):
     """
-    stores variables used when update article
+    stores variables used when processing article
     """
     
-    def __init__(self, user_id):
+    def __init__(self, user_id, url, title, description, folder_name, content):
         self.user_id = user_id
-        self.url = None
-        self.article_title = None
-        self.article_content = None
+        self.url = url
+        self.article_title = title
+        self.article_description = description
+        self.article_folder_name = folder_name
+        self.article_content = content
         self.mime = None
         self.article_id = None
         self.article_instance_key = None
         self.image_url_list = None
         
         return None
+    
+    def is_param_valid(self):
+        is_valid = True
+        scheme, netloc, path, params, query, fragment = urlparse.urlparse(self.url)
+        if not scheme or not netloc:
+            is_valid = False
+        
+        return is_valid
 
 
 def choose_a_db(user_id):
@@ -332,21 +344,21 @@ def input_for_modify_func(request):
 ##############################
 
     
-def api2_input_for_bookmark_id_common(request):
+def api2_input_for_article_id_common(request):
     if request.method == 'POST':
-        bookmark_id = request.POST.get('bookmark_id', '')
+        article_id = long(request.POST.get('bookmark_id', None))
     else:
-        bookmark_id = ''
+        article_id = None
     access_token_input = api2_input_for_access_token_common(request)
     
-    return access_token_input, bookmark_id
+    return access_token_input, article_id
 
 
 def api2_input_for_count(request):
     if request.method == 'POST':
-        folder_id = request.POST.get('folder_id', '')
+        folder_id = long(request.POST.get('folder_id', None))
     else:
-        folder_id = ''
+        folder_id = None
     access_token_input = api2_input_for_access_token_common(request)
     
     return access_token_input, folder_id
@@ -354,23 +366,23 @@ def api2_input_for_count(request):
 
 def api2_input_for_list(request):
     if request.method == 'POST':
-        offset = request.POST.get('offset', '')
+        offset = request.POST.get('offset', None)
         try:
             offset = int(offset)
         except:
             offset = 0
-        limit = request.POST.get('limit', '')
+        limit = request.POST.get('limit', None)
         try:
             limit = int(offset)
         except:
             limit = 20
-        folder_name = request.POST.get('folder_name', '')
-        order_by = request.POST.get('order_by', '')
+        folder_name = request.POST.get('folder_name', None)
+        order_by = request.POST.get('order_by', None)
     else:
         offset = 0
         limit = 20
-        folder_name = ''
-        order_by = ''
+        folder_name = None
+        order_by = None
     access_token_input = api2_input_for_access_token_common(request)
         
     return access_token_input, offset, limit, folder_name, order_by
@@ -378,12 +390,12 @@ def api2_input_for_list(request):
 
 def api2_input_for_update_read_progress(request):
     if request.method == 'POST':
-        progress = request.POST.get('read_progress', '')
+        progress = request.POST.get('read_progress', None)
         try:
             progress = float(progress)
         except:
             progress = None
-        progress_timestamp = request.COOKIES.get('read_progress_timestamp')
+        progress_timestamp = request.POST.get('read_progress_timestamp', None)
         try:
             progress_timestamp = datetime.fromtimestamp(float(progress_timestamp))
         except:
@@ -391,24 +403,24 @@ def api2_input_for_update_read_progress(request):
     else:
         progress = None
         progress_timestamp = None
-    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
+    access_token_input, article_id = api2_input_for_article_id_common(request)
     
-    return access_token_input, bookmark_id, progress, progress_timestamp
+    return access_token_input, article_id, progress, progress_timestamp
 
 
 def api2_input_for_add(request):
     if request.method == 'POST':
-        url = request.POST.get('url', '')
-        title = request.POST.get('title', '')
-        description = request.POST.get('description', '')
-        folder_name = request.POST.get('folder_name', '')
-        content = request.POST.get('content', '')
+        url = request.POST.get('url', None)
+        title = request.POST.get('title', None)
+        description = request.POST.get('description', None)
+        folder_name = request.POST.get('folder_name', None)
+        content = request.POST.get('content', None)
     else:
-        url = ''
-        title = ''
-        description = ''
-        folder_name = ''
-        content = ''
+        url = None
+        title = None
+        description = None
+        folder_name = None
+        content = None
     access_token_input = api2_input_for_access_token_common(request)
     
     return access_token_input, url, title, description, folder_name, content
@@ -416,71 +428,71 @@ def api2_input_for_add(request):
 
 def api2_input_for_delete(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_update(request):
     if request.method == 'POST':
-        title = request.POST.get('title', '')
-        description = request.POST.get('description', '')
+        title = request.POST.get('title', None)
+        description = request.POST.get('description', None)
     else:
-        title = ''
-        description = ''
-    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
+        title = None
+        description = None
+    access_token_input, article_id = api2_input_for_article_id_common(request)
     
-    return access_token_input, bookmark_id, title, description
+    return access_token_input, article_id, title, description
 
 
 def api2_input_for_view(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_star(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_unstar(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_archive(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_unarchive(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_move(request):
     if request.method == 'POST':
-        folder_name = request.POST.get('folder_name', '')
+        folder_name = request.POST.get('folder_name', None)
     else:
-        folder_name = ''
-    access_token_input, bookmark_id = api2_input_for_bookmark_id_common(request)
+        folder_name = None
+    access_token_input, article_id = api2_input_for_article_id_common(request)
     
-    return access_token_input, bookmark_id, folder_name
+    return access_token_input, article_id, folder_name
 
 
 def api2_input_for_get_text(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 
 def api2_input_for_get_resource(request):
     
-    return api2_input_for_bookmark_id_common(request)
+    return api2_input_for_article_id_common(request)
 
 ##############################
 # api2 process
 ##############################
 
 
-def generate_article_key(article_id):
+def api2_generate_article_key(article_id):
     article_key = KEY_FOLDER % article_id
     
     return article_key
@@ -526,21 +538,128 @@ def api2_select_article_list(user_id, folder_name, order_by, offset, limit):
         
 
 def api2_select_article(user_id, article_id):
-    chosen_db = choose_a_db(user_id)
-    try:
-        article = MyArticleInstance.objects \
-                                   .using(chosen_db) \
-                                   .get(user_id=user_id, id=article_id, is_delete=False)
-    except:
-        article = None
+    article_key = api2_generate_article_key(article_id)
+    article = cache.get(article_key, None)
+    if article is None:
+        chosen_db = choose_a_db(user_id)
+        try:
+            article = MyArticleInstance.objects \
+                                       .using(chosen_db) \
+                                       .get(user_id=user_id, id=article_id, is_delete=False)
+        except:
+            article = None
+        else:
+            article.update_cache()
     
     return article
 
 
-def api2_modify_article_common(article, modify_info):
-    pass
+def api2_modify_article_common(user_id, article, modify_info):
+    is_modified = False
+    is_successful = True
+    if modify_info.get('read_progress', None) and modify_info.get('read_progress_timestamp', None):
+        if article.read_time < modify_info['read_progress_timestamp']:
+            article.read_progress = modify_info['read_progress']
+            article.read_progress_timestamp = modify_info['read_progress_timestamp']
+            is_modified = True
+    if modify_info.get('is_delete', None) == True:
+        article.is_delete = True
+        article.delete_time = datetime.now()
+        is_modified = True
+    if modify_info.get('title', None) is not None:
+        article.title = modify_info['title']
+        is_modified = True
+    if modify_info.get('description', None) is not None:
+        article.description = modify_info['description']
+        is_modified = True 
+    if modify_info.get('is_star', None):
+        article.is_star = modify_info['is_star']
+        is_modified = True
+    if modify_info.get('is_archive', None):
+        article.is_archive = modify_info['is_archive']
+        is_modified = True
+    if modify_info.get('folder_name', None):
+        folder = get_folder_by_name(user_id, modify_info['folder_name'])
+        if folder:
+            article.folder_name = modify_info['folder_name']
+            is_modified = True
+        else:
+            is_successful = False
+    if is_modified:
+        article.save()
+    
+    if is_successful:
+        return article
+    else:
+        return None
+            
+
+def api2_generate_resource_key(article_id):
+    resource_key = KEY_RESOURCE % article_id
+    
+    return resource_key
 
 
+class ArticleResource(object):
+    """
+    caching article related resource
+    """
+    
+    def __init__(self, user_id, article_id):
+        self.user_id = user_id
+        self.article_id = article_id
+        self.key = api2_generate_resource_key(self.article_id)
+        self.images = None
+        self.audios = None
+        self.videos = None
+    
+    def get_images(self):
+        if self.images is None:
+            article = self._get_article()
+            if article.is_ready:
+                self.images = self._select_images()
+                self._update_cache(self)
+        
+        return self.images
+    
+    def get_audios(self):
+#        will be implemented later on
+        pass
+    
+    def ge_videos(self):
+#        will be implemented later on
+        pass
+    
+    def _get_article(self):
+        article = api2_select_article(self.user_id, self.article_id)
+        
+        return article
+    
+    def _update_cache(self):
+        cache.set(self.key, self)
+        
+        return None
+    
+    def _delete_cache(self):
+        cache.delete(self.key)
+    
+    def _select_images(self):
+        chosen_db = choose_a_db(self.user_id)
+        images = MyImageInstance.objects \
+                                .using(chosen_db) \
+                                .filter(myarticle_instance_id=self.article_id)
+        return images
+
+
+def api2_get_or_create_article_resource(user_id, article_id):
+    resource_key = api2_generate_resource_key(article_id)
+    resource = cache.get(resource_key, None)
+    if resource is None:
+        resource = ArticleResource(user_id, article_id)
+        
+    return resource
+
+    
 ##############################
 # api2 output
 ##############################
@@ -564,7 +683,7 @@ def api2_convert_article_to_etree(article):
         is_star_node.text = TRUE_REPR if article.is_star else FALSE_REPR
         
         is_read_node = etree.SubElement(bookmark_node)
-        is_read_node.text = TRUE_REPR if article.is_read else FALSE_REPR
+        is_read_node.text = TRUE_REPR if (article.read_progress - 0 < ABSOLUTE_FLOAT_ERROR) else FALSE_REPR
         
         create_time_node = etree.SubElement(bookmark_node)
         create_time_node.text = unicode(int(time.mktime(article.create_time.timetuple())))
@@ -600,4 +719,12 @@ def api2_convert_article_list_to_etree(article_list):
         package_node.append(article_node)
     
     return package_node
+
+
+def api2_generate_resource_package_etree(images=None, audios=None, videos=None):
+    package_node = etree.Element('package')
     
+    for image in images:
+        etree.SubElement(package_node, 'image', id=image.id)
+        
+    return package_node

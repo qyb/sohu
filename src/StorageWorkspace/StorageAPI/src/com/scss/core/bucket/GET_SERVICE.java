@@ -3,6 +3,7 @@
  */
 package com.scss.core.bucket;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,9 @@ import com.scss.core.APIResponse;
 import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
+import com.scss.db.dao.ScssBucketDaoImpl;
 import com.scss.db.model.ScssBucket;
-import com.scss.db.service.DBServiceHelper;
+import com.scss.db.model.ScssUser;
 import com.scss.utility.CommonUtilities;
 
 /**
@@ -32,7 +34,7 @@ public class GET_SERVICE extends BucketAPI {
 	 */
 	@Override
 	public APIResponse Invoke(APIRequest req) {
-		
+		logger.info("Invoking GET_SERVICE ...");
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
@@ -49,10 +51,22 @@ public class GET_SERVICE extends BucketAPI {
 		// TODO: consider a manager because there might be some logical process ?
 		// TODO: Add transaction support if required (some apis need).
 		// TODO: Use Bucket instead ScssBucket. temporary using.
-		List<ScssBucket> buckets = DBServiceHelper.getBucketsByUserID(req.getUser().getId());
+		ScssUser scssUser=new ScssUser();
+		
+		scssUser.setId(req.getUser().getId());
+		
+		List<ScssBucket> buckets=null;
+		try {
+			buckets = ScssBucketDaoImpl.getInstance().getBucketsByUser(scssUser);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// set response headers
 		if (null != buckets) {
+			logger.debug(String.format("%d buckets found", buckets.size()));
+			
 			APIResponse resp = new BucketAPIResponse();
 			Map<String, String> resp_headers = resp.getHeaders();
 			
@@ -70,12 +84,11 @@ public class GET_SERVICE extends BucketAPI {
 			//resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0"); // GET_SERVICE has no content
 			
 			// generate representation
-			
-			StringRepresentation stringRepresentation=new org.restlet.representation.StringRepresentation(this.getResponseText(req, buckets),MediaType.TEXT_PLAIN);
-			
-			resp.Repr = stringRepresentation;
-			
-			resp.MediaType = Mimetypes.APPLICATION_XML;
+			String resp_xml = this.getResponseText(req, buckets);
+			logger.debug(String.format("GET_SERVICE Response : \n%s", resp_xml));
+			StringRepresentation repr = new StringRepresentation(resp_xml, MediaType.TEXT_XML);
+			resp.Repr = repr;
+			resp.MediaType = Mimetypes.MIMETYPE_XML;
 			return resp;
 		}
 

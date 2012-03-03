@@ -10,7 +10,7 @@ from constants import BUCKET_NAME_IMAGE, DOWNLOAD_IMAGE_MAX_RETRIES, \
     UPLOAD_IMAGE_DEFAULT_RETRY_DELAY, DOWNLOAD_IMAGE_TIME_LIMIT, \
     UPLOAD_IMAGE_TIME_LIMIT, CLEAN_UP_TIME_BEFORE_KILLED
 from image.helper import generate_image_instance_key, decrease_image_tobedone, \
-    get_image_tobedone, create_myimage_instance, UpdateImageInfo, \
+    get_image_tobedone, create_myimage_instance, RuntimeImageInfo, \
     delete_myimage_instance_in_db
 from storage.helper import store_data_from_string
 import celery
@@ -31,7 +31,7 @@ class DownloadImageHandler(Task):
     store_errors_even_if_ignored = True
     
     def run(self, image_url, image_tobedone_key, update_article_info):
-        update_image_info = UpdateImageInfo(image_url)
+        update_image_info = RuntimeImageInfo(image_url)
         update_image_info.image_tobedone_key = image_tobedone_key
         try:
             resource = urllib2.urlopen(image_url)
@@ -58,7 +58,7 @@ class DownloadImageHandler(Task):
     
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         image_url, image_tobedone_key, update_article_info = args
-        update_image_info = UpdateImageInfo(image_url)
+        update_image_info = RuntimeImageInfo(image_url)
         update_image_info.image_tobedone_key = image_tobedone_key
         MarkImagetobedoneHandler.delay(update_image_info, update_article_info)
         

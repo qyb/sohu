@@ -5,7 +5,7 @@ from common.helper import KanError
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from folder.helper import create_or_get_folder_by_name, api2_input_for_add, \
+from folder.helper import get_or_create_folder_by_name, api2_input_for_add, \
     convert_folder_to_etree, api2_input_for_list, select_folder_list, \
     convert_folder_list_to_etree, api2_input_for_update, modify_folder_by_name, \
     api2_input_for_delete, get_folder_by_name, delete_folder, \
@@ -35,7 +35,7 @@ def api2_add(request):
     kan_user.verify_and_login()
     mimetype = 'text/xml'
     if kan_user.is_logged_in():
-        folder = create_or_get_folder_by_name(kan_user.get_user_id(), name)
+        folder = get_or_create_folder_by_name(kan_user.get_user_id(), name)
         folder_etree = convert_folder_to_etree(folder)
         response = etree.tostring(folder_etree, xml_declaration=True, encoding='utf-8')
     else:

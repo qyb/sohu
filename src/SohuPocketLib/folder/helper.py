@@ -121,13 +121,15 @@ def get_folder_by_name(user_id, name):
                 folder = folder.objects.using(chosen_db).get(user_id=user_id, name=name)
             except:
                 pass
+            else:
+                folder.update_cache()
     else:
         folder = None
         
     return folder
 
 
-def create_or_get_folder_by_name(user_id, name):
+def get_or_create_folder_by_name(user_id, name):
     if name:
         folder = get_folder_by_name(user_id, name)
         if folder is None:

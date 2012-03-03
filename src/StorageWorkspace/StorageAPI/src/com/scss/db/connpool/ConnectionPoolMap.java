@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.scss.utility.Logger;
+import org.apache.log4j.Logger;
 
 /**
  * @Title:连接池Map:适用于多数据库的情况。跨数据库的事务交给第三方框架去处理。<br>
@@ -17,8 +17,9 @@ import com.scss.utility.Logger;
  */
 public class ConnectionPoolMap {
 	private static ConcurrentHashMap<String, ConnectionPool> queue = new ConcurrentHashMap<String, ConnectionPool>();
-	private static final Logger logger = Logger.getLogger("scss/POOLMAP",
-			Logger.ALL, true);
+//	private static final Logger logger = Logger.getLogger("scss/POOLMAP",
+//			Logger.ALL, true);
+	private static final Logger logger = Logger.getLogger(ConnectionPoolMap.class);
 
 	public static Connection getConnection(String driver, String url,
 			String username, String password, int min, int max) {
@@ -34,8 +35,8 @@ public class ConnectionPoolMap {
 				return cp.getConnection();
 			}
 		} catch (SQLException e) {
-			logger.exception(e);
-			e.printStackTrace();
+			logger.debug(e);
+			//e.printStackTrace();
 		}
 		return null;
 	}

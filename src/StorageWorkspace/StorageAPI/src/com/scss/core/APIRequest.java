@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.restlet.representation.Representation;
@@ -32,6 +33,8 @@ public class APIRequest {
 	public String RequestID = null; // TODO: how to get?
 	private long ContentSize = -1;
 	public Map<String, String> Querys = new HashMap<String, String>();
+	
+	protected Logger logger = Logger.getLogger(this.getClass());
 	
 	public APIRequest(Request request) throws InvaildRequestException {
 		this.Method = request.getMethod().getName();
@@ -74,8 +77,7 @@ public class APIRequest {
 		
 		this.BucketName = bucket_name.trim();
 		this.ObjectKey = path.trim();
-		
-		System.out.printf("BucketName=%s\n  ObjectKey=%s\n", this.BucketName, this.ObjectKey);
+		logger.debug(String.format("BucketName=%s  ObjectKey=%s", this.BucketName, this.ObjectKey));
 		
 		// get content
 		Representation repr = request.getEntity();
@@ -86,6 +88,7 @@ public class APIRequest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		logger.debug(String.format("content-size : %d", this.ContentSize));
 		
 	}
 

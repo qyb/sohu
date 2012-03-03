@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect
 
 def passport(request):
     info = ['HTTP_X_SOHUPASSPORT_UID',
@@ -10,4 +10,5 @@ def passport(request):
     return HttpResponse(page)
 
 def home(request):
-    return HttpResponse('Welcome to sohukan!!!')
+    return HttpResponse('Welcome to sohukan!')
+#    return HttpResponsePermanentRedirect('http://www.google.com')

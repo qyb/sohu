@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.conf import settings
 from lxml import etree
 from models import Access, User
 import anyjson
@@ -205,19 +206,15 @@ def extract_class_instance_to_dict(ins):
     return ins_dict
 
 
-def input_for_api2_access_token_func(request):
-    
-    import socket
-    
+def api2_input_for_access_token_func(request):
     sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
-    if  not socket.gethostname() in ('tc_69_53', 'tc_69_54'):
+    if settings.IS_PRODUCTION_SERVER:
         sohupassport_uuid = '81215bb13f2f497u'
     
     return sohupassport_uuid
 
 
-def input_for_api2_verify_credentials_func(request):
-    
+def api2_input_for_verify_credentials_func(request):
     if request.method == 'POST':
         access_token_input = request.COOKIES.get('access_token', '')
     else:
@@ -226,8 +223,7 @@ def input_for_api2_verify_credentials_func(request):
     return access_token_input
 
 
-def input_for_api2_update_func(request):
-    
+def api2_input_for_update_func(request):
     if request.method == 'POST':
         access_token_input = request.COOKIES.get('access_token', '')
         valid_modify_attrs = ('username', 'description')
@@ -243,8 +239,7 @@ def input_for_api2_update_func(request):
     return access_token_input, modify_info
 
 
-def get_kan_user_to_xml_etree(kan_user):
-    
+def api2_convert_kan_user_to_xml_etree(kan_user):
     if kan_user:
         user = etree.Element('user')
     
@@ -256,15 +251,13 @@ def get_kan_user_to_xml_etree(kan_user):
     
         description = etree.SubElement(user, 'description')
         description.text = kan_user.get_kan_self_description()
-        
     else:
         user = None
-    
+        
     return user
 
 
-def update_kan_user_instance(kan_user, modify_info):
-    
+def api2_modify_kan_user_common(kan_user, modify_info):
     if modify_info.has_key('username'):
         kan_user.set_kan_username(modify_info['username'])
     if modify_info.has_key('description'):
