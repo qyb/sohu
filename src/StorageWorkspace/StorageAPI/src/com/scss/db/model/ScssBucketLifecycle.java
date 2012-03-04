@@ -6,6 +6,7 @@ package com.scss.db.model;
  * @author Jack.wu.xu
  */
 
+@SuppressWarnings("serial")
 public class ScssBucketLifecycle  implements java.io.Serializable {
 
 	// Fields
@@ -13,7 +14,7 @@ public class ScssBucketLifecycle  implements java.io.Serializable {
 	private Long id;
 	private Long bucketId;
 	private String expirationRule;
-
+	private Byte deleted = (byte) 0;
 	// Constructors
 
 	/** default constructor */
@@ -34,7 +35,13 @@ public class ScssBucketLifecycle  implements java.io.Serializable {
 	}
 
 	// Property accessors
+	public Byte getDeleted() {
+		return deleted;
+	}
 
+	public void setDeleted(Byte deleted) {
+		this.deleted = deleted;
+	}
 	public Long getId() {
 		return this.id;
 	}

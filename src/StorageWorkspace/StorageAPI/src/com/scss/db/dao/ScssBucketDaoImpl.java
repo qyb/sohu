@@ -8,6 +8,7 @@ import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssUser;
+
 /**
  * 
  * @author Jack.wu.xu
@@ -19,7 +20,8 @@ public class ScssBucketDaoImpl {
 	private ScssBucketDaoImpl() {
 	}
 
-	public ScssBucket insertBucket(ScssBucket bucket) throws SameNameException, SQLException {
+	public ScssBucket insertBucket(ScssBucket bucket) throws SameNameException,
+			SQLException {
 		try {
 			bucket.setId((Long) sqlMap.insert("putBucket", bucket));
 		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
@@ -39,24 +41,49 @@ public class ScssBucketDaoImpl {
 		return bucket;
 	}
 
-	public ScssBucket getBucket(ScssBucket sb) throws SQLException {
-		return (ScssBucket) sqlMap.queryForObject("getBucket", sb.getId());
+	public ScssBucket getBucket(ScssBucket sb) {
+		try {
+			return (ScssBucket) sqlMap.queryForObject("getBucket", sb.getId());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	public List<ScssBucket> getBuckets() throws SQLException {
-		return sqlMap.queryForList("getBuckets");
+	public List<ScssBucket> getBuckets() {
+		try {
+			return sqlMap.queryForList("getBuckets");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	public List<ScssBucket> getBucketsByUser(ScssUser user) throws SQLException {
-		return sqlMap.queryForList("getBucketsByUser", user);
+	public List<ScssBucket> getBucketsByUser(ScssUser user) {
+		try {
+			return sqlMap.queryForList("getBucketsByUser", user);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	public ScssBucket getBucket(Long id) throws SQLException {
-		return (ScssBucket) sqlMap.queryForObject("getBucket", id);
+	public ScssBucket getBucket(Long id) {
+		try {
+			return (ScssBucket) sqlMap.queryForObject("getBucket", id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	public ScssBucket getBucket(String name) throws SQLException {
-		return (ScssBucket) sqlMap.queryForObject("getBucketByName", name);
+	public ScssBucket getBucket(String name) {
+		try {
+			return (ScssBucket) sqlMap.queryForObject("getBucketByName", name);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public void updateBucket(ScssBucket sb) throws SQLException {

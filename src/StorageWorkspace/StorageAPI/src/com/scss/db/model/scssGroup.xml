@@ -11,6 +11,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		<result property="id" column="id"/>
 		<result property="name" column="name"/>
 		<result property="userIds" column="user_ids"/>
+		<result property="deleted" column="deleted"/>
 	</resultMap>
 	
 	<!-- 获得所有用户列表 -->
@@ -21,6 +22,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `user_ids` 
 	    from
 	        `scss_group`  
+	    where  `deleted`=0
 	</statement>
 	
 	<statement id="getGroupByName" resultMap="scssGroup" parameterClass="String" cacheModel="myCache">
@@ -30,7 +32,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `user_ids` 
 	    from
 	        `scss_group`  
-	    where  `name`=#name#
+	    where  `name`=#name# 
 	</statement>
 	
 	<statement id="updateGroup" parameterClass="group" cacheModel="myCache">
@@ -41,7 +43,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `name`=#name#,
 	        `user_ids`=#userIds#
 	          
-	    where  `id`=#id#
+	    where  `id`=#id# 
 	</statement>
 	
 	<statement id="getGroupById" resultMap="scssGroup" parameterClass="Long" cacheModel="myCache">
@@ -51,11 +53,11 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `user_ids` 
 	    from
 	        `scss_group`  
-	    where  `id`=#id#
+	    where  `id`=#id# 
 	</statement>
 	
 	<statement id="deleteGroup" parameterClass="Long" cacheModel="myCache">
-		delete from
+		delete from  
 			`scss_group` 
 	    where  `id`=#id#
 	</statement>

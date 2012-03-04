@@ -20,6 +20,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
         <result property="clientAddr" column="client_addr"/>
         <result property="timestamp" column="timestamp"/>
         <result property="message" column="message"/>
+        <result property="deleted" column="deleted"/>
 	</resultMap>
 	<statement id="getLog" resultMap="scssLog" parameterClass="Long" cacheModel="myCache">
 		select

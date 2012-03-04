@@ -8,6 +8,7 @@ import java.util.Date;
  * @author Jack.wu.xu
  */
 
+@SuppressWarnings("serial")
 public class ScssLog  implements java.io.Serializable {
 
 	// Fields
@@ -23,7 +24,7 @@ public class ScssLog  implements java.io.Serializable {
 	private String clientAddr;
 	private Date timestamp = new Date();
 	private String message;
-
+	private Byte deleted = (byte) 0;
 	// Constructors
 
 	/** default constructor */
@@ -152,5 +153,11 @@ public class ScssLog  implements java.io.Serializable {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	public Byte getDeleted() {
+		return deleted;
+	}
 
+	public void setDeleted(Byte deleted) {
+		this.deleted = deleted;
+	}
 }

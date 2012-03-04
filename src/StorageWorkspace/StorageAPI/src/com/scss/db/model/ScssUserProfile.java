@@ -8,6 +8,7 @@ import java.util.Date;
  * @author Jack.wu.xu
  */
 
+@SuppressWarnings("serial")
 public class ScssUserProfile implements java.io.Serializable {
 
 	// Fields

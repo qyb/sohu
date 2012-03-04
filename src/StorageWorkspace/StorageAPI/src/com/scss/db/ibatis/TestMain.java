@@ -39,8 +39,10 @@ public class TestMain {
 		user.setAccessKey("accessKey");
 		user = sud.insertUser(user);
 		user = sud.getUserById(user.getId());
-		user = sud.getUserBySohuId(user.getSohuId());
-		user = sud.getUserByAccessKey(user.getAccessKey());
+		sud.deleteUser(user);
+		user = sud.getUserById(user.getId());
+		user = sud.getUserBySohuId("sohuId");
+		user = sud.getUserByAccessKey("accessKey");
 		user.setAccessKey("aaaa&&&&&a");
 		sud.updateUser(user);
 		
@@ -51,6 +53,8 @@ public class TestMain {
 		group.setName("用户组");
 		group = sgd.insertGroup(group);
 		group = sgd.getGroupByName(group.getName());
+		sgd.deleteGroup(group);
+		group = sgd.getGroupByName("用户组");
 		group = sgd.getGroupById(group.getId());
 		group.setName(group.getName() + "1");
 		sgd.updateGroup(group);
@@ -70,7 +74,7 @@ public class TestMain {
 		bucket.setName("test_bucket");
 		bucket.setOwnerId(1l);
 		bucket.setMeta("Meta_test");
-		bucket.setDeleted((byte) 1);
+		bucket.setDeleted((byte) 0);
 		bucket.setLoggingEnabled((byte) 1);
 		bucket = sbd.insertBucket(bucket);
 		bucket = sbd.getBucket(bucket.getName());
@@ -103,7 +107,7 @@ public class TestMain {
 		acl = sad.insertAcl(acl);
 		List<ScssAcl> acls = sad.getAclByAccessor(acl.getAccessorId(), acl.getAccessorType());
 		acls = sad.getAclOnResouce(acl.getResourceId(), acl.getResourceType());
-		acls = sad.getAclByAccessorOnResouce(acl.getAccessorId(), acl.getAccessorType(),acl.getResourceId(), acl.getResourceType());
+		acl = sad.getAclByAccessorOnResouce(acl.getAccessorId(), acl.getAccessorType(),acl.getResourceId(), acl.getResourceType());
 		acl.setPermission("W");
 		sad.updateAcl(acl);
 		acl = sad.getAcl(acl.getId());
@@ -130,9 +134,9 @@ public class TestMain {
 		//delete all of test data.
 		sbld.deleteBucketLifecycle(sbl);
 		sbd.deleteBucket(bucket);
-		sod.deleteObject(object);
+		
 		sud.deleteUser(user);
-		sgd.deleteGroup(group);
+		
 		sad.deleteAcl(acl);
 		
 	}

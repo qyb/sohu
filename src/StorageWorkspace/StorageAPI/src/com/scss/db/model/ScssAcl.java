@@ -6,6 +6,7 @@ package com.scss.db.model;
  * @author Jack.wu.xu
  */
 
+@SuppressWarnings("serial")
 public class ScssAcl  implements java.io.Serializable {
 
 	// Fields
@@ -16,6 +17,7 @@ public class ScssAcl  implements java.io.Serializable {
 	private Long accessorId;
 	private String accessorType = "U";
 	private String permission = "R";
+	private Byte deleted = (byte) 0;
 
 	// Constructors
 
@@ -82,6 +84,14 @@ public class ScssAcl  implements java.io.Serializable {
 
 	public void setAccessorType(String accessorType) {
 		this.accessorType = accessorType;
+	}
+
+	public Byte getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Byte deleted) {
+		this.deleted = deleted;
 	}
 
 }

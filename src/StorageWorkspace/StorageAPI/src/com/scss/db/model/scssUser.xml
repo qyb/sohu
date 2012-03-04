@@ -13,6 +13,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		<result property="accessId" column="access_id"/>
 		<result property="accessKey" column="access_key"/>
 		<result property="status" column="status"/>
+		<result property="deleted" column="deleted"/>
 	</resultMap>
 	
 	<!-- 获得所有用户列表 -->
@@ -22,9 +23,11 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `Sohu_ID`,
 	        `access_id`,
 	        `access_key`,
-	        `status` 
+	        `status`, 
+	        `deleted`
 	    from
 	        `scss_user`  
+        where  `deleted`=0
 	</statement>
 	
 	<statement id="getUserBySohuId" resultMap="scssUser" parameterClass="String" cacheModel="myCache">
@@ -33,10 +36,11 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `Sohu_ID`,
 	        `access_id`,
 	        `access_key`,
-	        `status` 
+	        `status` , 
+	        `deleted`
 	    from
 	        `scss_user` 
-	    where  `Sohu_ID`=#sohuId#
+	    where  `Sohu_ID`=#sohuId# 
 	</statement>
 	
 	<statement id="getUserByAccessKey" resultMap="scssUser" parameterClass="String" cacheModel="myCache">
@@ -45,10 +49,11 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `Sohu_ID`,
 	        `access_id`,
 	        `access_key`,
-	        `status` 
+	        `status` , 
+	        `deleted`
 	    from
 	        `scss_user` 
-	    where  `access_key`=#access_key#
+	    where  `access_key`=#access_key# 
 	</statement>
 	
 	<statement id="getUserById" resultMap="scssUser" parameterClass="Long" cacheModel="myCache">
@@ -57,10 +62,11 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `Sohu_ID`,
 	        `access_id`,
 	        `access_key`,
-	        `status` 
+	        `status` , 
+	        `deleted`
 	    from
 	        `scss_user` 
-	    where `id`=#id#
+	    where `id`=#id# 
 	</statement>
 	<statement id="getUserByAccessId" resultMap="scssUser" parameterClass="String" cacheModel="myCache">
 		select
@@ -68,10 +74,11 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `Sohu_ID`,
 	        `access_id`,
 	        `access_key`,
-	        `status` 
+	        `status` , 
+	        `deleted`
 	    from
 	        `scss_user` 
-	    where `access_id`=#access_id#
+	    where `access_id`=#access_id# 
 	</statement>
 	
 	<statement id="updateUser" parameterClass="user" cacheModel="myCache">
@@ -79,22 +86,22 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 			`scss_user` 
 		set 
 	        `id`=#id#,
-	        `Sohu_ID`=#sohuId#,
+	        `sohu_id`=#sohuId#,
 	        `access_id`=#accessId#,
 	        `access_key`=#accessKey#,
 	        `status`=#status#  
-	    where  `id`=#id#
+	    where  `id`=#id# 
 	</statement>
 	
 	<statement id="deleteUser" parameterClass="Long" cacheModel="myCache">
-		delete from
+		delete from 
 			`scss_user` 
 	    where  `id`=#id#
 	</statement>
 	
 	<!--  -->
 	<insert id="putUser" parameterClass="user">
-		insert into `scss_user`(`Sohu_ID`,`access_id`,`access_key`,`status`) 
+		insert into `scss_user`(`sohu_id`,`access_id`,`access_key`,`status`) 
 		values( #sohuId#,#accessId#,#accessKey#,#status#)
 		<selectKey resultClass="long" keyProperty="id" >
             SELECT @@IDENTITY AS ID

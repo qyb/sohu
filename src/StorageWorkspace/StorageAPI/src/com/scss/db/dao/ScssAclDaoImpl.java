@@ -74,15 +74,15 @@ public class ScssAclDaoImpl {
 		return acls;
 	}
 
-	public List<ScssAcl> getAclByAccessorOnResouce(Long acc,String accType, Long res,String resType) {
-		List<ScssAcl> acls = null;
+	public ScssAcl getAclByAccessorOnResouce(Long acc,String accType, Long res,String resType) {
+		ScssAcl acls = null;
 		try {
 			ScssAcl acl = new ScssAcl();
 			acl.setAccessorId(acc);
 			acl.setAccessorType(accType);
 			acl.setResourceId(res);
 			acl.setResourceType(resType);
-			acls = sqlMap.queryForList("getAclByAccessorOnResouce", acl);
+			acls = (ScssAcl) sqlMap.queryForObject("getAclByAccessorOnResouce", acl);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -1,5 +1,4 @@
 package com.scss.db.dao;
-
 import java.sql.SQLException;
 import java.util.List;
 
@@ -16,8 +15,7 @@ import com.scss.db.model.ScssObject;
 public class ScssObjectDaoImpl {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssObjectDaoImpl instance = new ScssObjectDaoImpl();
-//	private static final Logger logger = Logger.getLogger("DAO/SCSSOBJECT", 0,
-//			true);
+
 	
 	private final Logger logger = Logger.getLogger(this.getClass());
 	private ScssObjectDaoImpl() {
@@ -69,19 +67,38 @@ public class ScssObjectDaoImpl {
 		return su;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static List<ScssObject> getObjectsByBucketId(Long id)
-			throws SQLException {
-		return sqlMap.queryForList("getObjectsByBucketId", id);
+	public ScssObject getObjectByKey(String key, Long ownerId) {
+		try {
+			ScssObject su = new ScssObject();
+			su.setKey(key);
+			su.setOwnerId(ownerId);
+			return (ScssObject) sqlMap.queryForObject("getObjectByKey", su);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<ScssObject> getObjectsByUserId(Long id)
-			throws SQLException {
-		return sqlMap.queryForList("getObjectsByUserId", id);
+	public List<ScssObject> getObjectsByBucketId(Long id) {
+		try {
+			return sqlMap.queryForList("getObjectsByBucketId", id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	public static ScssObject getObjectByBFSFile(Long key) {
+	public List<ScssObject> getObjectsByUserId(Long id) {
+		try {
+			return sqlMap.queryForList("getObjectsByUserId", id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public ScssObject getObjectByBFSFile(Long key) {
 		ScssObject su = null;
 		try {
 			su = (ScssObject) sqlMap.queryForObject("getObjectByBFSFile", key);
