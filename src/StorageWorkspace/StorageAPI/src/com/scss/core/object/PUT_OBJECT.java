@@ -81,11 +81,7 @@ public class PUT_OBJECT extends ObjectAPI {
 		
 		//ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
 		ScssBucket bucket = null;
-		try {
-			bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
-		} catch (SQLException e) {
-			logger.error(String.format("Fail to retrive bucket %s", req.BucketName), e);
-		}
+		bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
 		

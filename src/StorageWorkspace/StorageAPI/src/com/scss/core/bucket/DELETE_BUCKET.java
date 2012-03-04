@@ -37,22 +37,12 @@ public class DELETE_BUCKET extends BucketAPI {
 		Map<String, String> resp_headers = resp.getHeaders();
 		
         ScssBucket scssBucket=null;
-		try {
-			scssBucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		scssBucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
 		
 		if(null!= scssBucket)
 		{
 			List<ScssObject> scssObjectList=null;
-			try {
-				scssObjectList = ScssObjectDaoImpl.getObjectsByBucketId(scssBucket.getId());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			scssObjectList = ScssObjectDaoImpl.getInstance().getObjectsByBucketId(scssBucket.getId());
 			
 			if(null!=scssObjectList&&scssObjectList.size()>0)
 			{

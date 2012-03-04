@@ -56,12 +56,7 @@ public class GET_SERVICE extends BucketAPI {
 		scssUser.setId(req.getUser().getId());
 		
 		List<ScssBucket> buckets=null;
-		try {
-			buckets = ScssBucketDaoImpl.getInstance().getBucketsByUser(scssUser);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		buckets = ScssBucketDaoImpl.getInstance().getBucketsByUser(scssUser);
 		
 		// set response headers
 		if (null != buckets) {

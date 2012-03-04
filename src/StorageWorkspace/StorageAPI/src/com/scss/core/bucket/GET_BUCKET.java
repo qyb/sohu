@@ -55,21 +55,11 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: Use Bucket instead ScssBucket. temporary using.
 		
 		ScssBucket bucket=null;
-		try {
-			bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
 		List<ScssObject> bucket_objects=null;
-		try {
-			bucket_objects = (List<ScssObject>)ScssObjectDaoImpl.getObjectsByBucketId(bucket.getId());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		bucket_objects = (List<ScssObject>)ScssObjectDaoImpl.getInstance().getObjectsByBucketId(bucket.getId());
 		
 		// set response headers
 		if (null != bucket_objects) {

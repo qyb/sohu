@@ -15,10 +15,15 @@
 	<classpathentry kind="lib" path="lib/junit-4.10.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.18-bin.jar"/>
-	<classpathentry kind="lib" path="lib/org.restlet.ext.jaxrs.jar"/>
-	<classpathentry kind="lib" path="lib/org.restlet.ext.xml.jar"/>
-	<classpathentry kind="lib" path="lib/org.restlet.jar"/>
 	<classpathentry kind="lib" path="lib/bonecp-0.6.2.jar"/>
-
+	<classpathentry kind="lib" path="lib/org.restlet.jar" sourcepath="C:/Work/restlet-jse-2.0.11/src"/>
+	<classpathentry kind="lib" path="lib/org.restlet.ext.jetty.jar" sourcepath="C:/Work/restlet-jse-2.0.11"/>
+	<classpathentry kind="lib" path="lib/jetty-ajp-7.4.5.v20110725.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-continuation-7.4.5.v20110725.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-http-7.4.5.v20110725.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-io-7.4.5.v20110725.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-server-7.4.5.v20110725.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-util-7.4.5.v20110725.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api-2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
