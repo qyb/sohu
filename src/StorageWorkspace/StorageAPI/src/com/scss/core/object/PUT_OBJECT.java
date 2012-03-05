@@ -40,7 +40,7 @@ public class PUT_OBJECT extends ObjectAPI {
 	 */
 	
 	
-	@Override
+
 	public APIResponse Invoke(APIRequest req) {
 		// TODO: !!! need to re-organize. extract to pre-invoke post-invoke !!! 
 		// TODO: !!! and use reslet metheod to process headers there !!!
@@ -132,30 +132,30 @@ public class PUT_OBJECT extends ObjectAPI {
 //					if (modify_succeed && old_bfs > 0)
 //						BfsClientWrapper.getInstance().deleteFile(obj.getBfsFile());
 					
-				} else 
-//					obj = DBServiceHelper.putObject(req.ObjectKey, bfsresult.FileNumber, 
-//						req.getUser().getId(),
-					
+				} else {
+					// obj = DBServiceHelper.putObject(req.ObjectKey,
+					// bfsresult.FileNumber,
+					// req.getUser().getId(),
+					obj = new ScssObject();
 					obj.setKey(req.ObjectKey);
-				    obj.setBfsFile(bfsresult.FileNumber);
-				    obj.setOwnerId(req.getUser().getId());
-				    obj.setBucketId(bucket.getId());
-				    obj.setMeta(user_meta);
-				    obj.setSize(bfsresult.Size);
-				    obj.setMediaType(media_type);
-				    obj.setSysMeta(sys_meta);
-				    obj.setEtag(etag);
-				    obj.setVersionEnabled(version_enabled?(byte)1:0);
-				    obj.setVersion(version);
-				    obj.setDeleted((byte)0);
-				    obj.setExpirationTime(expireTime);
-				    obj.setCreateTime(createTime);
-				    obj.setModifyTime(modifyTime);
-					obj= ScssObjectDaoImpl.getInstance().insertObject(obj);
-				 
+					obj.setBfsFile(bfsresult.FileNumber);
+					obj.setOwnerId(req.getUser().getId());
+					obj.setBucketId(bucket.getId());
+					obj.setMeta(user_meta);
+					obj.setSize(bfsresult.Size);
+					obj.setMediaType(media_type);
+					obj.setSysMeta(sys_meta);
+					obj.setEtag(etag);
+					obj.setVersionEnabled(version_enabled ? (byte) 1 : 0);
+					obj.setVersion(version);
+					obj.setDeleted((byte) 0);
+					obj.setExpirationTime(expireTime);
+					obj.setCreateTime(createTime);
+					obj.setModifyTime(modifyTime);
+					obj = ScssObjectDaoImpl.getInstance().insertObject(obj);
+				}
+
 				// Stop transaction
-			} catch (SameNameException e) {
-				//TODO: update the object.
 			} catch (BufferOverflowException e) {
 				return ErrorResponse.EntityTooLarge(req);
 			}
