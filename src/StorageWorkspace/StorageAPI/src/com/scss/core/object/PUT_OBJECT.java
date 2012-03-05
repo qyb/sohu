@@ -77,11 +77,14 @@ public class PUT_OBJECT extends ObjectAPI {
 		if (size > BfsClientWrapper.MAX_SIZE)
 			return ErrorResponse.EntityTooLarge(req);
 		
-		
-		//ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
 		ScssBucket bucket = null;
-		
-		bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
+
+		try {
+			bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
+		} catch (SQLException e) {
+			logger.error(String.format("Fail to retrive bucket %s", req.BucketName), e);
+		}
+
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
 		
