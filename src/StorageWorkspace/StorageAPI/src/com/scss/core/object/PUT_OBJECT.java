@@ -26,7 +26,6 @@ import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
-import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 
 
@@ -81,6 +80,7 @@ public class PUT_OBJECT extends ObjectAPI {
 		
 		//ScssBucket bucket = DBServiceHelper.getBucketByName(req.BucketName, req.getUser().getId());
 		ScssBucket bucket = null;
+		
 		bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
@@ -113,7 +113,7 @@ public class PUT_OBJECT extends ObjectAPI {
 				// TODO: do need to delete the old BFS file?
 				logger.info(String.format("BFS file no : %d (size=%d)\n", bfsresult.FileNumber, bfsresult.Size));
 				// TODO: db needs to lock the record?
-				obj = DBServiceHelper.getObject(req.BucketName, req.ObjectKey);
+				obj = ScssObjectDaoImpl.getInstance().getObjectByKey(req.ObjectKey,req.getUser().getId());
 				if (null != obj) {
 					long old_bfs = obj.getBfsFile();
 					obj.setBfsFile(bfsresult.FileNumber);
@@ -121,6 +121,7 @@ public class PUT_OBJECT extends ObjectAPI {
 					boolean modify_succeed = false;
 					try {
 						ScssObjectDaoImpl.getInstance().updateObject(obj);
+					
 						modify_succeed = true;
 					} catch (SQLException e) {
 						// do nothing
@@ -131,10 +132,23 @@ public class PUT_OBJECT extends ObjectAPI {
 				} else 
 //					obj = DBServiceHelper.putObject(req.ObjectKey, bfsresult.FileNumber, 
 //						req.getUser().getId(),
-					obj = DBServiceHelper.putObject(req.ObjectKey, bfsresult.FileNumber, 
-							req.getUser().getId(), bucket.getId(), user_meta, bfsresult.Size, 
-							media_type, sys_meta, etag, version_enabled, version, false, expireTime, 
-							createTime, modifyTime);
+					
+					obj.setKey(req.ObjectKey);
+				    obj.setBfsFile(bfsresult.FileNumber);
+				    obj.setOwnerId(req.getUser().getId());
+				    obj.setBucketId(bucket.getId());
+				    obj.setMeta(user_meta);
+				    obj.setSize(bfsresult.Size);
+				    obj.setMediaType(media_type);
+				    obj.setSysMeta(sys_meta);
+				    obj.setEtag(etag);
+				    obj.setVersionEnabled(version_enabled?(byte)1:0);
+				    obj.setVersion(version);
+				    obj.setDeleted((byte)0);
+				    obj.setExpirationTime(expireTime);
+				    obj.setCreateTime(createTime);
+				    obj.setModifyTime(modifyTime);
+					obj= ScssObjectDaoImpl.getInstance().insertObject(obj);
 				 
 				// Stop transaction
 			} catch (SameNameException e) {
@@ -177,6 +191,8 @@ public class PUT_OBJECT extends ObjectAPI {
 		// TODO: return appropriate error response. DB access should return a value to determine status.
 		return ErrorResponse.InternalError(req);
 	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see com.scss.ICallable#CanInvoke(com.scss.core.APIRequest, com.scss.IAccessor)

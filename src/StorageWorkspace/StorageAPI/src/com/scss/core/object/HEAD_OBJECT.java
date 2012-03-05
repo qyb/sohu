@@ -15,6 +15,7 @@ import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
+import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
@@ -61,7 +62,8 @@ public class HEAD_OBJECT extends ObjectAPI {
 		// TODO: Add transaction support if required (some apis need).
 
 		// TODO: get by bucket name and key
-		ScssObject obj = DBServiceHelper.getObject(req.BucketName, req.ObjectKey);
+		ScssObject obj = ScssObjectDaoImpl.getInstance().getObjectByKey(req.ObjectKey,req.getUser().getId());
+		
 		if (null == obj || null == obj.getKey() || null == obj.getBfsFile())
 			return ErrorResponse.NoSuchKey(req);
 
