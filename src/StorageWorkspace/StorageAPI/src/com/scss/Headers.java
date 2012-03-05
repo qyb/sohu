@@ -25,13 +25,13 @@ public interface Headers {
      * S3 HTTP Headers
      */
 
-    /** Prefix for general Amazon headers: x-amz- */
-    public static final String AMAZON_PREFIX = "x-amz-";
+    /** Prefix for general S3 headers: x-amz- */
+    public static final String S3_PREFIX = "x-amz-";
 
     /** S3's canned ACL header: x-amz-acl */
     public static final String S3_CANNED_ACL = "x-amz-acl";
 
-    /** Amazon's alternative date header: x-amz-date */
+    /** S3's alternative date header: x-amz-date */
     public static final String S3_ALTERNATE_DATE = "x-amz-date";
 
     /** Prefix for S3 user metadata: x-amz-meta- */
