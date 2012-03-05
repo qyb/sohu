@@ -1,34 +1,35 @@
+/**
+ * Copyright Sohu Inc. 2012
+ */
 package com.scss.core.security;
 
-import java.util.Date;
+import java.security.SignatureException;
 import java.util.Map;
 
 import com.scss.core.APIRequest;
 import com.scss.core.CommonRequestHeader;
 
-public class QueryStringAuthorization extends Authorization {
+/**
+ * Authorization implementation base
+ * 
+ * @author Samuel
+ *
+ */
+public class GeneralAuthorization extends Authorization {
 
-	public QueryStringAuthorization(APIRequest req) {
+	public GeneralAuthorization(APIRequest req) {
 		super(req);
-		logger.debug("Query string authorization starting...");
+		logger.debug("General authorization starting...");
 	}
-	
+
 	@Override
 	public Boolean authorize() {
-		Boolean rc = super.authorize();
-		if (rc) {
-			Credential cred = this.getCredential();
-		 	Date now = new Date();
-		 	logger.debug(String.format("Expires on %s, now is %s", new Date(cred.getExpires()), now));
-		 	if (now.getTime() > cred.getExpires())
-		 		rc = false;
-		}
-		return rc;
+		return super.authorize();
 	}
-	
+
 	@Override
 	protected String getSignature(Credential cred) {
-		Signature signature = new QueryStringSigner(cred.getAccessId());
+		Signature signature = new GeneralSigner(cred.getAccessId());
 		String str_to_sign = this.getStringToSign();
 		logger.debug(String.format(" String to sign : \n%s", str_to_sign));
 		return signature.sign(str_to_sign);
@@ -47,8 +48,7 @@ public class QueryStringAuthorization extends Authorization {
 		sb.append(null==val?"":val).append("\n");
 		val = headers.get(CommonRequestHeader.CONTENT_TYPE);
 		sb.append(null==val?"":val).append("\n");
-		val = this.getRequest().Querys.get(Authorization.QUERY_EXPIRES);
-		assert (null != val);
+		val = headers.get(CommonRequestHeader.DATE);
 		sb.append(null==val?"":val).append("\n");
 		sb.append(canonical_headers);
 		sb.append(canonical_res);
