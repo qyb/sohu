@@ -19,8 +19,15 @@ public interface Headers {
     public static final String ETAG = "ETag";
     public static final String LAST_MODIFIED = "Last-Modified";
     public static final String SERVER = "Server";
-
-
+    
+    /*
+     * Extend HTTP Headers 
+     */
+    
+    public static final String STATUS = "Status";
+    public static final String LOCATION = "Location";
+    public static final Object AUTHORIZATION = "Authorization";
+    
     /*
      * S3 HTTP Headers
      */
@@ -105,4 +112,5 @@ public interface Headers {
     
     /** Instruction file header to be placed in the metadata of instruction files */
     public static final String CRYPTO_INSTRUCTION_FILE = "x-amz-crypto-instr-file";
+
 }

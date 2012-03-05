@@ -6,8 +6,8 @@ package com.scss.core.security;
 import java.security.SignatureException;
 import java.util.Map;
 
+import com.scss.Headers;
 import com.scss.core.APIRequest;
-import com.scss.core.CommonRequestHeader;
 
 /**
  * Authorization implementation base
@@ -29,7 +29,7 @@ public class GeneralAuthorization extends Authorization {
 
 	@Override
 	protected String getSignature(Credential cred) {
-		Signature signature = new GeneralSigner(cred.getAccessId());
+		Signature signature = new GeneralSigner(cred.getAccessKey());
 		String str_to_sign = this.getStringToSign();
 		logger.debug(String.format(" String to sign : \n%s", str_to_sign));
 		return signature.sign(str_to_sign);
@@ -44,11 +44,11 @@ public class GeneralAuthorization extends Authorization {
 		String val = "";
 		
 		sb.append(this.getRequest().Method).append("\n");
-		val = headers.get(CommonRequestHeader.CONTENT_MD5);
+		val = headers.get(Headers.CONTENT_MD5);
 		sb.append(null==val?"":val).append("\n");
-		val = headers.get(CommonRequestHeader.CONTENT_TYPE);
+		val = headers.get(Headers.CONTENT_TYPE);
 		sb.append(null==val?"":val).append("\n");
-		val = headers.get(CommonRequestHeader.DATE);
+		val = headers.get(Headers.DATE);
 		sb.append(null==val?"":val).append("\n");
 		sb.append(canonical_headers);
 		sb.append(canonical_res);

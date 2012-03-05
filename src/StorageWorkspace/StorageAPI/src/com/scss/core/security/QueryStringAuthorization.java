@@ -3,8 +3,8 @@ package com.scss.core.security;
 import java.util.Date;
 import java.util.Map;
 
+import com.scss.Headers;
 import com.scss.core.APIRequest;
-import com.scss.core.CommonRequestHeader;
 
 public class QueryStringAuthorization extends Authorization {
 
@@ -43,9 +43,9 @@ public class QueryStringAuthorization extends Authorization {
 		String val = "";
 		
 		sb.append(this.getRequest().Method).append("\n");
-		val = headers.get(CommonRequestHeader.CONTENT_MD5);
+		val = headers.get(Headers.CONTENT_MD5);
 		sb.append(null==val?"":val).append("\n");
-		val = headers.get(CommonRequestHeader.CONTENT_TYPE);
+		val = headers.get(Headers.CONTENT_TYPE);
 		sb.append(null==val?"":val).append("\n");
 		val = this.getRequest().Querys.get(Authorization.QUERY_EXPIRES);
 		assert (null != val);

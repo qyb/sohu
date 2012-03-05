@@ -12,8 +12,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import com.scss.Headers;
+import com.scss.Headers;
 import com.scss.core.APIRequest;
-import com.scss.core.CommonRequestHeader;
 import com.scss.core.ResponseHeaderOverrides;
 import com.scss.db.User;
 import com.scss.db.dao.ScssUserDaoImpl;
@@ -85,7 +85,7 @@ public abstract class Authorization implements IAuth {
 		assert (null != req);
 		
 		Credential cred = new Credential();
-		String req_auth = req.getHeaders().get(CommonRequestHeader.AUTHORIZATION);
+		String req_auth = req.getHeaders().get(Headers.AUTHORIZATION);
 		if (null != req_auth) {
 			cred.setAuthorizationType(AuthorizationTypes.GENERAL);
 			String[] authes = req_auth.split("\\s|:");
