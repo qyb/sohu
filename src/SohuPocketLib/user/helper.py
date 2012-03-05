@@ -208,7 +208,7 @@ def extract_class_instance_to_dict(ins):
 
 def api2_input_for_access_token_func(request):
     sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
-    if settings.IS_PRODUCTION_SERVER:
+    if not settings.IS_PRODUCTION_SERVER:
         sohupassport_uuid = '81215bb13f2f497u'
     
     return sohupassport_uuid
