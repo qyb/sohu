@@ -3,8 +3,6 @@
  */
 package com.scss.core.object;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -16,7 +14,8 @@ import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
-import com.scss.db.BucketBussiness;
+import com.scss.db.dao.ScssBucketDaoImpl;
+import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
 import com.scss.db.service.DBServiceHelper;
@@ -38,18 +37,19 @@ public class DELETE_OBJECT extends ObjectAPI {
 		APIResponse resp = new BucketAPIResponse();
 		Map<String, String> resp_headers = resp.getHeaders();
 		
-        ScssBucket  scssBucket=DBServiceHelper.getBucketByName(req.BucketName,req.getUser().getId()) ;
+        ScssBucket scssBucket=ScssBucketDaoImpl.getInstance().getBucket(req.BucketName) ;
 		
 		if(null!=scssBucket)
 		{
 			
-			ScssObject obj = DBServiceHelper.getObject(req.BucketName,req.ObjectKey);
+			ScssObject obj = ScssObjectDaoImpl.getInstance().getObjectByKey(req.ObjectKey,req.getUser().getId());
 			
 			if(null!=obj&&null != obj.getKey() && null != obj.getBfsFile())
 			{
 				
 				try {
-					DBServiceHelper.deleteObject(req.ObjectKey, req.getUser().getId(), scssBucket.getId());
+					ScssObjectDaoImpl.getInstance().deleteObject(obj.getId());
+				
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
