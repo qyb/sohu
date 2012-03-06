@@ -8,8 +8,12 @@ import sys
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 #boto.s3.connection.S3Connection.DefaultHost = "localhost"
 
-AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
-AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'
+#AWS_SECRET_ACCESS_KEY = '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'
+#AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'
+
+AWS_SECRET_ACCESS_KEY = 'FACKE_ACCESS_SECRET_KEY_!!!!!!_###_00002'
+AWS_ACCESS_KEY_ID = 'FAKE_ACCESS_ID_00002'
+
 
 def build_connect_s3():
     s3 = boto.connect_s3(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, is_secure=False)

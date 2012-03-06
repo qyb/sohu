@@ -20,6 +20,8 @@ public class QueryStringSigner extends Signature {
 		String sig = signer.sign(str_to_sign);
 		System.err.println(String.format("http://boto-test.s3.amazonaws.com/obj3?"
 				+ "AWSAccessKeyId=%s&Expires=%d&Signature=%s", access_id, expires, sig)); 
+		System.err.println(String.format("http://boto-test.s3.itc.cn/obj3?"
+				+ "AWSAccessKeyId=%s&Expires=%d&Signature=%s", access_id, expires, sig)); 
 				
 	}
 

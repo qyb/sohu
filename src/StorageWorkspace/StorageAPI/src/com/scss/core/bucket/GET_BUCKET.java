@@ -100,8 +100,8 @@ public class GET_BUCKET extends BucketAPI {
 		sb.append("  <MaxKeysIsNotImplemented />"); // TODO: Not implemented
 		sb.append("  <IsTruncated>false</IsTruncated>"); // TODO: Not implemented
 		
-		sb.append("  <Contents>");
 		for(ScssObject obj: bucket_objects){
+			sb.append("  <Contents>");
 		    sb.append("    <Key>").append(obj.getKey()).append("</Key>");
 		    sb.append("    <LastModified>").append(CommonUtilities.formatResponseTextDate(obj.getModifyTime())).append("</LastModified>");
 		    sb.append("    <ETag>").append(obj.getEtag()).append("</ETag>"); 
@@ -110,9 +110,10 @@ public class GET_BUCKET extends BucketAPI {
 			sb.append("    <Owner>");
 			sb.append("      <ID>").append(req.getUser().getAccessId()).append("</ID>");
 			sb.append("      <DisplayName>").append(req.getUser().getSohuId()).append("</DisplayName>");
-			sb.append("    </Owner>");		    
+			sb.append("    </Owner>");
+			sb.append("  </Contents>");
 		}
-		sb.append("  </Contents>");
+		
 		sb.append("</ListBucketResult>"); 
 		return sb.toString();
 	}

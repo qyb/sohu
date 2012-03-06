@@ -85,9 +85,13 @@ public class S3Sample {
              * keep your data closer to your applications or users.
              */
             System.out.println("Creating bucket " + bucketName + "\n");
+            try {
             Bucket b = s3.createBucket(bucketName);
             if (b != null) {
             	System.out.printf("bucket <%s> created or existed\n", b.getName());
+            }
+            } catch (Exception e) {
+            	e.printStackTrace();
             }
             
             /*
