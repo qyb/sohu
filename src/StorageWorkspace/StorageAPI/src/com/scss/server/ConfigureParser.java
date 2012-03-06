@@ -4,6 +4,8 @@ package com.scss.server;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
+
+
 /**
  * @author Leon
  * 
@@ -15,7 +17,7 @@ public class ConfigureParser {
     private static Logger logger = Logger.getLogger(ConfigureParser.class);
     private static ConfigureParser instance = new ConfigureParser();
     
-    private String configName = "config.xml";
+    private String configName = "config.server.xml";
     private XMLConfiguration xml = new XMLConfiguration();
     
     protected ConfigureParser() {

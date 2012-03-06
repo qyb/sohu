@@ -13,6 +13,8 @@ import org.restlet.representation.StringRepresentation;
 import com.scss.Const;
 import com.scss.Headers;
 import com.scss.IAccessor;
+import com.scss.config.ConfigManager;
+import com.scss.config.GeneralConfig;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.ErrorResponse;
@@ -91,10 +93,11 @@ public class GET_SERVICE extends BucketAPI {
 	}
 
 	private String getResponseText(APIRequest req, List<ScssBucket> buckets) {
+		GeneralConfig conf = (GeneralConfig)ConfigManager.getInstance().get(GeneralConfig.class);
 		// TODO: make the string static
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		sb.append("<ListAllMyBucketsResult xmlns=\"" + Const.XMLNS + "\">");
+		sb.append("<ListAllMyBucketsResult xmlns=\"" + conf.getXmlNamespace() + "\">");
 		sb.append("  <Owner>");
 		sb.append("    <ID>" + req.getUser().getSohuId() + "</ID>");
 		sb.append("    <DisplayName>" + req.getUser().getSohuId() + "</DisplayName>");

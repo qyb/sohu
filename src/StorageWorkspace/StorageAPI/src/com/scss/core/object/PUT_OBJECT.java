@@ -133,7 +133,7 @@ public class PUT_OBJECT extends ObjectAPI {
 				
 				logger.debug("Object is already existed. Trying to update it.");
 				
-				obj = ScssObjectDaoImpl.getInstance().getObjectByKey(req.ObjectKey, req.getUser().getId());				
+				obj = ScssObjectDaoImpl.getInstance().getObjectByKey(req.ObjectKey, req.getUser()).get(0);				
 				if (null != obj) {
 					long old_bfs = obj.getBfsFile();
 					obj.setBfsFile(bfsresult.FileNumber);

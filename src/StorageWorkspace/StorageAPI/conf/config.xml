@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<config>
+    <domain>s3.itc.cn</domain>
+    <port>8888</port>
+    <xmlns>http://s3.itc.cn/doc/2012-02-09/</xmlns>
+</config>
+
+
+
+

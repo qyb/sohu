@@ -8,11 +8,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.VirtualHost;
+
+
 
 /**
  * @author Leon
@@ -36,13 +39,14 @@ public class CloudServer {
     }
 
 	public CloudServer() {
-       	PropertyConfigurator.configure(logName);
+       	//PropertyConfigurator.configure(logName);
+       	DOMConfigurator.configureAndWatch(logName);
 	}
     
 	private static Logger logger = Logger.getLogger(CloudServer.class);
     
     private String configName = "config.xml";
-    private String logName = "./log4j.ini";
+    private String logName = "log4j.xml";
     
 	private ConfigBean config = null;
     private Component component = null;

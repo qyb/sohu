@@ -12,6 +12,8 @@ import org.restlet.data.MediaType;
 import com.scss.Const;
 import com.scss.Headers;
 import com.scss.IAccessor;
+import com.scss.config.ConfigManager;
+import com.scss.config.GeneralConfig;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
 import com.scss.core.ErrorResponse;
@@ -88,11 +90,12 @@ public class GET_BUCKET extends BucketAPI {
 		
 		int maxkeys = 1000;
 		String prefix = req.Querys.get("prefix");
+		GeneralConfig conf = (GeneralConfig)ConfigManager.getInstance().get(GeneralConfig.class);
 		
 		// TODO: Use template? or make the string static
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		sb.append("<ListBucketResult xmlns=\"").append(Const.XMLNS).append("\">");
+		sb.append("<ListBucketResult xmlns=\"").append(conf.getXmlNamespace()).append("\">");
 		sb.append("  <Name>").append(req.BucketName).append("</Name>");
 		sb.append("  <Prefix>").append(prefix).append(" (Not implemented)</Prefix>"); // TODO: Not implemented
 		sb.append("  <Marker />"); // TODO: Not implemented

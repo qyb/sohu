@@ -15,6 +15,8 @@ import org.restlet.data.Form;
 import org.restlet.representation.Representation;
 
 import com.scss.Const;
+import com.scss.config.ConfigManager;
+import com.scss.config.GeneralConfig;
 import com.scss.db.User;
 
 /**
@@ -56,8 +58,8 @@ public class APIRequest {
 		// parse bucket name and object key
 		String bucket_name = uri.getHost();
 		if (null != bucket_name) {
-			bucket_name = bucket_name.replace(Const.HOST, "");
-			bucket_name = bucket_name.replace(Const.AMAZON_HOST, "");
+			GeneralConfig conf = (GeneralConfig)ConfigManager.getInstance().get(GeneralConfig.class);
+			bucket_name = bucket_name.replace(conf.getDomain(), "");
 			if (bucket_name.endsWith("."))
 				bucket_name = bucket_name.substring(0, bucket_name.length()-1);
 		}

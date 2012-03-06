@@ -3,6 +3,8 @@
  */
 package com.scss;
 
+import java.util.HashSet;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.restlet.Application;
@@ -14,6 +16,8 @@ import org.restlet.ext.jetty.HttpServerHelper;
 import org.restlet.ext.jetty.JettyServerHelper;
 import org.restlet.routing.Router;
 
+import com.scss.config.ConfigManager;
+import com.scss.config.GeneralConfig;
 import com.scss.core.Handler;
 import com.scss.server.CloudServer;
 
@@ -26,32 +30,57 @@ public class Main{
 
 	/**
 	 * @param args
+	 * 		1. -P## (## is port number. e.g. 8080)
+	 * 		2. -D
+	 * 		3. -S
 	 * @author Samuel
 	 * @throws Exception 
 	 * 
 	 */
 	public static void main(String[] args)  throws Exception {
+		
+		int port = 80;
+		
+		HashSet<String> params = new HashSet<String>();
+		for(String arg: args) {
+			String a = arg.toUpperCase();
+			if (a.startsWith("-P"))
+				port = Integer.parseInt(a.substring(2));
+			params.add(a);
+		}
+		
+		Boolean serving = params.contains("-S");
+		Boolean debug = params.contains("-D");
+		String prefix = debug ? "debug." : "";
+		
+					
+		ConfigManager cm = ConfigManager.getInstance();
+		cm.setPrefix(prefix);
+		cm.register(GeneralConfig.class);
+		
 		 Component component = new Component();
 		 component.getDefaultHost().attachDefault(Handler.class);
 		 
-		 DOMConfigurator.configureAndWatch("./log4j.xml");
-		 logger.info("Starting DEBUG server...");
+		 DOMConfigurator.configureAndWatch("log4j.xml");
 		 
-		 if (args.length >= 1) {
-			 if (args[0].equals("serve"))
-				 CloudServer.shared().start(null, null);
-			 else if (Integer.parseInt(args[0]) > 0) {
-//				 Server server = new Server(Protocol.HTTP, Integer.parseInt(args[0]), Handler.class);
-//				 component.getServers().add(server);
-//				 component.getDefaultHost().attachDefault(Handler.class)
-//				 server.getContext().getParameters().add("useForwardedForHeader", "true");
-//				 server.start();
-				 ServeWithJetty(Integer.parseInt(args[0]));
-			 }
-		 } 
+		 
+		 if (serving) {
+			 logger.info("Starting server...");
+			 CloudServer.shared().start(null, null);
+		 }
+		 else if (debug) {
+			 logger.info("Starting DEBUG server...");
+//			 Server server = new Server(Protocol.HTTP, Integer.parseInt(args[0]), Handler.class);
+//			 component.getServers().add(server);
+//			 component.getDefaultHost().attachDefault(Handler.class)
+//			 server.getContext().getParameters().add("useForwardedForHeader", "true");
+//			 server.start();
+			 ServeWithJetty(port);
+		 }
 		 else {
-			 //new Server(Protocol.HTTP, 80, Handler.class).start();
-			 ServeWithJetty(80);
+			 logger.info("Starting DEBUG server...");
+			//new Server(Protocol.HTTP, 80, Handler.class).start();
+			 ServeWithJetty(port);
 		 }
 	}
 	

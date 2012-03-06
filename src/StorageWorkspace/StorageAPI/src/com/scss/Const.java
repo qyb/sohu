@@ -8,10 +8,6 @@ package com.scss;
  *
  */
 public final class Const {
-	public static final String AMAZON_HOST = "s3.amazonaws.com"; // used for testing
-	public static final String HOST = "s3.itc.cn";
-	public static final String XMLNS = "http://doc.s3.amazonaws.com/2006-03-0"; // used for response xml
-
     /** Service name for Amazon S3 */
     public static String S3_SERVICE_NAME = "Sohu S3";
 
