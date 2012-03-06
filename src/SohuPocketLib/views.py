@@ -2,6 +2,7 @@
 
 from django.http import HttpResponse, HttpResponsePermanentRedirect
 
+
 def passport(request):
     info = ['HTTP_X_SOHUPASSPORT_UID',
             'HTTP_X_SOHUPASSPORT_USERID',
