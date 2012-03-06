@@ -1,8 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-     <item android:id="@+id/refresh" android:background="#22222222" android:title="刷新"/>
-     <item android:id="@+id/add_category" android:background="#22222222" android:title="添加分类" />
-     <item android:id="@+id/font_size" android:background="#22222222" android:title="字体" />
-     <item android:id="@+id/night" android:background="#22222222" android:title="夜间模式" />
-     <item android:id="@+id/settings" android:background="#22222222" android:title="设置" />
-     <item android:id="@+id/about" android:background="#22222222" android:title="关于" />
- </menu>
