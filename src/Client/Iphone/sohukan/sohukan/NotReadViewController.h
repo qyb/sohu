@@ -9,9 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "ListViewController.h"
 #import "EditViewController.h"
-#import "CXMLDocument.h"
+#import "DetailViewController.h"
 
-@class DetailViewController;
 @interface NotReadViewController : ListViewController<FlipViewDidDelegate, UISearchBarDelegate> {
     NSMutableArray *articles;
     NSMutableArray *markList;
@@ -20,6 +19,8 @@
     UISegmentedControl *segmentedControl;
     UISearchBar *theSearchBar;
     NSOperationQueue *_queue;
+    UIToolbar *toolBar;
+    NSIndexPath *changePath;
     BOOL isEdit;
     BOOL isOrder;
     BOOL isUpdate;
@@ -27,5 +28,6 @@
     int arrayLength;
 }
 @property(retain, nonatomic)NSMutableArray *articles;
+@property(retain, nonatomic)NSIndexPath *changePath;
 
 @end

@@ -8,6 +8,7 @@
 
 #import "EditViewController.h"
 #import "DatabaseProcess.h"
+#import "SystemTool.h"
 
 @implementation EditViewController
 @synthesize article;
@@ -27,8 +28,6 @@
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark - View lifecycle
-
 - (void)viewDidLoad
 {
     _url.text = self.article.url;
@@ -39,9 +38,7 @@
     UIImage *nodelImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_nodel" ofType:@"png"]];
     [delButton setBackgroundImage:nodelImg forState:UIControlStateNormal];
     UIImage *markImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_mark" ofType:@"png"]];
-   // UIImage *markedImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"edit_mark" ofType:@"png"]];
     [markButton setBackgroundImage:markImg forState:UIControlStateNormal];
-    //[markButton setBackgroundImage:markedImg forState:UIControlEventTouchUpInside];
     [super viewDidLoad];
 }
 
@@ -95,30 +92,22 @@
 }
 -(IBAction)saveAction:(id)sender
 {   
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"sohukan.db"];  
-    FMDatabase *db= [FMDatabase databaseWithPath:dbPath];
-    [db open];
+    
+    DatabaseProcess *dp = [[DatabaseProcess alloc] init];
     if (isDel){
-        NSFileManager *fileManager =[NSFileManager defaultManager];
-        
-        NSString *appFile = [documentsDirectory stringByAppendingPathComponent:self.article.key];
-        [fileManager removeItemAtPath:appFile error:nil];
-        //TO-DO DELETE IMAGE FILE;
-        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM Article WHERE key='%@'", self.article.key]];
+        [SystemTool deleteArticleAndImage:dp articleKey:article.key];
     }else{
-        NSString *selSQL = [[NSString alloc] initWithFormat:@"SELECT id FROM Category WHERE name='%@'",_category.text];
-        if(![db boolForQuery:selSQL]){
+        FMResultSet *rs = [dp getCategoryEntity:_category.text];
+        if (![rs next]){
             NSString *inserSQl = [[NSString alloc] initWithFormat:@"INSERT INTO Category (name) VALUES ('%@')",_category.text];
-            [db executeUpdate:inserSQl];
+            [dp executeUpdate:inserSQl];
             [inserSQl release];
         }
         NSString *updateSQL = [[NSString alloc] initWithFormat:@"UPDATE Article SET title='%@',category='%@',is_read=%d WHERE key='%@'", _titleContent.text, _category.text, isRead, self.article.key];
-        [db executeUpdate:updateSQL];
+        [dp executeUpdate:updateSQL];
         [updateSQL release];
-        [selSQL release];
     }
+    [dp release];
     [self.delegate flipViewDidFinish:self];
 }
 

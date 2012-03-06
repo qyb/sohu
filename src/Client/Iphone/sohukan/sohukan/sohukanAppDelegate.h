@@ -9,10 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "CXMLDocument.h"
 #import "DatabaseProcess.h"
+#import "FirstRunViewController.h"
+#import "GuideViewController.h"
 
 @interface sohukanAppDelegate : NSObject <UIApplicationDelegate> {
     NSOperationQueue *_queue;
-    DatabaseProcess *_dp;
+    UIView *_mainView;
+    FirstRunViewController *firstRunView;
+    GuideViewController *guideView;
+
 }
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UINavigationController *navigationController;

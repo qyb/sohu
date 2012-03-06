@@ -7,6 +7,7 @@
 //
 
 #import "NSURLProtocolCustom.h"
+#import "SystemTool.h"
 
 @implementation NSURLProtocolCustom
 + (BOOL)canInitWithRequest:(NSURLRequest*)theRequest
@@ -29,10 +30,8 @@
                                            expectedContentLength:-1 
                                                 textEncodingName:nil];
     NSString *key = [[self.request.URL.absoluteString componentsSeparatedByString:@"/"] lastObject];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *imagePath = [documentsDirectory stringByAppendingPathComponent:key];
-    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    NSString *path = [SystemTool getUserPathForFile:key];
+    NSData *data = [NSData dataWithContentsOfFile:path];
     [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
     [[self client] URLProtocol:self didLoadData:data];
     [[self client] URLProtocolDidFinishLoading:self];
