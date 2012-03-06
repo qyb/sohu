@@ -24,7 +24,6 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.sohu.database.DBHelper;
-import com.sohu.look.R;
 
 public class CategoryList extends Activity {
 	

@@ -15,6 +15,7 @@ import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.db.dao.ScssBucketDaoImpl;
 import com.scss.db.exception.SameNameException;
+import com.scss.db.model.Log;
 import com.scss.db.model.ScssBucket;
 import com.scss.utility.CommonUtilities;
 
@@ -51,11 +52,8 @@ public class PUT_BUCKET extends BucketAPI {
 		try{
 			
 			bucket.setName(req.BucketName);
-			
 			bucket.setOwnerId(req.getUser().getId());
-			
 			bucket.setMeta(user_meta);
-			
 			bucket = ScssBucketDaoImpl.getInstance().insertBucket(bucket);
 			
 		} catch (SameNameException e) {
@@ -63,6 +61,8 @@ public class PUT_BUCKET extends BucketAPI {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.error("PUT_BUCKET sql exception ",e);
+			return ErrorResponse.InternalError(req);
 		}
 		
 		// set response headers

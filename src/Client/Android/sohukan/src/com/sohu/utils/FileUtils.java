@@ -18,14 +18,14 @@ public class FileUtils {
     
     public FileUtils(){
 //    	PATH = Environment.getFilesDir()+"/";
-    	PATH = "/data/data/com.sohu.look/files/";
+    	PATH = "/data/data/com.sohu.kan/files/";
     	createDir("");
     }
     
     public FileUtils(String type){  //type类型是否存sd
     	if(!"sd".equals(type.toLowerCase())){
     		//机身内存路径
-            PATH = "/data/data/com.sohu.look/files/";
+            PATH = "/data/data/com.sohu.kan/files/";
     	}else{
 	        //sd存储路径
 	        // /SDCARD  

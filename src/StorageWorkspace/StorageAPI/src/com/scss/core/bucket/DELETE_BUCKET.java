@@ -19,7 +19,7 @@ import com.scss.db.dao.ScssBucketDaoImpl;
 import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
-import com.scss.db.service.DBServiceHelper;
+
 
 /**
  * @author Samuel
@@ -50,7 +50,12 @@ public class DELETE_BUCKET extends BucketAPI {
 			}
 			else
 			{
-				DBServiceHelper.deleteBucket(req.BucketName, req.getUser().getId());
+				try {
+					ScssBucketDaoImpl.getInstance().deleteBucket(scssBucket);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				setCommResponseHeaders(resp_headers,req);
 				

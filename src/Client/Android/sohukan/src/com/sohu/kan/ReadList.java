@@ -44,7 +44,6 @@ import android.widget.Toast;
 
 import com.sohu.database.DBHelper;
 import com.sohu.kan.Global;
-import com.sohu.look.R;
 import com.sohu.utils.FileUtils;
 import com.sohu.utils.HttpDownloader;
 import com.sohu.utils.RAPI;
