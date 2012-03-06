@@ -26,7 +26,7 @@ MANAGERS = ADMINS
 try:
     import local_settings
 except ImportError:
-    pass
+    raise
 
 DATABASES = {
     'default': {
@@ -192,26 +192,41 @@ CELERY_QUEUES = {
                              "exchange": "default",
                              "binding_key": "default"
                              },
-                 "oper_record": {
-                         "exchange": 'media',
-                         "exchange_type": "topic",
-                         "binding_key": "#.oper_record",
-                         },
                  "upload": {
                             "exchange": "media",
                             "exchange_type": "topic",
-                            "binding_key": "upload.#",
+                            "binding_key": "#.upload",
                             },
                  "download": {
                               "exchange": "media",
                               "exchange_type": "topic",
-                              "binding_key": "download.#",
+                              "binding_key": "#.download",
                               },
                  "encode": {
                             "exchange": "media",
                             "exchange_type": "topic",
-                            "binding_key": "encode.#",
+                            "binding_key": "#.encode",
                             },
+                 "article": {
+                          "exchange": "media",
+                          "exchange_type": "topic",
+                          "binding_key": "article.#",
+                          },
+                 "image": {
+                           "exchange": "media",
+                           "exchange_type": "topic",
+                           "binding_key": "image.#",
+                           },
+                 "audio": {
+                           "exchange": "media",
+                           "exchange_type": "topic",
+                           "binding_key": "audio.#",
+                           },
+                 "video": {
+                           "exchange": "media",
+                           "exchange_type": "topic",
+                           "binding_key": "video.#",
+                           },
                  }
 
 CELERY_DEFAULT_QUEUE = "default"
