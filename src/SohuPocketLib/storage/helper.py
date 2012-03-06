@@ -25,7 +25,7 @@ def get_or_create_bucket(bucket_name, policy='public-read', location=Location.DE
 
 
 def get_data_to_string(bucket_name, key_name):
-    #get_contents_to_filename, get_file
+    #get_contents_to_filename,get_file
     bucket = get_or_create_bucket(bucket_name)
     key = bucket.lookup(key_name)
     if not key:
@@ -35,7 +35,7 @@ def get_data_to_string(bucket_name, key_name):
 
 
 def get_data_to_filename(bucket_name, key_name, filename):
-    #get_contents_to_filename, get_file
+    #get_contents_to_filename,get_file
     bucket = get_or_create_bucket(bucket_name)
     key = bucket.lookup(key_name)
     if not key:
@@ -120,10 +120,8 @@ def get_expire_data_url(bucket_name, key_name, expires_seconds):#该URL地址有
 
 
 def get_data_url(bucket_name, key_name):
-    if settings.IS_PRODUCTION_SERVER:
-        domain = 's3.itc.cn'
-    else:
-        domain = 's3.amazonaws.com'
+    #domain = 's3.amazonaws.com'
+    domain = 's3.itc.cn:8888'
     url = 'http://%s.%s/%s' % (bucket_name, domain, key_name)
 
     return url

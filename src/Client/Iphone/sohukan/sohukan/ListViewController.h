@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DownloadOperation.h"
+#import "SystemTool.h"
 
 @interface ListViewController : UITableViewController
 

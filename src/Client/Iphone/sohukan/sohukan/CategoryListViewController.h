@@ -7,13 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ListViewController.h"
 #import "EditViewController.h"
+#import "ListViewController.h"
 
 @class DetailViewController;
-@interface CategoryListViewController : ListViewController<FlipViewDidDelegate> {
+@interface CategoryListViewController : ListViewController<FlipViewDidDelegate>{
     NSMutableArray *articles;
     DetailViewController *detailViewController;
+    UIToolbar *toolBar;
+    NSIndexPath *changePath;
+    EditViewController *editViewController;
 }
-@property(nonatomic, assign)NSMutableArray *articles;
+@property(nonatomic, retain)NSMutableArray *articles;
+@property(nonatomic, retain)NSIndexPath *changePath;
 @end

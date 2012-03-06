@@ -93,8 +93,6 @@ public class BfsClientWrapper {
 				logger.error(e, e);
 			} catch (UnknownHostException e) {
 				logger.error(e, e);
-			} catch (IOException e) {
-				logger.error(e, e);
 			}
 			
 		}

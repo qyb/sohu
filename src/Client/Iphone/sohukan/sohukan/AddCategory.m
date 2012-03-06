@@ -10,8 +10,10 @@
 #import "DatabaseProcess.h"
 
 @implementation AddCategory
-@synthesize category;  
+@synthesize textField;  
 @synthesize delegate;
+@synthesize category;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -26,6 +28,13 @@
     [super didReceiveMemoryWarning];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    textField.text = self.category.name;
+    
+}
+
 - (void)viewDidLoad
 {   
     [super viewDidLoad];
@@ -33,14 +42,14 @@
 
 - (void)viewDidUnload
 {   
-    [category release];
-    category = nil;
+    [textField release];
+    textField = nil;
+    self.category = nil;
     [super viewDidUnload];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
@@ -48,11 +57,17 @@
 {
     [self.delegate flipsideDidFinish:self];
 }
+
 -(IBAction)saveAction:(id)sender
 {
-    if ([category.text length] >= 1){
+    if ([textField.text length] >= 1){
         DatabaseProcess *dp = [[DatabaseProcess alloc] init];
-        [dp executeUpdate:[NSString stringWithFormat:@"INSERT INTO Category (name) VALUES ('%@')", category.text]];
+        FMResultSet *rs = [dp getCategoryEntity:self.category.name];
+        if ([rs next]) {
+            [dp executeUpdate:[NSString stringWithFormat:@"UPDATE Category SET name='%@' WHERE name='%@'", textField.text, self.category.name]];
+        }else{
+            [dp executeUpdate:[NSString stringWithFormat:@"INSERT INTO Category (name) VALUES ('%@')", textField.text]];
+        }
         [dp release];
     }
     [self.delegate flipsideDidFinish:self];

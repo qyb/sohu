@@ -13,7 +13,6 @@
     @synthesize title;
     @synthesize url;
     @synthesize download_url;
-    @synthesize cover;
     @synthesize category;
     @synthesize create_time;
     @synthesize is_star;

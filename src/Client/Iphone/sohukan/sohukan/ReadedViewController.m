@@ -8,10 +8,20 @@
 
 #import "ReadedViewController.h"
 #import "DetailViewController.h"
-#import "ListItemCell.h"
+#import "SystemTool.h"
+#import "NSURLProtocolCustom.h"
 
 @implementation ReadedViewController
 @synthesize articles;
+@synthesize changePath;
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+    }
+    return self;
+}
 
 -(void)initButton
 {
@@ -24,7 +34,6 @@
     [delButton release];
     UIImage *orderImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"order" ofType:@"png"]];
     UIImage *syncImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"system_sync" ofType:@"png"]];
-    //UIImage *searchImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"searchbar" ofType:@"png"]];
     UIBarButtonItem *orderButton = [[UIBarButtonItem alloc]
                                     initWithImage:orderImg                                   
                                     style:UIBarButtonItemStylePlain
@@ -38,6 +47,7 @@
     searchBar.placeholder=@"输入标题"; 
     searchBar.keyboardType=UIKeyboardTypeDefault;
     searchBar.backgroundColor = [UIColor blackColor];
+    //[[searchbar.subviews objectAtIndex:0]removeFromSuperview];
     //UITextField *searchField = [[searchBar subviews] lastObject];
     //[searchField setReturnKeyType:UIReturnKeyGo];
     UIBarButtonItem *searchButton = [[UIBarButtonItem alloc] initWithCustomView:searchBar];
@@ -53,49 +63,98 @@
     [self setToolbarItems:array animated:NO];
 }
 
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+
+-(IBAction)saveAction:(id)sender
 {
-    if (buttonIndex == alertView.cancelButtonIndex) {
-        return;
-    }else{
-        if ([delList count]>0) {
+    if ([delList count]>0) {
         DatabaseProcess *dp = [[DatabaseProcess alloc] init];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSFileManager *fileManager =[NSFileManager defaultManager];
         for (Article *article in delList) {
-            [dp executeUpdate:[NSString stringWithFormat:@"DELETE FROM Article WHERE key='%@'",article.key]];
-            NSString *appFile = [documentsDirectory stringByAppendingPathComponent:article.key];
-            [fileManager removeItemAtPath:appFile error:nil];
+            [SystemTool deleteArticleAndImage:dp articleKey:article.key];
         }
         self.articles = [dp getReadedArticles];
         arrayLength = [self.articles count];
         [dp release];
-        }else{
-            NSLog(@"No element");
-        }
+    }else{
+        NSLog(@"No element");
     }
     isDel = NO;
     [self initButton];
     [self.tableView reloadData];
 }
 
--(IBAction)saveAction:(id)sender
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object
+                        change:(NSDictionary*)change context:(void*)context
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"确定要删除吗" 
-                                                message:@""
-                                                delegate:self 
-                                            cancelButtonTitle:@"取消" 
-                                           otherButtonTitles:@"确定",nil];
-    [alert show];
-    [alert release];
-    
-}
--(IBAction)refreshAction:(id)sender
-{
-    arrayLength = [self.articles count];
+    [object removeObserver:self forKeyPath:keyPath];
+    [SystemTool writeApplicationData:((DownloadOperation*)object).data toFile:((DownloadOperation*)object).key];
 }
 
+-(void)startDownload:(NSString *)url key:(NSString *)key downloadType:(NSString *)type
+{
+    NSURLRequest*  request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]
+                                              cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                          timeoutInterval: 30.0];
+    DownloadOperation*  operation = [[DownloadOperation alloc] initWithRequest:request];
+    operation.key = key;
+    operation.type = type;
+    [operation autorelease];
+    [operation addObserver:self forKeyPath:@"isFinished"
+                   options:NSKeyValueObservingOptionNew context:nil];
+    [_queue addOperation:operation];
+    
+}
+
+-(IBAction)refreshAction:(id)sender
+{   if ([SystemTool isEnableWIFI] || [SystemTool isEnable3G]){
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    [NSURLProtocol unregisterClass:[NSURLProtocolCustom class]];
+    NSString *urlString = [NSString stringWithFormat: @"http://10.10.69.53/article/list.xml?access_token=%@&limit=5",[[NSUserDefaults standardUserDefaults] stringForKey:@"access_token"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:
+                             [NSURL URLWithString:urlString]
+                                             cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                         timeoutInterval: 30.0];
+    NSURLResponse *response;
+    NSError *err;
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&err];
+    NSMutableArray *array = [SystemTool parseXML:responseData elementName:@"//article" attributeName:@"key"];
+    DatabaseProcess *dp = [[DatabaseProcess alloc] init];
+    _queue = [[NSOperationQueue alloc] init];
+    for(NSMutableDictionary *element in array){
+        FMResultSet *rs = [dp getRowEntity:@"Article" primaryKey:[element objectForKey:@"key"]];
+        BOOL needDownload = NO;
+        if ([rs next]) {
+            needDownload = [SystemTool processUpdateArticleData:element dataBase:dp];
+        }else{
+            needDownload = [SystemTool processNewArticleData:element dataBase:dp userId:[[NSUserDefaults standardUserDefaults] integerForKey:@"userid"]];
+        }
+        if (needDownload){
+            [self startDownload:[element objectForKey:@"download_url"] 
+                            key:[element objectForKey:@"key"] downloadType:@"html"];
+            NSString *img_urls = [NSString stringWithString:[element objectForKey:@"image_urls"]];
+            NSMutableArray *urls = [[NSMutableArray alloc] initWithArray:[img_urls componentsSeparatedByString:@"|"]];
+            for(NSString *url in urls){
+                NSString *link = [url stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                if([link length] >= 1){
+                    [dp executeUpdate:[NSString stringWithFormat:@"INSERT INTO Image (key, url, is_download) VALUES ('%@', '%@', 0)", [element objectForKey:@"key"], link]];
+                    [self startDownload:url key:[[url componentsSeparatedByString:@"/"] lastObject] downloadType:@"image"];
+                }
+            }
+            [urls release];
+        }
+        isUpdate = YES;
+    }
+    if (isUpdate) {
+        self.articles = [dp getNotReadArticles];
+        arrayLength = [self.articles count];
+        [self.tableView reloadData];
+    }
+    [dp closeDB];
+    [dp release];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+
+}
+    NSLog(@"Refresh is start");
+}
 
 -(IBAction)cancelAction:(id)sender
 {
@@ -109,7 +168,7 @@
     if (isOrder) {
         [segmentedControl removeFromSuperview];
     }else{
-        [self.view addSubview:segmentedControl];
+        [[self.tableView superview] addSubview:segmentedControl];
     }
     isOrder = !isOrder;
 }
@@ -192,7 +251,7 @@
 }
 
 
--(IBAction)delAction:(id)sender
+-(void)delAction:(id)sender
 {
     isDel = !isDel;
     self.navigationItem.rightBarButtonItem = nil;
@@ -220,7 +279,7 @@
     [spaceButton release];
 }
 
--(IBAction)readyToDel:(id)sender
+-(void)readyToDel:(id)sender
 {
     UIButton *senderButton = (UIButton *)sender;
     UITableViewCell *buttonCell = (UITableViewCell *)[senderButton superview];
@@ -242,12 +301,89 @@
     [self dismissModalViewControllerAnimated:YES];
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+-(void)handleLeftSwipe:(UISwipeGestureRecognizer *)recognizer
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        if (self.changePath) {
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:self.changePath];
+            CATransition *animation = [SystemTool swipAnimation:kCATransitionFromRight delegateObject:self];
+            [[cell layer] addAnimation:animation forKey:@"kRightAnimationKey"];
+            [[[cell.contentView subviews] lastObject] removeFromSuperview];
+            self.changePath = nil;
+        }
     }
-    return self;
+}
+
+-(void)handleRightSwipe:(UISwipeGestureRecognizer *)recognizer
+{   
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:[recognizer locationInView:self.view]];
+        if (self.changePath == nil) {
+            self.changePath = indexPath;
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            CATransition *animation = [SystemTool swipAnimation:kCATransitionFromLeft delegateObject:self];
+            [[cell layer] addAnimation:animation forKey:@"kLeftAnimationKey"];
+            [cell.contentView addSubview:toolBar];
+        }else{
+            if ([self.changePath row] != [indexPath row]) {
+                UITableViewCell *oldCell = [self.tableView cellForRowAtIndexPath:self.changePath];
+                CATransition *animationLeft = [SystemTool swipAnimation:kCATransitionFromRight delegateObject:self];
+                [[oldCell layer] addAnimation:animationLeft forKey:@"kRightAnimationKey"];
+                [[[oldCell.contentView subviews] lastObject] removeFromSuperview];
+                self.changePath = indexPath;
+                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                CATransition *animationRight = [SystemTool swipAnimation:kCATransitionFromLeft delegateObject:self];
+                [[cell layer] addAnimation:animationRight forKey:@"kLeftAnimationKey"];
+                [cell.contentView addSubview:toolBar];
+            }
+        }
+    }
+}
+
+-(void)changeViewAction:(id)sender
+{
+    editViewController = [[EditViewController alloc]
+                          initWithNibName:@"EditViewController" bundle:nil];
+    editViewController.delegate = self;
+    editViewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+    Article *article = [self.articles objectAtIndex:[self.changePath row]];
+    editViewController.article = article;
+    [self presentModalViewController:editViewController animated:YES]; 
+}
+
+-(void)cellDelAction:(id)sender
+{
+    
+    if (self.changePath) {
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"确定要删除吗" 
+                                                        message:@""
+                                                       delegate:self 
+                                              cancelButtonTitle:@"取消" 
+                                              otherButtonTitles:@"确定",nil];
+        [alert show];
+        [alert release];
+    }
+}
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == alertView.cancelButtonIndex) {
+        return;
+    }else{
+        if (self.changePath) {
+            DatabaseProcess *dp = [[DatabaseProcess alloc] init];
+            Article *article = [self.articles objectAtIndex:[self.changePath row]];
+            [self.tableView beginUpdates];
+            [SystemTool deleteArticleAndImage:dp articleKey:article.key];
+            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.changePath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            self.articles = [dp getReadedArticles];
+            arrayLength = [self.articles count];
+            self.changePath = nil;
+            [dp release];
+            [self.tableView endUpdates];
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -273,6 +409,7 @@
     delList = [[NSMutableArray alloc] init];
     isOrder = NO;
     isDel = NO;
+    isUpdate = NO;
     [self initButton];
     [self.navigationController setNavigationBarHidden:NO];
     segmentedControl = [[UISegmentedControl alloc] initWithFrame:CGRectMake(0.0f, 333.0f, 320.0f, 40.0f)];
@@ -284,6 +421,34 @@
     segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
     [segmentedControl addTarget:self action:@selector(segmentAction:)
                forControlEvents:UIControlEventValueChanged];
+    toolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 60.0f)];
+    toolBar.barStyle = UIBarStyleBlack;
+    UIImage *editImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"cell_edit" ofType:@"png"]];
+    UIImage *delImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"cell_del" ofType:@"png"]];
+    UIBarButtonItem *editButton = [[UIBarButtonItem alloc]
+                                   initWithImage:editImg
+                                   style:UIBarButtonItemStylePlain
+                                   target:self
+                                   action:@selector(changeViewAction:)];
+    UIBarButtonItem *delButton = [[UIBarButtonItem alloc]
+                                  initWithImage:delImg
+                                  style:UIBarButtonItemStylePlain
+                                  target:self
+                                  action:@selector(cellDelAction:)]; 
+    NSArray *array = [NSArray arrayWithObjects:editButton, delButton, nil];
+    editButton.width = 150;
+    delButton.width = 150;
+    [toolBar setItems:array];
+    [delButton release];
+    [editButton release];
+    UISwipeGestureRecognizer* leftRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleLeftSwipe:)];
+    leftRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
+    [self.view addGestureRecognizer:leftRecognizer];
+    [leftRecognizer release];
+    UISwipeGestureRecognizer* rightRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleRightSwipe:)];
+    rightRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+    [self.view addGestureRecognizer:rightRecognizer];
+    [rightRecognizer release];
     [super viewDidLoad];
 }
 
@@ -291,8 +456,10 @@
 {   
     [delList release], delList = nil;
     self.articles = nil;
+    self.changePath = nil;
     [detailViewController release];
     detailViewController = nil;
+    [toolBar release];
     [super viewDidUnload];
 }
 
@@ -311,11 +478,10 @@
     
     static NSString * DetailViewCellIdentifier = 
     @"DetailViewCellIdentifier";
-    
-    ListItemCell *cell = [tableView dequeueReusableCellWithIdentifier: 
-                             DetailViewCellIdentifier];
+   
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:DetailViewCellIdentifier];
     if (cell == nil) {
-        cell = [[[ListItemCell alloc] initWithStyle:UITableViewCellStyleSubtitle 
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle 
                                        reuseIdentifier: DetailViewCellIdentifier]
                                        autorelease];
     }
@@ -330,13 +496,17 @@
     }else{
         Article *article = [self.articles objectAtIndex:[indexPath row]];
         cell.textLabel.text = article.title;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.textLabel.backgroundColor = [UIColor clearColor];
+        cell.textLabel.shadowColor = [UIColor whiteColor];
+        cell.textLabel.shadowOffset = CGSizeMake(0.0, 1.0);
         NSURL *link = [[NSURL alloc] initWithString:article.url];
         cell.detailTextLabel.text = link.host;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.article = article;
-        cell.controller = self;
-        cell.accessoryView = nil;
+        cell.detailTextLabel.backgroundColor = [UIColor clearColor];
+        cell.detailTextLabel.shadowColor = [UIColor whiteColor];
+        cell.detailTextLabel.shadowOffset = CGSizeMake(0.0, 1.0);
         [link release];
+        cell.accessoryView = nil;
     }
     return cell;
 }
@@ -358,5 +528,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 60.0f;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    cell.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"item_bg" ofType:@"png"]]];
 }
 @end

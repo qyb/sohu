@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ListViewController.h"
 
 @class DetailViewController;
-@interface RecentViewController : ListViewController{
+@interface RecentViewController : UITableViewController{
     NSMutableArray *articles;
     DetailViewController *detailViewController;
 }

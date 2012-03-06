@@ -66,7 +66,6 @@
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{67, 9}, {94, 27}}</string>
 								<reference key="NSSuperview" ref="254188771"/>
-								<reference key="NSNextKeyView"/>
 								<object class="NSColor" key="IBUIBackgroundColor" id="667672331">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MAA</bytes>
@@ -189,6 +188,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">leftButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="299756109"/>
+					</object>
+					<int key="connectionID">54</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="416729327"/>
 						<reference key="destination" ref="372490531"/>
@@ -222,11 +229,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">refresh:</string>
+						<string key="label">refreshAction:</string>
 						<reference key="source" ref="285689465"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
-					<int key="connectionID">39</int>
+					<int key="connectionID">55</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -354,7 +361,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">49</int>
+			<int key="maxID">55</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>
