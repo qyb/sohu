@@ -14,7 +14,6 @@
     NSString* title;
     NSString* url;
     NSString* download_url;
-    NSString* cover;
     NSString* category;
     NSDate*   create_time;
     BOOL      is_star;
@@ -25,9 +24,8 @@
 @property(retain, nonatomic)NSString* title;
 @property(retain, nonatomic)NSString* url;
 @property(retain, nonatomic)NSString* download_url;
-@property(retain, nonatomic)NSString* cover;
 @property(retain, nonatomic)NSString* category;
-@property(retain, nonatomic)NSDate* create_time;
+@property(retain, nonatomic)NSDate*   create_time;
 @property(nonatomic) BOOL is_star;
 @property(nonatomic) BOOL is_read;
 @property(nonatomic) BOOL is_download; 

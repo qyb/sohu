@@ -9,10 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface RootViewController : UIViewController {
-    //ListViewController *listViewController;
-    NSArray *controllers;
 }
-@property(nonatomic, retain)NSArray *controllers;
-//@property(nonatomic, retain)ListViewController *listViewController;
-
 @end

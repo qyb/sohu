@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ListViewController.h"
 #import "AddCategory.h"
+#import "ListViewController.h"
 #import "CategoryListViewController.h"
 
 @class CategoryListViewController;
@@ -17,7 +17,11 @@
     NSMutableArray *categorys;
     CategoryListViewController *categoryListViewController;
     AddCategory *addCategoryViewController;
+    UIToolbar *toolBar;
+    NSIndexPath *changePath;
 }
 @property(nonatomic, retain)NSMutableArray *categorys;
+@property(nonatomic, retain)NSIndexPath *changePath;
 -(IBAction)switchView:(id)sender;
+-(void)flipsideDidFinish:(AddCategory *)controller;
 @end
