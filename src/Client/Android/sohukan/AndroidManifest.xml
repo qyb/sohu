@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.sohu.kan"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="10" />
+
+    <application android:name=".Global" android:icon="@drawable/icon" android:label="@string/app_name">
+        <activity android:name=".SohuKan"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+		<activity android:name=".ReadList"/>
+		<activity android:name=".Read">
+			<intent-filter>  
+			<action android:name="android.intent.action.SEND">  
+			</action>  
+			<category android:name="android.intent.category.DEFAULT">  
+			</category>  
+			<data android:mimeType="text/plain">  
+			</data>  
+			</intent-filter>
+		</activity>
+		<activity android:name=".Category"/>
+		<activity android:name=".EditArticle"/>
+		<activity android:name=".CategoryList"/>
+		<activity android:name=".Settings"/>
+    </application>
+    
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.ACCES_MOCK_LOCATION"></uses-permission> 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+</manifest>
