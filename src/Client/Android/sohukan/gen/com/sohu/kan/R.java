@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.sohu.look;
+package com.sohu.kan;
 
 public final class R {
     public static final class attr {

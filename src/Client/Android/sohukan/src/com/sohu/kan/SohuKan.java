@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.sohu.database.DBHelper;
 import com.sohu.kan.Global;
-import com.sohu.look.R;
 import com.sohu.utils.RAPI;
 import com.sohu.xml.model.ArticleList;
 
@@ -55,25 +54,31 @@ public class SohuKan extends Activity {
         global = (Global)getApplication();
         db = new DBHelper(this);
         Cursor cursor = db.getSettings(token);
-        if(cursor.moveToFirst()){
-    		do{
-    			if(cursor.getInt(1)==1){
-    				global.setImgFlag(true);
-    			}else{
-    				global.setImgFlag(false);
-    			}
-    			if(cursor.getInt(2)==1){
-    				//sd卡
-    				global.setSaveFlag(true);
-    				global.setSavePath(Environment.getExternalStorageDirectory()+"/sohukan/");
-    			}else{
-    				//机身
-    				global.setSaveFlag(false);
-    				global.setSavePath("/data/data/com.sohu.look/files/");
-    			}
-    		}
-    		while(cursor.moveToNext());
-    	}
+        if(cursor.getCount()!=0){
+	        if(cursor.moveToFirst()){
+	    		do{
+	    			if(cursor.getInt(1)==1){
+	    				global.setImgFlag(true);
+	    			}else{
+	    				global.setImgFlag(false);
+	    			}
+	    			if(cursor.getInt(2)==1){
+	    				//sd卡
+	    				global.setSaveFlag(true);
+	    				global.setSavePath(Environment.getExternalStorageDirectory()+"/sohukan/");
+	    			}else{
+	    				//机身
+	    				global.setSaveFlag(false);
+	    				global.setSavePath("/data/data/com.sohu.kan/files/");
+	    			}
+	    		}
+	    		while(cursor.moveToNext());
+	    	}
+        }else{
+        	global.setImgFlag(true);
+        	global.setSaveFlag(false);
+        	global.setSavePath("/data/data/com.sohu.kan/files/");
+        }
 		
         cursor.close();
         db.close();

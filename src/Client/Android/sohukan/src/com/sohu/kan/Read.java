@@ -40,7 +40,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.sohu.database.DBHelper;
-import com.sohu.look.R;
 import com.sohu.utils.HttpDownloader;
 import com.sohu.utils.RAPI;
 import com.sohu.xml.model.ArticleList;
@@ -111,7 +110,7 @@ public class Read extends Activity {
 			base_url = "file:///"+Environment.getExternalStorageDirectory()+"/sohukan/";
 		}else{
 			//机身
-			base_url = "file:///data/data/com.sohu.look/files/";
+			base_url = "file:///data/data/com.sohu.kan/files/";
 		}
 		path = global.getSavePath();
 		System.out.println("读取路径"+path);
@@ -251,6 +250,12 @@ public class Read extends Activity {
         			DBHelper db = new DBHelper(Read.this);
         			db.setArticleRead(articleList.get(0).getKey());
         			db.close();
+        			Intent intent = new Intent(Read.this,ReadList.class);
+        			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        			Bundle bundle = new Bundle();
+        			bundle.putString("type", "0");
+        			intent.putExtras(bundle);
+        			startActivity(intent);
         			//服务器设已读
         			
         		}
@@ -298,7 +303,7 @@ public class Read extends Activity {
 					webview.loadUrl(articleList.get(0).getUrl());
 					readStyleSwitch = true;
 				}else{
-					webview.loadDataWithBaseURL("file:///data/data/com.sohu.look/files/",html.trim(), "text/html", "utf-8",null);
+					webview.loadDataWithBaseURL("file:///data/data/com.sohu.kan/files/",html.trim(), "text/html", "utf-8",null);
 					readStyleSwitch = false;
 				}
 			}

@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sohu.database.DBHelper;
-import com.sohu.look.R;
 import com.sohu.utils.RAPI;
 import com.sohu.xml.model.ArticleList;
 

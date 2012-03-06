@@ -17,7 +17,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.sohu.database.DBHelper;
-import com.sohu.look.R;
 import com.sohu.utils.FileUtils;
 
 public class Settings extends Activity {
@@ -180,9 +179,9 @@ public class Settings extends Activity {
     		if(!saveToSD_flag){
 //				Toast.makeText(Settings.this, "转存到sd卡", Toast.LENGTH_SHORT).show();
 				fileUtils = new FileUtils("sd");
-				fileUtils.copyFolder("/data/data/com.sohu.look/files/"+token, fileUtils.getSDPATH()+token);
+				fileUtils.copyFolder("/data/data/com.sohu.kan/files/"+token, fileUtils.getSDPATH()+token);
 				try {
-					fileUtils.del("/data/data/com.sohu.look/files/"+token);
+					fileUtils.del("/data/data/com.sohu.kan/files/"+token);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -203,7 +202,7 @@ public class Settings extends Activity {
 				}
 				saveToSD_flag = false;
 				global.setSaveFlag(false);
-				global.setSavePath("/data/data/com.sohu.look/files/");
+				global.setSavePath("/data/data/com.sohu.kan/files/");
 				db.setSettingsSave(token, 0);
 			}
     		db.close();
