@@ -29,6 +29,8 @@ class PageFetchHandler(Task):
     default_retry_delay = PAGE_FETCH_DEFAULT_RETRY_DELAY
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'article.download'
     
     def run(self, update_article_info):
         try:
@@ -64,6 +66,8 @@ class ReadableArticleHandler(Task):
     
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'article.encode'
     
     def get_title(self, doc):
         
@@ -96,6 +100,8 @@ class StoreArticleInfoHandler(Task):
     
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'article.store'
     
     def run(self, update_article_info, callback=None):
         article_instance_key = generate_article_instance_key(update_article_info.url, update_article_info.user_id)
@@ -121,6 +127,8 @@ class ImageUrlListHandler(Task):
     
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'article.encode'
     
     def run(self, update_article_info, callback=None):
         try:
@@ -153,6 +161,8 @@ class UploadArticleHandler(Task):
     default_retry_delay = UPLOAD_ARTICLE_DEFAULT_RETRY_DELAY
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'article.upload'
     
     def run(self, update_article_info, callback=None):
         try:
@@ -188,6 +198,8 @@ class BulkImageDownloadHandler(Task):
     
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'article.encode'
     
     def run(self, update_article_info, callback=None):
         try:
@@ -219,6 +231,8 @@ class RollbackArticleInDbHandler(Task):
     
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'article.store'
     
     def run(self, update_article_info):
         delete_myarticle_instance_in_db(update_article_info.user_id,

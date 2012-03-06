@@ -29,6 +29,8 @@ class DownloadImageHandler(Task):
     default_retry_delay = DOWNLOAD_IMAGE_DEFAULT_RETRY_DELAY
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'image.download'
     
     def run(self, image_url, image_tobedone_key, update_article_info):
         update_image_info = RuntimeImageInfo(image_url)
@@ -72,6 +74,8 @@ class StoreImageInfoHandler(Task):
     
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'image.store'
     
     def run(self, update_image_info, update_article_info, callback=None):
         image_instance_key = generate_image_instance_key(update_article_info.article_id,
@@ -102,6 +106,8 @@ class UploadImageHandler(Task):
     default_retry_delay = UPLOAD_IMAGE_DEFAULT_RETRY_DELAY
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'image.upload'
 
 #    attention: 'callback' here must be called as 'kwargs', not 'args'    
     def run(self, update_image_info, update_article_info, callback=None):
@@ -138,6 +144,8 @@ class MarkImagetobedoneHandler(Task):
     
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'article.store'
     
     def run(self, update_image_info, update_article_info):
         decrease_image_tobedone(update_image_info.image_tobedone_key)
@@ -154,6 +162,8 @@ class RollbackImageInDbHandler(Task):
     
     ignore_result = True
     store_errors_even_if_ignored = True
+    exchange = 'media'
+    routing_key = 'image.store'
     
     def run(self, update_image_info, update_article_info):
         delete_myimage_instance_in_db(update_article_info.user_id,

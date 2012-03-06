@@ -207,6 +207,11 @@ CELERY_QUEUES = {
                             "exchange_type": "topic",
                             "binding_key": "#.encode",
                             },
+                 "store": {
+                           "exchange": "media",
+                           "exchange_type": "topic",
+                           "binding_key": "#.store",
+                           },
                  "article": {
                           "exchange": "media",
                           "exchange_type": "topic",
