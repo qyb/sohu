@@ -26,7 +26,7 @@ import org.restlet.resource.ServerResource;
 
 import com.scss.Operation;
 import com.scss.OperationResult;
-import com.scss.core.security.AuthorizationBase;
+import com.scss.core.security.Authorization;
 import com.scss.core.security.AuthorizationTypes;
 import com.scss.core.security.IAuth;
 import com.scss.db.User;
@@ -200,13 +200,13 @@ public class Handler extends ServerResource {
 	 * TODO: convert to class or module
 	 */
 	protected Boolean Authorize(APIRequest req) {
-		logger.debug("Start fake authorization.");
-		ScssUser suser = ScssUserDaoImpl.getInstance().getUserByAccessId("FAKE_ACCESS_ID_00002");
-		logger.debug(String.format("Authorized user : %s", suser));
-		req.setUser(new User(suser));
-		return true;
-		//IAuth auth = AuthorizationBase.createInstace(req, AuthorizationTypes.GENERAL);
-		//return auth.authorize();
+//		logger.debug("Start fake authorization.");
+//		ScssUser suser = ScssUserDaoImpl.getInstance().getUserByAccessId("FAKE_ACCESS_ID_00002");
+//		logger.debug(String.format("Authorized user : %s", suser));
+//		req.setUser(new User(suser));
+//		return true;
+		IAuth auth = Authorization.createInstace(req);
+		return auth.authorize();
 	}
 	
 	/*

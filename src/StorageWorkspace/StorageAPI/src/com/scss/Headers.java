@@ -19,19 +19,26 @@ public interface Headers {
     public static final String ETAG = "ETag";
     public static final String LAST_MODIFIED = "Last-Modified";
     public static final String SERVER = "Server";
-
-
+    
+    /*
+     * Extend HTTP Headers 
+     */
+    
+    public static final String STATUS = "Status";
+    public static final String LOCATION = "Location";
+    public static final Object AUTHORIZATION = "Authorization";
+    
     /*
      * S3 HTTP Headers
      */
 
-    /** Prefix for general Amazon headers: x-amz- */
-    public static final String AMAZON_PREFIX = "x-amz-";
+    /** Prefix for general S3 headers: x-amz- */
+    public static final String S3_PREFIX = "x-amz-";
 
     /** S3's canned ACL header: x-amz-acl */
     public static final String S3_CANNED_ACL = "x-amz-acl";
 
-    /** Amazon's alternative date header: x-amz-date */
+    /** S3's alternative date header: x-amz-date */
     public static final String S3_ALTERNATE_DATE = "x-amz-date";
 
     /** Prefix for S3 user metadata: x-amz-meta- */
@@ -105,4 +112,5 @@ public interface Headers {
     
     /** Instruction file header to be placed in the metadata of instruction files */
     public static final String CRYPTO_INSTRUCTION_FILE = "x-amz-crypto-instr-file";
+
 }

@@ -3,7 +3,6 @@
  */
 package com.scss.core.bucket;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,18 +10,16 @@ import java.util.Map;
 import org.restlet.data.MediaType;
 
 import com.scss.Const;
+import com.scss.Headers;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
-import com.scss.core.APIResponseHeader;
-import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.db.dao.ScssBucketDaoImpl;
 import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
-import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 
 /**
@@ -40,7 +37,7 @@ public class GET_BUCKET extends BucketAPI {
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
-		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
+		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(Headers.DATE));
 		Date modifyTime = createTime;
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
@@ -67,8 +64,7 @@ public class GET_BUCKET extends BucketAPI {
 			Map<String, String> resp_headers = resp.getHeaders();
 			
 			// set common response header
-			// TODO: change the temporary values
-			CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
+			setCommResponseHeaders(resp_headers,req);
 			
 			// Set API response header
 			//TODO: set user meta
@@ -84,6 +80,7 @@ public class GET_BUCKET extends BucketAPI {
 		}
 
 		// TODO: return appropriate error response. DB access should return a value to determine status.
+		logger.warn("GET_BUCKET is returning Interal error due to unexpected result");
 		return ErrorResponse.InternalError(req);
 	}
 	
