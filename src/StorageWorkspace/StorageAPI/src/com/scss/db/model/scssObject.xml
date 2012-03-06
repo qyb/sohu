@@ -69,6 +69,28 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `modify_time` 
 	    from
 	        `scss_object`  
+        where `bucket_id`=#bucketId# and `key`=#key# 
+	</statement>
+	<statement id="getObjectByKeyAndUser" resultMap="scssObject" parameterClass="sObject" cacheModel="myCache">
+		select
+	        `id`,
+	        `key`,
+	        `bfs_file`,
+	        `owner_id`,
+	        `bucket_id`,
+	        `meta`,
+	        `sys_meta`,
+	        `etag`,
+	        `size`,
+	        `media_type`,
+	        `version_enabled`,
+	        `version`,
+	        `deleted`,
+	        `expiration_time`,
+	        `create_time`,
+	        `modify_time` 
+	    from
+	        `scss_object`  
         where `owner_id`=#ownerId# and `key`=#key# 
 	</statement>
 	

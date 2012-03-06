@@ -24,6 +24,7 @@ import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 
+import com.scss.Headers;
 import com.scss.Operation;
 import com.scss.OperationResult;
 import com.scss.core.security.Authorization;
@@ -200,13 +201,21 @@ public class Handler extends ServerResource {
 	 * TODO: convert to class or module
 	 */
 	protected Boolean Authorize(APIRequest req) {
-//		logger.debug("Start fake authorization.");
-//		ScssUser suser = ScssUserDaoImpl.getInstance().getUserByAccessId("FAKE_ACCESS_ID_00002");
-//		logger.debug(String.format("Authorized user : %s", suser));
-//		req.setUser(new User(suser));
-//		return true;
-		IAuth auth = Authorization.createInstace(req);
-		return auth.authorize();
+		logger.debug("Start fake authorization.");
+		String id = "FAKE_ACCESS_ID_00002";
+		String req_auth = req.getHeaders().get(Headers.AUTHORIZATION);
+		if (null != req_auth) {
+			String[] authes = req_auth.split("\\s|:");
+			if (3 == authes.length){
+				id = authes[1];
+			}
+		}
+		ScssUser suser = ScssUserDaoImpl.getInstance().getUserByAccessId(id);
+		logger.debug(String.format("Authorized user : %s", suser));
+		req.setUser(new User(suser));
+		return true;
+//		IAuth auth = Authorization.createInstace(req);
+//		return auth.authorize();
 	}
 	
 	/*
