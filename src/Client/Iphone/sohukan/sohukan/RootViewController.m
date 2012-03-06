@@ -15,7 +15,6 @@
 #import "SettingViewController.h"
 
 @implementation RootViewController
-@synthesize controllers;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -63,13 +62,11 @@
 
 - (void)viewDidUnload
 {   
-    self.controllers = nil;
     [super viewDidUnload];
 }
 
 - (void)dealloc
 {   
-    [controllers release];
     [super dealloc];
 }
 
@@ -94,7 +91,7 @@
 -(IBAction)recentReadList:(id)sender
 {
     RecentViewController *recentController = [[RecentViewController alloc] initWithStyle:UITableViewStylePlain];
-    recentController.title = @"最近读过";
+    recentController.title = @"阅读历史";
     [self.navigationController pushViewController:recentController animated:YES];
     [recentController release];
 }
@@ -109,8 +106,7 @@
 
 -(IBAction)toSetting:(id)sender
 {
-    SettingViewController *settingController = [[SettingViewController alloc]
-                                                initWithStyle:UITableViewStyleGrouped];
+    SettingViewController *settingController = [[SettingViewController alloc] init];
     [self.navigationController pushViewController:settingController animated:YES];
     settingController.title = @"设置";
     [settingController release];

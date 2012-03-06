@@ -34,13 +34,7 @@
     
 }
 
-- (NSData *)applicationDataFromFile:(NSString *)fileName {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
-    NSData *myData = [[[NSData alloc] initWithContentsOfFile:appFile] autorelease];
-    return myData;
-}
+
 
 -(IBAction)switchReadMode:(id)sender
 {   self.switchButton = (UISwitch *)sender;
@@ -49,9 +43,7 @@
         [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
     }else{
         [NSURLProtocol registerClass:[NSURLProtocolCustom class]];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *path = [documentsDirectory stringByAppendingPathComponent:self.key];
+        NSString *path = [SystemTool getUserPathForFile:self.key];        
         [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:path]]];
         NSString *html = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
         /*
@@ -71,9 +63,7 @@
                 html = [html stringByReplacingOccurrencesOfString:[images objectAtIndex:i] withString:[NSString stringWithFormat:@"file://%@",path]];
             }
         }*/
-        [self.webView loadHTMLString:html baseURL:nil];
-        //[images release];
-    
+        [self.webView loadHTMLString:html baseURL:nil];    
     }
 }
 
@@ -101,12 +91,7 @@
         return;
     }else{
         DatabaseProcess *dp = [[DatabaseProcess alloc] init];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSFileManager *fileManager =[NSFileManager defaultManager];
-        [dp executeUpdate:[NSString stringWithFormat:@"DELETE FROM Article WHERE key='%@'",self.key]];
-        NSString *appFile = [documentsDirectory stringByAppendingPathComponent:self.key];
-        [fileManager removeItemAtPath:appFile error:nil];
+        [SystemTool deleteArticleAndImage:dp articleKey:self.key];
         [self.navigationController popViewControllerAnimated:YES];
         [dp release];
     }
@@ -124,29 +109,82 @@
         [alert release];
         
     }else{
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);  
-        NSString *documentDirectory = [paths objectAtIndex:0];  
-        NSString *dbPath = [documentDirectory stringByAppendingPathComponent:@"sohukan.db"];  
-        FMDatabase *db= [FMDatabase databaseWithPath:dbPath];
-        [db open];
-        [db executeUpdate:[NSString stringWithFormat:@"UPDATE Article SET is_read=1 WHERE key='%@'",self.key]];
+        DatabaseProcess *dp = [[DatabaseProcess alloc] init];
+        [dp executeUpdate:[NSString stringWithFormat:@"UPDATE Article SET is_read=1 WHERE key='%@'",self.key]];
         [self.navigationController popViewControllerAnimated:YES];
+        [dp release];
     //NSArray *allControllers = self.navigationController.viewControllers;
     //UITableViewController *parent = [allControllers lastObject];
     //[parent.tableView reloadData];
     }
 }
 
--(IBAction)refresh:(id)sender
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object
+                        change:(NSDictionary*)change context:(void*)context
 {
-    //NSString *urlString = [NSString stringWithFormat:@"http://10.10.69.53/article/show/%@.xml?access_token=%@"];
-    //NSURLRequest *request = [NSURLRequest requestWithURL:
-    //                        [NSURL URLWithString:urlString]
-    //                                    cachePolicy:NSURLRequestUseProtocolCachePolicy
-    //                                    timeoutInterval: 30.0];
-    //NSURLResponse *response;
-    //NSError *err;
-    //NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&err];
+    [object removeObserver:self forKeyPath:keyPath];
+    [SystemTool writeApplicationData:((DownloadOperation*)object).data toFile:((DownloadOperation*)object).key];
+}
+
+-(void)startDownload:(NSString *)urlString key:(NSString *)keyString downloadType:(NSString *)type
+{
+    NSURLRequest*  request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]
+                                              cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                          timeoutInterval: 30.0];
+    DownloadOperation*  operation = [[DownloadOperation alloc] initWithRequest:request];
+    operation.key = keyString;
+    operation.type = type;
+    [operation autorelease];
+    [operation addObserver:self forKeyPath:@"isFinished"
+                   options:NSKeyValueObservingOptionNew context:nil];
+    [_queue addOperation:operation];
+    
+}
+
+-(IBAction) refreshAction:(id)sender
+{   if ([SystemTool isEnableWIFI] || [SystemTool isEnable3G]){
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    [NSURLProtocol unregisterClass:[NSURLProtocolCustom class]];
+    NSString *_access_token = [[NSUserDefaults standardUserDefaults] stringForKey:@"access_token"];
+    NSString *urlString = [NSString stringWithFormat:@"http://10.10.69.53/article/list.xml?access_token=%@&limit=5", _access_token];
+    NSURLRequest *request = [NSURLRequest requestWithURL:
+                             [NSURL URLWithString:urlString]
+                                             cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                         timeoutInterval: 30.0];
+    NSURLResponse *response;
+    NSError *err;
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&err];
+    NSMutableArray *array = [SystemTool parseXML:responseData elementName:@"//article" attributeName:@"key"];
+    DatabaseProcess *dp = [[DatabaseProcess alloc] init];
+    _queue = [[NSOperationQueue alloc] init];
+    for(NSMutableDictionary *element in array){
+        FMResultSet *rs = [dp getRowEntity:@"Article" primaryKey:[element objectForKey:@"key"]];
+        BOOL needDownload = NO;
+        if ([rs next]) {
+            needDownload = [SystemTool processUpdateArticleData:element dataBase:dp];
+        }else{
+            needDownload = [SystemTool processNewArticleData:element dataBase:dp userId:[[NSUserDefaults standardUserDefaults] integerForKey:@"userid"]];
+        }
+        if (needDownload){
+            [self startDownload:[element objectForKey:@"download_url"] 
+                            key:[element objectForKey:@"key"] downloadType:@"html"];
+            NSString *img_urls = [NSString stringWithString:[element objectForKey:@"image_urls"]];
+            NSMutableArray *urls = [[NSMutableArray alloc] initWithArray:[img_urls componentsSeparatedByString:@"|"]];
+            for(NSString *imgURL in urls){
+                if([imgURL length] >= 1){
+                    [dp executeUpdate:[NSString stringWithFormat:@"INSERT INTO Image (key, url, is_download) VALUES ('%@', '%@', 0)", [element objectForKey:@"key"], link]];
+                    [self startDownload:url key:[[imgURL componentsSeparatedByString:@"/"] lastObject] downloadType:@"image"];
+                }
+            }
+            [urls release];
+        }
+        isUpdate = YES;
+    }
+    [dp closeDB];
+    [dp release];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    }
+    NSLog(@"Refresh is start");
 }
 
 
@@ -173,49 +211,33 @@
     self.webView.delegate = self;
     if (self.switchButton.on){
         [NSURLProtocol registerClass:[NSURLProtocolCustom class]];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *path = [documentsDirectory stringByAppendingPathComponent:self.key];
+        NSString *path = [SystemTool getUserPathForFile:self.key];
         [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:path]]];
         NSString *html = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-        /*
-        NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"sohukan.db"];  
-        FMDatabase *db= [FMDatabase databaseWithPath:dbPath];
-        [db open];
-        FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT * FROM Image WHERE key='%@'",key]];
-        NSMutableArray *images = [[NSMutableArray alloc] init];
-        while ([rs next]){
-            [images addObject:[rs stringForColumn:@"url"]];
-        }
-        NSString *imgPath = nil;
-        for (int i=0; i<[images count]; i++){
-            if ([[images objectAtIndex:i] length] > 0){
-                imgPath = [[[images objectAtIndex:i] componentsSeparatedByString:@"/"] lastObject];
-                NSString *path = [documentsDirectory stringByAppendingPathComponent:imgPath];
-                html = [html stringByReplacingOccurrencesOfString:[images objectAtIndex:i] withString:[NSString stringWithFormat:@"file://%@",path]];
-            }
-        }
-        [images release];*/
         [self.webView loadHTMLString:html baseURL:nil];
-        
-        NSString *dbPath = [documentsDirectory stringByAppendingPathComponent:@"sohukan.db"]; 
-        FMDatabase *db= [FMDatabase databaseWithPath:dbPath];
-        [db open];
-        FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT * FROM History WHERE key='%@'",self.key]];
+        DatabaseProcess *dp = [[DatabaseProcess alloc] init];
         NSDateFormatter *dateFormatter = [[ NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         NSString * timeString = [dateFormatter stringFromDate:[NSDate date]];
         NSString *sql;
+        FMResultSet *rs = [dp getRowEntity:@"History" primaryKey:self.key];
         if ([rs next]) {
             sql = [NSString stringWithFormat:@"UPDATE History SET read_time='%@' WHERE key='%@'", timeString, self.key];
-            [db executeUpdate:sql];
+            [dp executeUpdate:sql];
         }else{
-            sql = [NSString stringWithFormat: @"INSERT INTO History (key, read_time) VALUES ('%@', '%@')", self.key, timeString];
-            [db executeUpdate:sql];
+            NSMutableArray *array = [[NSMutableArray alloc] init];
+            NSMutableArray *historys = [dp getHistoryList:array];
+            if ([array count] < 20) {
+                sql = [NSString stringWithFormat: @"INSERT INTO History (key, read_time) VALUES ('%@', '%@')", self.key, timeString];
+            }else{
+                sql = [NSString stringWithFormat: @"UPDATE History SET key='%@',read_time='%@' WHERE key='%@'", self.key, timeString, [historys lastObject]];
+                }
+            [dp executeUpdate:sql];
+            [array release];
         }
         [dateFormatter release];
         [rs close];
-        [db close];
+        [dp release];
     }else{
         [NSURLProtocol unregisterClass:[NSURLProtocolCustom class]];
         [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
@@ -229,6 +251,12 @@
 {   
     [super viewDidAppear:animated];
 }
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+}
+
 -(void)viewDidLoad
 {  
     dayMode = YES;
@@ -283,7 +311,7 @@
     switch (buttonIndex) {
         case 0: {
             [NSURLProtocol unregisterClass:[NSURLProtocolCustom class]];
-            NSString *myRequestString = [NSString stringWithFormat:@"access_token=%@&url=%@", @"649cfef6a94ee38f0c82a26dc8ad341292c7510e", actionSheet.title];
+            NSString *myRequestString = [NSString stringWithFormat:@"access_token=%@&url=%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"access_token"], actionSheet.title];
             NSData *myRequestData = [NSData dataWithBytes: [myRequestString UTF8String] length: [myRequestString length]];
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://10.10.69.53/article/add.xml/"]];
             [request setHTTPMethod: @"POST"];

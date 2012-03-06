@@ -7,15 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "Models.h"
 
 @protocol FlipSideDelegate;
 
 @interface AddCategory : UIViewController{
-    IBOutlet UITextField *category;
+    IBOutlet UITextField *textField;
     id <FlipSideDelegate> delegate;
+    Category *category;
 }
-@property(nonatomic, retain)IBOutlet UITextField *category;
+@property(nonatomic, retain)IBOutlet UITextField *textField;
+@property(nonatomic, retain)Category *category;
 @property(nonatomic, assign) id <FlipSideDelegate> delegate;
 -(IBAction)cancelAction:(id)sender;
 -(IBAction)saveAction:(id)sender;

@@ -3,7 +3,6 @@
  */
 package com.scss.core.bucket;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,18 +10,16 @@ import java.util.Map;
 import org.restlet.data.MediaType;
 
 import com.scss.Const;
+import com.scss.Headers;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
-import com.scss.core.APIResponseHeader;
-import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.db.dao.ScssBucketDaoImpl;
 import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
-import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 
 /**
@@ -40,7 +37,7 @@ public class GET_BUCKET extends BucketAPI {
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
-		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
+		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(Headers.DATE));
 		Date modifyTime = createTime;
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
@@ -55,21 +52,11 @@ public class GET_BUCKET extends BucketAPI {
 		// TODO: Use Bucket instead ScssBucket. temporary using.
 		
 		ScssBucket bucket=null;
-		try {
-			bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		bucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
 		if (null == bucket)
 			return ErrorResponse.NoSuchBucket(req);
 		List<ScssObject> bucket_objects=null;
-		try {
-			bucket_objects = (List<ScssObject>)ScssObjectDaoImpl.getObjectsByBucketId(bucket.getId());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		bucket_objects = (List<ScssObject>)ScssObjectDaoImpl.getInstance().getObjectsByBucketId(bucket.getId());
 		
 		// set response headers
 		if (null != bucket_objects) {
@@ -77,8 +64,7 @@ public class GET_BUCKET extends BucketAPI {
 			Map<String, String> resp_headers = resp.getHeaders();
 			
 			// set common response header
-			// TODO: change the temporary values
-			CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
+			setCommResponseHeaders(resp_headers,req);
 			
 			// Set API response header
 			//TODO: set user meta
@@ -94,6 +80,7 @@ public class GET_BUCKET extends BucketAPI {
 		}
 
 		// TODO: return appropriate error response. DB access should return a value to determine status.
+		logger.warn("GET_BUCKET is returning Interal error due to unexpected result");
 		return ErrorResponse.InternalError(req);
 	}
 	
@@ -113,8 +100,8 @@ public class GET_BUCKET extends BucketAPI {
 		sb.append("  <MaxKeysIsNotImplemented />"); // TODO: Not implemented
 		sb.append("  <IsTruncated>false</IsTruncated>"); // TODO: Not implemented
 		
-		sb.append("  <Contents>");
 		for(ScssObject obj: bucket_objects){
+			sb.append("  <Contents>");
 		    sb.append("    <Key>").append(obj.getKey()).append("</Key>");
 		    sb.append("    <LastModified>").append(CommonUtilities.formatResponseTextDate(obj.getModifyTime())).append("</LastModified>");
 		    sb.append("    <ETag>").append(obj.getEtag()).append("</ETag>"); 
@@ -123,9 +110,10 @@ public class GET_BUCKET extends BucketAPI {
 			sb.append("    <Owner>");
 			sb.append("      <ID>").append(req.getUser().getAccessId()).append("</ID>");
 			sb.append("      <DisplayName>").append(req.getUser().getSohuId()).append("</DisplayName>");
-			sb.append("    </Owner>");		    
+			sb.append("    </Owner>");
+			sb.append("  </Contents>");
 		}
-		sb.append("  </Contents>");
+		
 		sb.append("</ListBucketResult>"); 
 		return sb.toString();
 	}

@@ -7,18 +7,15 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 
+import com.scss.Headers;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
-import com.scss.core.APIResponseHeader;
-import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.db.dao.ScssBucketDaoImpl;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
-import com.scss.db.model.ScssUser;
-import com.scss.db.service.DBServiceHelper;
 import com.scss.utility.CommonUtilities;
 
 /**
@@ -36,9 +33,9 @@ public class PUT_BUCKET extends BucketAPI {
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
-		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
+		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(Headers.DATE));
 		Date modifyTime = createTime;
-		String media_type = req_headers.get(CommonResponseHeader.CONTENT_TYPE);
+		String media_type = req_headers.get(Headers.CONTENT_TYPE);
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
 		//TODO: Check whether Logging is enabled 
@@ -74,8 +71,7 @@ public class PUT_BUCKET extends BucketAPI {
 			Map<String, String> resp_headers = resp.getHeaders();
 			
 			// set common response header
-			// TODO: change the temporary values
-			CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
+			setCommResponseHeaders(resp_headers,req);
 			
 			//TODO: set user meta
 			// user_meta key-value pair -> header
@@ -93,6 +89,7 @@ public class PUT_BUCKET extends BucketAPI {
 		}
 
 		// TODO: return appropriate error response. DB access should return a value to determine status.
+		logger.warn("PUT_BUCKET is returning Interal error due to unexpected result");
 		return ErrorResponse.InternalError(req);
 	}
 

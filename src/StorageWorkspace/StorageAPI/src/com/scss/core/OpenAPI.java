@@ -6,10 +6,13 @@ package com.scss.core;
 
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
+import com.scss.Headers;
 import com.scss.ICallable;
 import com.scss.core.bucket.DELETE_BUCKET;
 import com.scss.core.bucket.GET_BUCKET;
@@ -62,6 +65,13 @@ public abstract class OpenAPI implements ICallable {
 	public String getBase64ContentMD5() {
         byte[] b64 = Base64.encodeBase64(md5DigestStream.getMd5Digest());
         return new String(b64);		
+	}
+
+	public static void setCommResponseHeaders(Map<String, String> resp_headers,
+			APIRequest req) {
+		resp_headers
+				.put(Headers.EXTENDED_REQUEST_ID, req.getUser().getSohuId());
+		resp_headers.put(Headers.REQUEST_ID, UUID.randomUUID().toString());
 	}
 	
 	// ----- open APIs -----

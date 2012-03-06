@@ -21,7 +21,7 @@ public class User extends ScssUser implements IAccessor {
 	public User() {}
 	public User(ScssUser user) {
 		this.setAccessId(user.getAccessId());
-		this.setAccessKey(user.getAccessKey());
+		// We don't want access key stored
 		this.setId(user.getId());
 		this.setSohuId(user.getSohuId());
 		this.setStatus(user.getStatus());

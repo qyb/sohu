@@ -9,10 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.scss.Headers;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
-import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.db.dao.ScssBucketDaoImpl;
@@ -37,22 +37,12 @@ public class DELETE_BUCKET extends BucketAPI {
 		Map<String, String> resp_headers = resp.getHeaders();
 		
         ScssBucket scssBucket=null;
-		try {
-			scssBucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		scssBucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
 		
 		if(null!= scssBucket)
 		{
 			List<ScssObject> scssObjectList=null;
-			try {
-				scssObjectList = ScssObjectDaoImpl.getObjectsByBucketId(scssBucket.getId());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			scssObjectList = ScssObjectDaoImpl.getInstance().getObjectsByBucketId(scssBucket.getId());
 			
 			if(null!=scssObjectList&&scssObjectList.size()>0)
 			{
@@ -62,13 +52,13 @@ public class DELETE_BUCKET extends BucketAPI {
 			{
 				DBServiceHelper.deleteBucket(req.BucketName, req.getUser().getId());
 				
-				CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
+				setCommResponseHeaders(resp_headers,req);
 				
 				//TODO: set user meta
 				// user_meta key-value pair -> header
 				
 				// TODO: set system meta
-				resp_headers.put(CommonResponseHeader.DATE, DateFormat.getDateTimeInstance().format(new Date()));
+				resp_headers.put(Headers.DATE, DateFormat.getDateTimeInstance().format(new Date()));
 				
 				// generate representation
 				resp.Repr = new org.restlet.representation.EmptyRepresentation();

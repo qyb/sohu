@@ -3,23 +3,21 @@
  */
 package com.scss.core.object;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import com.scss.Headers;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
-import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.core.bucket.BucketAPIResponse;
-import com.scss.db.BucketBussiness;
+import com.scss.db.dao.ScssBucketDaoImpl;
+import com.scss.db.dao.ScssObjectDaoImpl;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssObject;
-import com.scss.db.service.DBServiceHelper;
 
 /**
  * @author Samuel
@@ -38,18 +36,19 @@ public class DELETE_OBJECT extends ObjectAPI {
 		APIResponse resp = new BucketAPIResponse();
 		Map<String, String> resp_headers = resp.getHeaders();
 		
-        ScssBucket  scssBucket=DBServiceHelper.getBucketByName(req.BucketName,req.getUser().getId()) ;
+        ScssBucket scssBucket=ScssBucketDaoImpl.getInstance().getBucket(req.BucketName) ;
 		
 		if(null!=scssBucket)
 		{
 			
-			ScssObject obj = DBServiceHelper.getObject(req.BucketName,req.ObjectKey);
+			ScssObject obj = ScssObjectDaoImpl.getInstance().getObjectByKey(req.ObjectKey,req.getUser().getId());
 			
 			if(null!=obj&&null != obj.getKey() && null != obj.getBfsFile())
 			{
 				
 				try {
-					DBServiceHelper.deleteObject(req.ObjectKey, req.getUser().getId(), scssBucket.getId());
+					ScssObjectDaoImpl.getInstance().deleteObject(obj.getId());
+				
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -65,12 +64,12 @@ public class DELETE_OBJECT extends ObjectAPI {
 					//如果失败需要记录下来
 				}
 				 
-				CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
-				resp_headers.put(CommonResponseHeader.CONTENT_LENGTH, "0");
+				setCommResponseHeaders(resp_headers,req);
+				resp_headers.put(Headers.CONTENT_LENGTH, "0");
 				//TODO: set user meta
 				// user_meta key-value pair -> header
 				// TODO: set system meta
-				resp_headers.put(CommonResponseHeader.DATE, DateFormat.getDateTimeInstance().format(new Date()));
+				resp_headers.put(Headers.DATE, DateFormat.getDateTimeInstance().format(new Date()));
 				
 				// generate representation
 				resp.Repr = new org.restlet.representation.EmptyRepresentation();

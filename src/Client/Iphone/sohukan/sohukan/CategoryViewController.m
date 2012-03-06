@@ -8,9 +8,11 @@
 
 #import "CategoryViewController.h"
 #import "NotReadViewController.h"
+#import "DatabaseProcess.h"
 
 @implementation CategoryViewController
 @synthesize categorys;
+@synthesize changePath;
 
 -(IBAction)switchView:(id)sender
 {
@@ -27,15 +29,6 @@
     [UIView commitAnimations];*/
 }
 
--(void)flipsideDidFinish:(AddCategory *)controller
-{
-    DatabaseProcess *dp = [[DatabaseProcess alloc] init];
-    self.categorys = [dp getAllCategory];
-    [dp closeDB];
-    [dp release];
-    [self.tableView reloadData];
-    [self dismissModalViewControllerAnimated:YES];
-}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -45,6 +38,93 @@
     }
     return self;
 }
+
+-(void)flipsideDidFinish:(AddCategory *)controller;
+{
+    [self dismissModalViewControllerAnimated:YES];
+    [self.tableView reloadData];
+}
+
+-(void)handleLeftSwipe:(UISwipeGestureRecognizer *)recognizer
+{
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        if (self.changePath) {
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:self.changePath];
+            CATransition *animation = [SystemTool swipAnimation:kCATransitionFromRight delegateObject:self];
+            [[cell layer] addAnimation:animation forKey:@"kRightAnimationKey"];
+            [[[cell.contentView subviews] lastObject] removeFromSuperview];
+            self.changePath = nil;
+        }
+    }
+}
+
+-(void)handleRightSwipe:(UISwipeGestureRecognizer *)recognizer
+{   
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:[recognizer locationInView:self.view]];
+        if (self.changePath == nil) {
+            self.changePath = indexPath;
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            CATransition *animation = [SystemTool swipAnimation:kCATransitionFromLeft delegateObject:self];
+            [[cell layer] addAnimation:animation forKey:@"kLeftAnimationKey"];
+            [cell.contentView addSubview:toolBar];
+        }else{
+            if ([self.changePath row] != [indexPath row]) {
+                UITableViewCell *oldCell = [self.tableView cellForRowAtIndexPath:self.changePath];
+                CATransition *animationLeft = [SystemTool swipAnimation:kCATransitionFromRight delegateObject:self];
+                [[oldCell layer] addAnimation:animationLeft forKey:@"kRightAnimationKey"];
+                [[[oldCell.contentView subviews] lastObject] removeFromSuperview];
+                self.changePath = indexPath;
+                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                CATransition *animationRight = [SystemTool swipAnimation:kCATransitionFromLeft delegateObject:self];
+                [[cell layer] addAnimation:animationRight forKey:@"kLeftAnimationKey"];
+                [cell.contentView addSubview:toolBar];
+            }
+        }
+    }
+}
+
+-(void)changeViewAction:(id)sender
+{
+    addCategoryViewController = [[AddCategory alloc]
+                          initWithNibName:@"AddCategory" bundle:nil];
+    addCategoryViewController.delegate = self;
+    addCategoryViewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+    Category *category = [self.categorys objectAtIndex:[self.changePath row]];
+    addCategoryViewController.category = category;
+    [self presentModalViewController:addCategoryViewController animated:YES]; 
+}
+
+-(void)cellDelAction:(id)sender
+{
+    if (self.changePath) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"确定要删除吗" 
+                                                        message:@""
+                                                       delegate:self 
+                                              cancelButtonTitle:@"取消" 
+                                              otherButtonTitles:@"确定",nil];
+        [alert show];
+        [alert release];
+    }
+}
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == alertView.cancelButtonIndex) {
+        return;
+    }else{
+        DatabaseProcess *dp = [[DatabaseProcess alloc] init];
+        Category *category = [self.categorys objectAtIndex:[self.changePath row]];
+        [self.tableView beginUpdates];
+        [dp executeUpdate:[NSString stringWithFormat:@"DELETE FROM Category WHERE name='%@'",category.name]];
+        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.changePath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        self.categorys = [dp getAllCategory];
+        self.changePath = nil;
+        [dp release];
+        [self.tableView endUpdates];
+    }
+}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -62,14 +142,44 @@
                                   action:@selector(switchView:)];
     self.navigationItem.rightBarButtonItem = addButton;
     [addButton release];
+    toolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 60.0f)];
+    toolBar.barStyle = UIBarStyleBlack;
+    //UIImage *bgImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"cell_click" ofType:@"png"]];
+    //toolBar.backgroundColor = [UIColor colorWithPatternImage:bgImg];
+    UIImage *editImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"cell_edit" ofType:@"png"]];
+    UIImage *delImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"cell_del" ofType:@"png"]];
+    UIBarButtonItem *editButton = [[UIBarButtonItem alloc]
+                                   initWithImage:editImg
+                                   style:UIBarButtonItemStylePlain
+                                   target:self
+                                   action:@selector(changeViewAction:)];
+    UIBarButtonItem *delButton = [[UIBarButtonItem alloc]
+                                  initWithImage:delImg
+                                  style:UIBarButtonItemStylePlain
+                                  target:self
+                                  action:@selector(cellDelAction:)]; 
+    NSArray *array = [NSArray arrayWithObjects:editButton, delButton, nil];
+    editButton.width = 150;
+    delButton.width = 150;
+    [toolBar setItems:array];
+    [delButton release];
+    [editButton release];
+    UISwipeGestureRecognizer* leftRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleLeftSwipe:)];
+    leftRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
+    [self.view addGestureRecognizer:leftRecognizer];
+    [leftRecognizer release];
+    UISwipeGestureRecognizer* rightRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleRightSwipe:)];
+    rightRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+    [self.view addGestureRecognizer:rightRecognizer];
+    [rightRecognizer release];
     [super viewDidLoad];
-    
 }
+
 
 - (void)viewDidUnload
 {       
-    //[self.categorys release];
     self.categorys = nil;
+    self.changePath = nil;
     [categoryListViewController release];
     [addCategoryViewController release];
     [super viewDidUnload];
@@ -123,6 +233,8 @@
     Category *category = [self.categorys objectAtIndex:[indexPath row]];
     cell.textLabel.text = category.name;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    UIImage *image = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"category_icon" ofType:@"png"]];
+    cell.imageView.image = image;
     return cell;
 }
 
@@ -142,6 +254,11 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 60.0f;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    cell.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"item_bg" ofType:@"png"]]];
 }
 
 @end

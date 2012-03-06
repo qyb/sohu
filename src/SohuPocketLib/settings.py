@@ -93,8 +93,8 @@ STATICFILES_DIRS = (
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
-#    'django.contrib.staticfiles.finders.FileSystemFinder',
-#    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
@@ -131,14 +131,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    #'django.contrib.staticfiles',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
+    'django.contrib.staticfiles',
+#    'django.contrib.admin',
+#    'django.contrib.admindocs',
     'djcelery',
     'storage',
-    'article',
-    'image',
-    'page',
+#    'article',
+#    'image',
+#    'page',
     'user',
     'south'
 )

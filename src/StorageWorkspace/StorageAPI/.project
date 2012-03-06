@@ -10,19 +10,8 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<buildCommand>
-			<name>org.codehaus.aspectwerkz.ide.eclipse.core.project.AwAnnotationBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>org.codehaus.aspectwerkz.ide.eclipse.core.project.AwProjectBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.codehaus.aspectwerkz.ide.eclipse.core.project.AwProjectNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 </projectDescription>

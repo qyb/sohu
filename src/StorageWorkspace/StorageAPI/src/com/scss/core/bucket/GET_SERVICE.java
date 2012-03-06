@@ -3,7 +3,6 @@
  */
 package com.scss.core.bucket;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +11,10 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
 
 import com.scss.Const;
+import com.scss.Headers;
 import com.scss.IAccessor;
 import com.scss.core.APIRequest;
 import com.scss.core.APIResponse;
-import com.scss.core.CommonResponseHeader;
 import com.scss.core.ErrorResponse;
 import com.scss.core.Mimetypes;
 import com.scss.db.dao.ScssBucketDaoImpl;
@@ -38,7 +37,7 @@ public class GET_SERVICE extends BucketAPI {
 		Map<String, String> req_headers = req.getHeaders();
 		
 		// get system meta
-		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(CommonResponseHeader.DATE));
+		Date createTime = CommonUtilities.parseResponseDatetime(req_headers.get(Headers.DATE));
 		Date modifyTime = createTime;
 		// TODO: GET size if required. long size = req_headers.get(CommonResponseHeader.CONTENT_LENGTH)
 		
@@ -56,12 +55,7 @@ public class GET_SERVICE extends BucketAPI {
 		scssUser.setId(req.getUser().getId());
 		
 		List<ScssBucket> buckets=null;
-		try {
-			buckets = ScssBucketDaoImpl.getInstance().getBucketsByUser(scssUser);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		buckets = ScssBucketDaoImpl.getInstance().getBucketsByUser(scssUser);
 		
 		// set response headers
 		if (null != buckets) {
@@ -72,7 +66,7 @@ public class GET_SERVICE extends BucketAPI {
 			
 			// set common response header
 			// TODO: change the temporary values
-			CommonResponseHeader.setCommHeaderInfoToRespHeader(resp_headers,req);
+			setCommResponseHeaders(resp_headers,req);
 			
 			// Set API response header
 			//resp_headers.put(APIResponseHeader.LOCATION, );
