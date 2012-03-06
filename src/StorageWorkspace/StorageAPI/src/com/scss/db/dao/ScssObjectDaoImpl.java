@@ -8,6 +8,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssObject;
+import com.scss.db.model.ScssUser;
 /**
  * 
  * @author Jack.wu.xu
@@ -67,12 +68,23 @@ public class ScssObjectDaoImpl {
 		return su;
 	}
 
-	public ScssObject getObjectByKey(String key, Long ownerId) {
+	public ScssObject getObjectByKey(String key, Long bucketId) {
 		try {
 			ScssObject su = new ScssObject();
 			su.setKey(key);
-			su.setOwnerId(ownerId);
+			su.setBucketId(bucketId);
 			return (ScssObject) sqlMap.queryForObject("getObjectByKey", su);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public List<ScssObject> getObjectByKey(String key, ScssUser user) {
+		try {
+			ScssObject su = new ScssObject();
+			su.setKey(key);
+			su.setOwnerId(user.getId());
+			return  sqlMap.queryForList("getObjectByKeyAndUser", su);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
