@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import socket
+
+sys.path.append(os.path.dirname(__file__))
 
 PRODUCTION_SERVER_HOSTNAMES = ('tc_69_53', 'tc_69_54')
 
@@ -21,18 +24,18 @@ ADMINS = (
 
 MANAGERS = ADMINS
 try:
-    from local_settings import *
+    import local_settings
 except ImportError:
     pass
 
 DATABASES = {
     'default': {
-        'ENGINE': DATABASE_ENGINE, # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': DATABASE_NAME,                      # Or path to database file if using sqlite3.
-        'USER': DATABASE_USER,                      # Not used with sqlite3.
-        'PASSWORD': DATABASE_PASSWORD,                  # Not used with sqlite3.
-        'HOST': DATABASE_HOST,                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': DATABASE_PORT,                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': local_settings.DATABASE_ENGINE, # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': local_settings.DATABASE_NAME,                      # Or path to database file if using sqlite3.
+        'USER': local_settings.DATABASE_USER,                      # Not used with sqlite3.
+        'PASSWORD': local_settings.DATABASE_PASSWORD,                  # Not used with sqlite3.
+        'HOST': local_settings.DATABASE_HOST,                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': local_settings.DATABASE_PORT,                      # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -136,9 +139,9 @@ INSTALLED_APPS = (
 #    'django.contrib.admindocs',
     'djcelery',
     'storage',
-#    'article',
-#    'image',
-#    'page',
+    'article',
+    'image',
+    'page',
     'user',
     'south'
 )
@@ -176,40 +179,45 @@ LOGGING = {
 import djcelery
 djcelery.setup_loader()
 
-if  IS_PRODUCTION_SERVER:
-    BROKER_HOST = "10.10.69.53"
-else:
-    BROKER_HOST = "localhost"
-BROKER_PORT = 5672
-BROKER_USER = "guest"
-BROKER_PASSWORD = "guest"
-BROKER_VHOST = "/"
+BROKER_HOST = local_settings.BROKER_HOST
+BROKER_PORT = local_settings.BROKER_PORT
+BROKER_USER = local_settings.BROKER_USER
+BROKER_PASSWORD = local_settings.BROKER_PASSWORD
+BROKER_VHOST = local_settings.BROKER_VHOST
 
 CELERY_DISABLE_RATE_LIMITS = True
 
-#CELERY_QUEUES = {
-#                 "default": {
-#                             "exchange": "default",
-#                             "binding_key": "default"
-#                             },
-#                 "pages": {
-#                           "exchange": "media",
-#                           "binding_key": "media.page",
-#                           },
-#                 "images": {
-#                            "exchange": "media",
-#                            "binding_key": "media.image",
-#                            },
-#                 "videos": {
-#                            "exchange": "media",
-#                            "binding_key": "media.video",
-#                            },
-#                 }
-#
-#CELERY_DEFAULT_QUEUE = "default"
-#CELERY_DEFAULT_EXCHANGE = "default"
-#CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
-#CELERY_DEFAULT_ROUTING_KEY = "default"
+CELERY_QUEUES = {
+                 "default": {
+                             "exchange": "default",
+                             "binding_key": "default"
+                             },
+                 "oper_record": {
+                         "exchange": 'media',
+                         "exchange_type": "topic",
+                         "binding_key": "#.oper_record",
+                         },
+                 "upload": {
+                            "exchange": "media",
+                            "exchange_type": "topic",
+                            "binding_key": "upload.#",
+                            },
+                 "download": {
+                              "exchange": "media",
+                              "exchange_type": "topic",
+                              "binding_key": "download.#",
+                              },
+                 "encode": {
+                            "exchange": "media",
+                            "exchange_type": "topic",
+                            "binding_key": "encode.#",
+                            },
+                 }
+
+CELERY_DEFAULT_QUEUE = "default"
+CELERY_DEFAULT_EXCHANGE = "default"
+CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
+CELERY_DEFAULT_ROUTING_KEY = "default"
 
 AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
 AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'
