@@ -27,12 +27,11 @@ class PageFetchHandler(Task):
     soft_time_limit = 10
     max_retries = PAGE_FETCH_MAX_RETRIES
     default_retry_delay = PAGE_FETCH_DEFAULT_RETRY_DELAY
-    ignore_result = True
-    store_errors_even_if_ignored = True
     exchange = 'media'
     routing_key = 'article.download'
     
     def run(self, update_article_info):
+        ret_val = None
         try:
             resource = urllib2.urlopen(update_article_info.url)
             raw_html = resource.read() 
@@ -41,31 +40,28 @@ class PageFetchHandler(Task):
             except:
                 mime = None
         except Exception, exc:
-            try:
-                PageFetchHandler.retry(exc=exc)
-            except Exception, e:
-                logging.warning(str(type(e)))
+            PageFetchHandler.retry(exc=exc)
         else:
             update_article_info.mime = mime
 #            call next step
-            ReadableArticleHandler.delay(raw_html,
-                                         update_article_info,
-                                         callback=subtask(StoreArticleInfoHandler,
-                                         callback=subtask(ImageUrlListHandler,
-                                         callback=subtask(UploadArticleHandler,
-                                         callback=subtask(BulkImageDownloadHandler,
-                                         callback=subtask(DownloadImageHandler))))))
+            readable_article_result = \
+                ReadableArticleHandler.delay(raw_html,
+                                             update_article_info,
+                                             callback=subtask(StoreArticleInfoHandler,
+                                             callback=subtask(ImageUrlListHandler,
+                                             callback=subtask(UploadArticleHandler,
+                                             callback=subtask(BulkImageDownloadHandler,
+                                             callback=subtask(DownloadImageHandler))))))
+            ret_val = readable_article_result
             
-        return None
-    
+        return ret_val
+        
 
 class ReadableArticleHandler(Task):
     '''
     make html readable
     '''
     
-    ignore_result = True
-    store_errors_even_if_ignored = True
     exchange = 'media'
     routing_key = 'article.encode'
     
@@ -78,19 +74,21 @@ class ReadableArticleHandler(Task):
         return doc.summary()
     
     def run(self, raw_html, update_article_info, callback=None):
+        ret_val = None
         try:
             doc = Document(raw_html)
             article_title = self.get_title(doc)
             article_content = self.get_content(doc)
-        except Exception:
-            pass
+        except Exception, exc:
+            raise exc
         else:
             update_article_info.article_title = article_title
             update_article_info.article_content = article_content
 #            call next step
-            subtask(callback).delay(update_article_info)
+            store_article_result = subtask(callback).delay(update_article_info)
+            ret_val = store_article_result
             
-        return None
+        return ret_val
 
 
 class StoreArticleInfoHandler(Task):
@@ -104,20 +102,21 @@ class StoreArticleInfoHandler(Task):
     routing_key = 'article.store'
     
     def run(self, update_article_info, callback=None):
+        ret_val = None
         article_instance_key = generate_article_instance_key(update_article_info.url, update_article_info.user_id)
         try:
             article_instance = create_myarticle_instance(update_article_info.user_id, article_instance_key, update_article_info.article_title, update_article_info.url)
             article_id = article_instance.id
-        except Exception:
-            raise
-            pass
+        except Exception, exc:
+            raise exc
         else:
             update_article_info.article_id = article_id
             update_article_info.article_instance_key = article_instance_key
 #            call next step
             subtask(callback).delay(update_article_info)
+            ret_val = article_instance
             
-        return None
+        return ret_val
 
 
 class ImageUrlListHandler(Task):
@@ -176,7 +175,6 @@ class UploadArticleHandler(Task):
         except SoftTimeLimitExceeded, exc:
             raise exc
         except Exception, exc:
-            logging.warn(str(exc))
             UploadArticleHandler.retry(exc=exc)
         else:
 #            call next step
