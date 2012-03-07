@@ -13,8 +13,10 @@ public class ScssGroup implements java.io.Serializable {
 
 	private Long id;
 	private String name;
-	private String userIds=",";
+	private String userIds = ",";
+	private Long ownerId;
 	private Byte deleted = (byte) 0;
+
 	// Constructors
 
 	/** default constructor */
@@ -52,11 +54,20 @@ public class ScssGroup implements java.io.Serializable {
 	public void setUserIds(String userIds) {
 		this.userIds = userIds;
 	}
+
 	public Byte getDeleted() {
 		return deleted;
 	}
 
 	public void setDeleted(Byte deleted) {
 		this.deleted = deleted;
+	}
+
+	public Long getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(Long ownerId) {
+		this.ownerId = ownerId;
 	}
 }
