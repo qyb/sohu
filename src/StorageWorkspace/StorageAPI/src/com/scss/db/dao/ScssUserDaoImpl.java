@@ -8,47 +8,59 @@ import org.apache.log4j.Logger;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
+import com.scss.db.dao.i.IUser;
+import com.scss.db.exception.DBException;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssGroup;
 import com.scss.db.model.ScssUser;
+
 /**
  * 
  * @author Jack.wu.xu
  */
-public class ScssUserDaoImpl {
+public class ScssUserDaoImpl implements IUser {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssUserDaoImpl instance = new ScssUserDaoImpl();
-	private static ScssGroupDaoImpl groupDao = ScssGroupDaoImpl.getInstance();
-//	private static final Logger logger = Logger.getLogger("DAO/SCSSUSER", 0,
-//			true);
-
-	private final Logger logger = Logger.getLogger(this.getClass());
-	private ScssUserDaoImpl() {
-	}
-
-	public List getUserList() {
-		List userList = null;
-		try {
-			userList = sqlMap.queryForList("getScssUsers");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return userList;
-	}
 
 	public static ScssUserDaoImpl getInstance() {
 		return instance;
 	}
 
-	public void deleteUser(ScssUser user) throws SQLException {
-		sqlMap.delete("deleteUser", user.getId());
+	private final Logger logger = Logger.getLogger(this.getClass());
+
+	private ScssUserDaoImpl() {
 	}
 
-	public void deleteUser(Long id) throws SQLException {
-		sqlMap.delete("deleteUser", id);
+	@Override
+	public List getUserList() {
+		List userList = null;
+		try {
+			userList = sqlMap.queryForList("getScssUsers");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return userList;
 	}
 
+	@Override
+	public void deleteUser(ScssUser user) throws DBException {
+		try {
+			sqlMap.delete("deleteUser", user.getId());
+		} catch (SQLException e) {
+			throw new DBException(e);
+		}
+	}
+
+	@Override
+	public void deleteUser(Long id) throws DBException {
+		try {
+			sqlMap.delete("deleteUser", id);
+		} catch (SQLException e) {
+			throw new DBException(e);
+		}
+	}
+
+	@Override
 	public ScssUser insertUser(ScssUser user) throws SameNameException {
 		try {
 			user.setId((Long) sqlMap.insert("putUser", user));
@@ -75,6 +87,7 @@ public class ScssUserDaoImpl {
 		return user;
 	}
 
+	@Override
 	public ScssUser getUserByAccessKey(String access_key) {
 		ScssUser su = null;
 		try {
@@ -85,6 +98,8 @@ public class ScssUserDaoImpl {
 		}
 		return su;
 	}
+
+	@Override
 	public ScssUser getUserByAccessId(String access_id) {
 		ScssUser su = null;
 		try {
@@ -95,11 +110,20 @@ public class ScssUserDaoImpl {
 		}
 		return su;
 	}
+
+	@Override
 	public List<ScssUser> getUsersByGroupId(Long groupId) {
-		ScssGroup groupById = groupDao.getGroupById(groupId);
-		return getUsersByGroup(groupById);
+		ScssGroup su;
+		try {
+			su = (ScssGroup) sqlMap.queryForObject("getGroupById", groupId);
+			return getUsersByGroup(su);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
+	@Override
 	public List<ScssUser> getUsersByGroup(ScssGroup group) {
 		List result = new ArrayList();
 		String userIds = group.getUserIds();
@@ -113,6 +137,7 @@ public class ScssUserDaoImpl {
 		return result;
 	}
 
+	@Override
 	public ScssUser getUserById(long id) {
 		ScssUser su = null;
 		try {
@@ -123,6 +148,7 @@ public class ScssUserDaoImpl {
 		return su;
 	}
 
+	@Override
 	public ScssUser getUserBySohuId(String sohuId) {
 		ScssUser su = null;
 		try {
@@ -133,7 +159,12 @@ public class ScssUserDaoImpl {
 		return su;
 	}
 
-	public void updateUser(ScssUser scssUser) throws SQLException {
-		sqlMap.update("updateUser", scssUser);
+	@Override
+	public void updateUser(ScssUser scssUser) throws DBException {
+		try {
+			sqlMap.update("updateUser", scssUser);
+		} catch (SQLException e) {
+			throw new DBException(e);
+		}
 	}
 }

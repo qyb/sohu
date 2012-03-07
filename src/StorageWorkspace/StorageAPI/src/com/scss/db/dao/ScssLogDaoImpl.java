@@ -6,13 +6,14 @@ import java.util.Map;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
+import com.scss.db.dao.i.ILog;
 import com.scss.db.model.ScssLog;
 import com.scss.db.model.ScssUser;
 /**
  * 
  * @author Jack.wu.xu
  */
-public class ScssLogDaoImpl {
+public class ScssLogDaoImpl implements ILog{
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssLogDaoImpl instance = new ScssLogDaoImpl();
 

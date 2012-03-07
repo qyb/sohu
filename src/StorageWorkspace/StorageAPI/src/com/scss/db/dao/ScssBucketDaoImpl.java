@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
+import com.scss.db.dao.i.IBucket;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucket;
 import com.scss.db.model.ScssUser;
@@ -13,13 +14,13 @@ import com.scss.db.model.ScssUser;
  * 
  * @author Jack.wu.xu
  */
-public class ScssBucketDaoImpl {
+public class ScssBucketDaoImpl implements IBucket{
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssBucketDaoImpl instance = new ScssBucketDaoImpl();
 
 	private ScssBucketDaoImpl() {
 	}
-
+	@Override
 	public ScssBucket insertBucket(ScssBucket bucket) throws SameNameException,
 			SQLException {
 		try {
@@ -40,8 +41,8 @@ public class ScssBucketDaoImpl {
 		}
 		return bucket;
 	}
-
-	public ScssBucket getBucket(ScssBucket sb) {
+	@Override
+	public ScssBucket get(ScssBucket sb) {
 		try {
 			return (ScssBucket) sqlMap.queryForObject("getBucket", sb.getId());
 		} catch (SQLException e) {
@@ -49,8 +50,8 @@ public class ScssBucketDaoImpl {
 		}
 		return null;
 	}
-
-	public List<ScssBucket> getBuckets() {
+	@Override
+	public List<ScssBucket> get() {
 		try {
 			return sqlMap.queryForList("getBuckets");
 		} catch (SQLException e) {
@@ -58,8 +59,8 @@ public class ScssBucketDaoImpl {
 		}
 		return null;
 	}
-
-	public List<ScssBucket> getBucketsByUser(ScssUser user) {
+	@Override
+	public List<ScssBucket> getByUser(ScssUser user) {
 		try {
 			return sqlMap.queryForList("getBucketsByUser", user);
 		} catch (SQLException e) {
@@ -67,8 +68,8 @@ public class ScssBucketDaoImpl {
 		}
 		return null;
 	}
-
-	public ScssBucket getBucket(Long id) {
+	@Override
+	public ScssBucket get(Long id) {
 		try {
 			return (ScssBucket) sqlMap.queryForObject("getBucket", id);
 		} catch (SQLException e) {
@@ -76,8 +77,8 @@ public class ScssBucketDaoImpl {
 		}
 		return null;
 	}
-
-	public ScssBucket getBucket(String name) {
+	@Override
+	public ScssBucket get(String name) {
 		try {
 			return (ScssBucket) sqlMap.queryForObject("getBucketByName", name);
 		} catch (SQLException e) {
@@ -85,12 +86,12 @@ public class ScssBucketDaoImpl {
 		}
 		return null;
 	}
-
-	public void updateBucket(ScssBucket sb) throws SQLException {
+	@Override
+	public void update(ScssBucket sb) throws SQLException {
 		sqlMap.update("updateBucket", sb);
 	}
-
-	public void deleteBucket(ScssBucket sb) throws SQLException {
+	@Override
+	public void delete(ScssBucket sb) throws SQLException {
 		sqlMap.update("deleteBucket", sb);
 	}
 
