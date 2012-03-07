@@ -36,7 +36,7 @@ public class DELETE_OBJECT extends ObjectAPI {
 		APIResponse resp = new BucketAPIResponse();
 		Map<String, String> resp_headers = resp.getHeaders();
 		
-        ScssBucket scssBucket=ScssBucketDaoImpl.getInstance().getBucket(req.BucketName) ;
+        ScssBucket scssBucket=ScssBucketDaoImpl.getInstance().get(req.BucketName) ;
 		
 		if(null!=scssBucket)
 		{

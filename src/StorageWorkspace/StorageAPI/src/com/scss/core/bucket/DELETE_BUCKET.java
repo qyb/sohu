@@ -37,7 +37,7 @@ public class DELETE_BUCKET extends BucketAPI {
 		Map<String, String> resp_headers = resp.getHeaders();
 		
         ScssBucket scssBucket=null;
-		scssBucket = ScssBucketDaoImpl.getInstance().getBucket(req.BucketName);
+		scssBucket = ScssBucketDaoImpl.getInstance().get(req.BucketName);
 		
 		if(null!= scssBucket)
 		{
@@ -51,7 +51,7 @@ public class DELETE_BUCKET extends BucketAPI {
 			else
 			{
 				try {
-					ScssBucketDaoImpl.getInstance().deleteBucket(scssBucket);
+					ScssBucketDaoImpl.getInstance().delete(scssBucket);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -9,6 +9,6 @@ public class ScssUserServiceImpl implements ScssUserService {
 	private ScssUserDaoImpl sudi = ScssUserDaoImpl.getInstance();
 
 	public ScssUser putUser(ScssUser user) throws SameNameException {
-		return sudi.insertUser(user);
+		return sudi.insert(user);
 	}
 }

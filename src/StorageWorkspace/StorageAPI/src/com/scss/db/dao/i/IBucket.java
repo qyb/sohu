@@ -9,16 +9,14 @@ import com.scss.db.model.ScssUser;
 
 public interface IBucket {
 
-	ScssBucket insertBucket(ScssBucket bucket) throws SameNameException,
+	ScssBucket insert(ScssBucket bucket) throws SameNameException,
 			SQLException;
 
 	ScssBucket get(Long id);
 
-	List<ScssBucket> getByUser(ScssUser user);
+	List<ScssBucket> getAll(ScssUser user);
 
 	ScssBucket get(ScssBucket sb);
-
-	List<ScssBucket> get();
 
 	void delete(ScssBucket sb) throws SQLException;
 

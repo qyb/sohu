@@ -9,13 +9,13 @@ import com.scss.db.model.ScssUser;
 
 public interface IUser {
 
-	List getUserList();
+	List<ScssUser> getUserList();
 
-	void deleteUser(ScssUser user) throws DBException;
+	void delete(ScssUser user) throws DBException;
 
-	void deleteUser(Long id) throws DBException;
+	void delete(Long id) throws DBException;
 
-	ScssUser insertUser(ScssUser user) throws SameNameException;
+	ScssUser insert(ScssUser user) throws SameNameException;
 
 	ScssUser getUserByAccessKey(String access_key);
 
@@ -25,10 +25,10 @@ public interface IUser {
 
 	List<ScssUser> getUsersByGroup(ScssGroup group);
 
-	ScssUser getUserById(long id);
+	ScssUser get(long id);
 
-	ScssUser getUserBySohuId(String sohuId);
+	List<ScssUser> getUsersBySohuId(String sohuId);
 
-	void updateUser(ScssUser scssUser) throws DBException;
+	void update(ScssUser scssUser) throws DBException;
 
 }

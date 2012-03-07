@@ -43,7 +43,7 @@ public class ScssUserDaoImpl implements IUser {
 	}
 
 	@Override
-	public void deleteUser(ScssUser user) throws DBException {
+	public void delete(ScssUser user) throws DBException {
 		try {
 			sqlMap.delete("deleteUser", user.getId());
 		} catch (SQLException e) {
@@ -52,7 +52,7 @@ public class ScssUserDaoImpl implements IUser {
 	}
 
 	@Override
-	public void deleteUser(Long id) throws DBException {
+	public void delete(Long id) throws DBException {
 		try {
 			sqlMap.delete("deleteUser", id);
 		} catch (SQLException e) {
@@ -61,7 +61,7 @@ public class ScssUserDaoImpl implements IUser {
 	}
 
 	@Override
-	public ScssUser insertUser(ScssUser user) throws SameNameException {
+	public ScssUser insert(ScssUser user) throws SameNameException {
 		try {
 			user.setId((Long) sqlMap.insert("putUser", user));
 		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
@@ -132,13 +132,13 @@ public class ScssUserDaoImpl implements IUser {
 		}
 		String[] split = userIds.split(",");
 		for (int i = 1; i < split.length; ++i) {
-			result.add(getUserById(Long.parseLong(split[i])));
+			result.add(get(Long.parseLong(split[i])));
 		}
 		return result;
 	}
 
 	@Override
-	public ScssUser getUserById(long id) {
+	public ScssUser get(long id) {
 		ScssUser su = null;
 		try {
 			su = (ScssUser) sqlMap.queryForObject("getUserById", id);
@@ -160,7 +160,7 @@ public class ScssUserDaoImpl implements IUser {
 	}
 
 	@Override
-	public void updateUser(ScssUser scssUser) throws DBException {
+	public void update(ScssUser scssUser) throws DBException {
 		try {
 			sqlMap.update("updateUser", scssUser);
 		} catch (SQLException e) {

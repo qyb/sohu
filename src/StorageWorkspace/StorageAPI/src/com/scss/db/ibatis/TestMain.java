@@ -39,23 +39,23 @@ public class TestMain {
 		user.setSohuId("sohuId");
 		user.setAccessId("accessId");
 		user.setAccessKey("accessKey");
-		user = sud.insertUser(user);
+		user = sud.insert(user);
 		user.setAccessKey("aaaa&&&&&a");
-		sud.updateUser(user);
-		user = sud.getUserById(user.getId());
-		user = sud.getUserById(user.getId());
+		sud.update(user);
+		user = sud.get(user.getId());
+		user = sud.get(user.getId());
 		user = sud.getUserBySohuId("sohuId");
 		user = sud.getUserByAccessKey("aaaa&&&&&a");
 
 		// Test Group
 		ScssGroupDaoImpl sgd = ScssGroupDaoImpl.getInstance();
 		ScssGroup group = new ScssGroup();
-		group.setName("ÓÃ»§×é");
+		group.setName("ï¿½Ã»ï¿½ï¿½ï¿½");
 		group.setOwnerId(user.getId());
 		group = sgd.insert(group);
 		List<ScssGroup> groups = sgd.getGroupByName(group.getName());
 		group = sgd.getGroupByName(group.getName(), user.getId());
-		group = sgd.getGroupById(group.getId());
+		group = sgd.get(group.getId());
 		group.setName(group.getName() + "1");
 		sgd.update(group);
 
@@ -67,14 +67,14 @@ public class TestMain {
 
 		// Test Bucket
 		ScssBucketDaoImpl sbd = ScssBucketDaoImpl.getInstance();
-		List<ScssBucket> bucketsByUser = sbd.getByUser(user);
+		List<ScssBucket> bucketsByUser = sbd.getAll(user);
 		ScssBucket bucket = new ScssBucket();
 		bucket.setName("test_bucket");
 		bucket.setOwnerId(1l);
 		bucket.setMeta("Meta_test");
 		bucket.setDeleted((byte) 0);
 		bucket.setLoggingEnabled((byte) 1);
-		bucket = sbd.insertBucket(bucket);
+		bucket = sbd.insert(bucket);
 		bucket = sbd.get(bucket.getName());
 		bucket = sbd.get(bucket.getId());
 		bucket = sbd.get(bucket);
@@ -111,7 +111,7 @@ public class TestMain {
 		sad.update(acl);
 		acl = sad.get(acl.getId());
 
-		// Test Log ÔÝÊ±²»²âÊÔ
+		// Test Log ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		// ScssLogDaoImpl sld = ScssLogDaoImpl.getInstance();
 		// ScssLog log = new ScssLog();
 		// log
@@ -133,7 +133,7 @@ public class TestMain {
 		sbld.delete(sbl);
 		sbd.delete(bucket);
 		sgd.delete(group);
-		sud.deleteUser(user);
+		sud.delete(user);
 		sad.delete(acl);
 
 	}
