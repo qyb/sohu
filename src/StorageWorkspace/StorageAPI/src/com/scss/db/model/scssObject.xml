@@ -189,6 +189,44 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 			`scss_object` 
 	    where  `id`=#id#
 	</statement>
+	<statement id="deleteObjectByBucketNameAndObjectKey" parameterClass="map" cacheModel="myCache">
+		delete from scss_object
+		where scss_object.`key`=#object_key# 
+			and 
+			EXISTS(SELECT 1 from scss_bucket 
+				where `name`=#bucket_name# 
+				and scss_object.`bucket_id`=`id`)
+	</statement>
+	<statement id="deleteObjectByBucketIdAndObjectKey" parameterClass="map" cacheModel="myCache">
+		delete from scss_object
+		where scss_object.`key`=#object_key# 
+			and scss_object.`bucket_id`=#bucket_id# 
+			
+	</statement>
+	<statement id="deleteObjectAll" parameterClass="Long" cacheModel="myCache">
+		delete from scss_object
+		where scss_object.`bucket_id`=#bucket_id# 
+			
+	</statement>
+	<statement id="deleteObjectAllByBucketName" parameterClass="String" cacheModel="myCache">
+		delete from scss_object
+		where EXISTS(SELECT 1 from scss_bucket 
+				where `name`=#bucket_name# 
+				and scss_object.`bucket_id`=`id`)
+			
+	</statement>
+	<statement id="deleteObjectAllByAccessKey" parameterClass="String" cacheModel="myCache">
+		delete from scss_object
+		where EXISTS(SELECT 1 from scss_user 
+				where `access_key`=#bucket_name# 
+				and scss_object.`owner_id`=`id`)
+			
+	</statement>
+	<statement id="deleteObjectAllByUserId" parameterClass="Long" cacheModel="myCache">
+		delete from scss_object
+		where scss_object.`owner_id`=#id#
+	</statement>
+	
 	<statement id="deleteObjectByBFSKey" parameterClass="Long" cacheModel="myCache">
 		update 
 			`scss_object` 

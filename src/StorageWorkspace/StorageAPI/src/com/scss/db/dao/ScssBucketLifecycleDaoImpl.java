@@ -4,13 +4,15 @@ import java.sql.SQLException;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
+import com.scss.db.dao.i.IBucketLifecycle;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssBucketLifecycle;
+
 /**
  * 
  * @author Jack.wu.xu
  */
-public class ScssBucketLifecycleDaoImpl {
+public class ScssBucketLifecycleDaoImpl implements IBucketLifecycle {
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssBucketLifecycleDaoImpl instance = new ScssBucketLifecycleDaoImpl();
 
@@ -21,8 +23,9 @@ public class ScssBucketLifecycleDaoImpl {
 		return instance;
 	}
 
-	public ScssBucketLifecycle insertBucketLifecycle(
-			ScssBucketLifecycle bucketLifecycle) throws SameNameException {
+	@Override
+	public ScssBucketLifecycle insert(ScssBucketLifecycle bucketLifecycle)
+			throws SameNameException {
 		try {
 			bucketLifecycle.setId((Long) sqlMap.insert("putBucketLifecycle",
 					bucketLifecycle));
@@ -37,7 +40,8 @@ public class ScssBucketLifecycleDaoImpl {
 		return bucketLifecycle;
 	}
 
-	public ScssBucketLifecycle getBucketLifecycle(Long id) {
+	@Override
+	public ScssBucketLifecycle get(Long id) {
 		ScssBucketLifecycle acl = null;
 		try {
 			acl = (ScssBucketLifecycle) sqlMap.queryForObject(
@@ -48,11 +52,13 @@ public class ScssBucketLifecycleDaoImpl {
 		return acl;
 	}
 
-	public void updateBucketLifecycle(ScssBucketLifecycle sbl) throws SQLException {
+	@Override
+	public void update(ScssBucketLifecycle sbl) throws SQLException {
 		sqlMap.update("updateBucketLifecycle", sbl);
 	}
 
-	public void deleteBucketLifecycle(ScssBucketLifecycle sbl) throws SQLException {
+	@Override
+	public void delete(ScssBucketLifecycle sbl) throws SQLException {
 		sqlMap.update("deleteBucketLifecycle", sbl);
 	}
 }

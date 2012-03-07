@@ -5,13 +5,14 @@ import java.util.List;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.scss.db.connpool.config.IbatisConfig;
+import com.scss.db.dao.i.IAcl;
 import com.scss.db.exception.SameNameException;
 import com.scss.db.model.ScssAcl;
 /**
  * 
  * @author Jack.wu.xu
  */
-public class ScssAclDaoImpl {
+public class ScssAclDaoImpl implements IAcl{
 	private static final SqlMapClient sqlMap = IbatisConfig.getSqlMapInstance();
 	private static ScssAclDaoImpl instance = new ScssAclDaoImpl();
 
@@ -21,8 +22,8 @@ public class ScssAclDaoImpl {
 	public static ScssAclDaoImpl getInstance() {
 		return instance;
 	}
-
-	public ScssAcl insertAcl(ScssAcl acl) throws SameNameException {
+	@Override
+	public ScssAcl insert(ScssAcl acl) throws SameNameException {
 		try {
 			acl.setId((Long) sqlMap.insert("putAcl", acl));
 		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
@@ -37,8 +38,8 @@ public class ScssAclDaoImpl {
 		}
 		return acl;
 	}
-
-	public ScssAcl getAcl(Long id) {
+	@Override
+	public ScssAcl get(Long id) {
 		ScssAcl acl = null;
 		try {
 			acl = (ScssAcl) sqlMap.queryForObject("getAcl", id);
@@ -48,8 +49,8 @@ public class ScssAclDaoImpl {
 		return acl;
 	}
 
-
-	public List<ScssAcl> getAclByAccessor(Long acc,String accType) {
+	@Override
+	public List<ScssAcl> getByAccessor(Long acc,String accType) {
 		List<ScssAcl> acls = null;
 		try {
 			ScssAcl acl = new ScssAcl();
@@ -61,7 +62,8 @@ public class ScssAclDaoImpl {
 		}
 		return acls;
 	}
-	public List<ScssAcl> getAclOnResouce(Long res,String resType) {
+	@Override
+	public List<ScssAcl> getOnResouce(Long res,String resType) {
 		List<ScssAcl> acls = null;
 		try {
 			ScssAcl acl = new ScssAcl();
@@ -73,8 +75,8 @@ public class ScssAclDaoImpl {
 		}
 		return acls;
 	}
-
-	public ScssAcl getAclByAccessorOnResouce(Long acc,String accType, Long res,String resType) {
+	@Override
+	public ScssAcl getByAccessorOnResouce(Long acc,String accType, Long res,String resType) {
 		ScssAcl acls = null;
 		try {
 			ScssAcl acl = new ScssAcl();
@@ -88,12 +90,12 @@ public class ScssAclDaoImpl {
 		}
 		return acls;
 	}
-
-	public void updateAcl(ScssAcl acl) throws SQLException {
+	@Override
+	public void update(ScssAcl acl) throws SQLException {
 		sqlMap.update("updateAcl", acl);
 	}
-
-	public void deleteAcl(ScssAcl acl) throws SQLException {
+	@Override
+	public void delete(ScssAcl acl) throws SQLException {
 		sqlMap.update("deleteAcl", acl);
 	}
 }

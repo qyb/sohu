@@ -11,6 +11,7 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		<result property="id" column="id"/>
 		<result property="name" column="name"/>
 		<result property="userIds" column="user_ids"/>
+		<result property="ownerId" column="owner_id"/>
 		<result property="deleted" column="deleted"/>
 	</resultMap>
 	
@@ -19,20 +20,36 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		select
 	        `id`,
 	        `name`,
-	        `user_ids` 
+	        `user_ids`,
+	        `owner_id`,
+	        `deleted` 
 	    from
 	        `scss_group`  
 	    where  `deleted`=0
 	</statement>
 	
-	<statement id="getGroupByName" resultMap="scssGroup" parameterClass="String" cacheModel="myCache">
+	<statement id="getGroupByName" resultMap="scssGroup" parameterClass="group" cacheModel="myCache">
 		select
 	        `id`,
 	        `name`,
-	        `user_ids` 
+	        `user_ids`,
+	        `owner_id` ,
+	        `deleted` 
 	    from
 	        `scss_group`  
-	    where  `name`=#name# 
+	    where  `name`=#name# and `owner_id` =#ownerId#
+	</statement>
+	
+	<statement id="getGroupsByName" resultMap="scssGroup" parameterClass="String" cacheModel="myCache">
+		select
+	        `id`,
+	        `name`,
+	        `user_ids`,
+	        `owner_id` ,
+	        `deleted` 
+	    from
+	        `scss_group`  
+	    where  `name`=#name#
 	</statement>
 	
 	<statement id="updateGroup" parameterClass="group" cacheModel="myCache">
@@ -50,7 +67,9 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 		select
 	        `id`,
 	        `name`,
-	        `user_ids` 
+	        `user_ids`,
+	        `owner_id` ,
+	        `deleted` 
 	    from
 	        `scss_group`  
 	    where  `id`=#id# 
@@ -63,8 +82,8 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	</statement>
 	<!--  -->
 	<insert id="putGroup" parameterClass="group">
-		insert into `scss_group`(`name`,`user_ids`) 
-		values( #name#,',')
+		insert into `scss_group`(`name`,`user_ids`,`owner_id`) 
+		values( #name#,',',#ownerId#)
 		<selectKey resultClass="long" keyProperty="id" >
             SELECT @@IDENTITY AS ID
         </selectKey>

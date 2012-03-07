@@ -25,7 +25,8 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `resource_type`,
 	        `accessor_id`,
 	        `accessor_type`,
-	        `permission` 
+	        `permission`,
+	        `deleted`  
 	    from
 	        `scss_acl`
 	    where `id`=#id# 
@@ -37,7 +38,8 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `resource_type`,
 	        `accessor_id`,
 	        `accessor_type`,
-	        `permission` 
+	        `permission`,
+	        `deleted`  
 	    from
 	        `scss_acl`
 	    where `accessor_id`=#accessorId# and `accessor_type`=#accessorType#   
@@ -49,7 +51,8 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `resource_type`,
 	        `accessor_id`,
 	        `accessor_type`,
-	        `permission` 
+	        `permission`,
+	        `deleted`  
 	    from
 	        `scss_acl`
 	    where `resource_id`=#resourceId# and 
@@ -62,7 +65,8 @@ PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
 	        `resource_type`,
 	        `accessor_id`,
 	        `accessor_type`,
-	        `permission` 
+	        `permission`,
+	        `deleted`  
 	    from
 	        `scss_acl`
 	    where `accessor_id`=#accessorId# and `accessor_type`=#accessorType# and 
