@@ -26,7 +26,7 @@ public class ScssGroupDaoImpl implements IGroup {
 	}
 
 	@Override
-	public ScssGroup getGroupById(Long groupId) {
+	public ScssGroup get(Long groupId) {
 		ScssGroup su = null;
 		try {
 			su = (ScssGroup) sqlMap.queryForObject("getGroupById", groupId);

@@ -21,7 +21,7 @@ public class ScssBucketDaoImpl implements IBucket{
 	private ScssBucketDaoImpl() {
 	}
 	@Override
-	public ScssBucket insertBucket(ScssBucket bucket) throws SameNameException,
+	public ScssBucket insert(ScssBucket bucket) throws SameNameException,
 			SQLException {
 		try {
 			bucket.setId((Long) sqlMap.insert("putBucket", bucket));
@@ -50,17 +50,17 @@ public class ScssBucketDaoImpl implements IBucket{
 		}
 		return null;
 	}
+//	@Override
+//	public List<ScssBucket> get() {
+//		try {
+//			return sqlMap.queryForList("getBuckets");
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 	@Override
-	public List<ScssBucket> get() {
-		try {
-			return sqlMap.queryForList("getBuckets");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	@Override
-	public List<ScssBucket> getByUser(ScssUser user) {
+	public List<ScssBucket> getAll(ScssUser user) {
 		try {
 			return sqlMap.queryForList("getBucketsByUser", user);
 		} catch (SQLException e) {
