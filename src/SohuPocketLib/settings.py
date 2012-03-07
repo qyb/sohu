@@ -138,10 +138,10 @@ INSTALLED_APPS = (
 #    'django.contrib.admin',
 #    'django.contrib.admindocs',
     'djcelery',
-    'storage',
-    'article',
-    'image',
-    'page',
+#    'storage',
+#    'article',
+#    'image',
+#    'page',
     'user',
     'south'
 )
@@ -241,3 +241,6 @@ CELERY_DEFAULT_ROUTING_KEY = "default"
 
 AWS_SECRET_ACCESS_KEY = 'rfUdPSAC2hXhHMGG0wXiHcxeuEpqybEGxn8xPYMy'
 AWS_ACCESS_KEY_ID = 'AKIAIXEPRIJSQA4A2KOA'
+
+APP_ID = '1088'
+APP_KEY = "f9#7V-RA)pnnXfE0Xq'jFb2t<m-43T"
