@@ -34,7 +34,7 @@ class KanError(object):
     def __init__(self, code):
         self.code = code
         
-        return self
+        return None
         
     def get_code(self):
         

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
-from lxml import etree
+from lxml import etree, etree
 from models import Access, User
 import anyjson
 import hashlib
+import logging
 import time
+import urllib2
 
 
 class KanUser(object):
@@ -207,11 +209,23 @@ def extract_class_instance_to_dict(ins):
 
 
 def api2_input_for_access_token_func(request):
-    sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
-    if settings.IS_PRODUCTION_SERVER:
-        sohupassport_uuid = '81215bb13f2f497u'
+#    sohupassport_uuid = request.META.get('HTTP_X_SOHUPASSPORT_UUID', '')
+#    if settings.IS_PRODUCTION_SERVER:
+#        sohupassport_uuid = '81215bb13f2f497u'
+    if request.method == 'POST':
+        passport_userid = request.POST.get('userid', None)
+        passport_token = request.POST.get('token', None)
+        passport_gid = request.POST.get('gid', None)
+    else:
+        passport_userid = None
+        passport_token = None
+        passport_gid = None
     
-    return sohupassport_uuid
+#    passport_userid = 'edison_0951@yahoo.com.cn'
+#    passport_token = '4813f05988a1000b1b5b8e428d0b9498'
+#    passport_gid = '7bcd0c8866e5fa8b7af624732ec6d6dc60d3daee'
+    
+    return passport_userid, passport_token, passport_gid
 
 
 def api2_input_for_verify_credentials_func(request):
@@ -270,3 +284,48 @@ def api2_input_for_access_token_common(request):
     access_token_input = request.COOKIES.get('access_token', '')
     
     return access_token_input
+    
+
+def api2_convert_token_to_info(passport_userid, passport_token, passport_gid):
+    info_node = etree.Element('info')
+    
+    userid_node = etree.SubElement(info_node, 'userid')
+    userid_node.text = passport_userid
+    
+    token_node = etree.SubElement(info_node, 'token')
+    token_node.text = passport_token
+    
+    appid_node = etree.SubElement(info_node, 'appid')
+    appid_node.text = settings.APP_ID
+    
+    gid_node = etree.SubElement(info_node, 'gid')
+    gid_node.text = passport_gid
+    
+    sig_node = etree.SubElement(info_node, 'sig')
+    hash_source = (passport_userid or '') \
+                + (passport_token or '') \
+                + (settings.APP_ID or '') \
+                + (passport_gid or '') \
+                + (settings.APP_KEY or '')
+    logging.warning(hash_source)
+    try:
+        sig_node.text = hashlib.new('md5', hash_source).hexdigest()
+    except TypeError:
+        sig_node.text = ''
+    
+    return info_node
+
+
+def api2_auth_token(passport_userid, passport_token, passport_gid):
+    info_etree = api2_convert_token_to_info(passport_userid, passport_token, passport_gid)
+    auth_token_port = 'http://internal.passport.sohu.com/interface/mobile/mobile_authtoken.jsp'
+    data = etree.tostring(info_etree, xml_declaration=True, encoding='gbk')
+    logging.warning(data)
+    resp = urllib2.urlopen(auth_token_port, data).read()
+    logging.warning(resp)
+    if resp == '0':
+        sohupassport_uuid = passport_userid
+    else:
+        sohupassport_uuid = None
+    
+    return sohupassport_uuid

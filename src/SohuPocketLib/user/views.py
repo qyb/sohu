@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 
-from article.helper import generate_single_xml_etree
+from common.helper import KanError
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from helper import KanUser, serialize
 from lxml import etree
-from user.helper import api2_convert_kan_user_to_xml_etree, \
+from user.helper import api2_auth_token, api2_convert_kan_user_to_xml_etree, \
     api2_input_for_access_token_func, input_for_verify_func, input_for_show_func, \
     extract_class_instance_to_dict, input_for_update_func, \
     api2_input_for_verify_credentials_func, api2_input_for_update_func, \
     api2_modify_kan_user_common
-import logging
 import datetime
-from common.helper import KanError
+import logging
 
 
 def verify(request):
@@ -87,22 +86,21 @@ def update_test(request):
 
 def api2_access_token(request):
     
-    sohupassport_uuid = api2_input_for_access_token_func(request)
+    passport_userid, passport_token, passport_gid = api2_input_for_access_token_func(request)
+    sohupassport_uuid = api2_auth_token(passport_userid, passport_token, passport_gid)
     kan_user = KanUser(sohupassport_uuid, '')
     kan_user.verify_and_login()
     response = None
     mimetype = 'text/xml'
     if kan_user.is_logged_in():
-        kan_user_etree = api2_convert_kan_user_to_xml_etree(kan_user)
-        if kan_user_etree is not None:
-            response = etree.tostring(kan_user_etree, xml_declaration=True, encoding='utf-8')
-        http_response = HttpResponse(response, mimetype=mimetype)
+        http_response = HttpResponse(kan_user.get_access_token())
         http_response.set_cookie('access_token',
                                  kan_user.get_access_token(),
                                  expires=datetime.datetime.now() + datetime.timedelta(days=1),
                                  httponly=False)
     else:
-        error_etree = KanError('1000').get_error_etree()
+        error = KanError('1000')
+        error_etree = error.get_error_etree()
         response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
         
@@ -126,7 +124,8 @@ def api2_verify_credentials(request):
                                  expires=datetime.datetime.now() + datetime.timedelta(days=1),
                                  httponly=False)
     else:
-        error_etree = KanError('1000').get_error_etree()
+        error = KanError('1000')
+        error_etree = error.get_error_etree()
         response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
         
@@ -148,7 +147,8 @@ def api2_update(request):
         http_response = HttpResponse(response, mimetype=mimetype)
         http_response.set_cookie('access_token', kan_user.get_access_token())
     else:
-        error_etree = KanError('1000').get_error_etree()
+        error = KanError('1000')
+        error_etree = error.get_error_etree()
         response = etree.tostring(error_etree, xml_declaration=True, encoding='utf-8')
         http_response = HttpResponse(response, mimetype=mimetype)
         
