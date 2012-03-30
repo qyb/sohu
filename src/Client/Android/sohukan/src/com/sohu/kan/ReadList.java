@@ -1,7 +1,5 @@
 package com.sohu.kan;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,20 +12,22 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -37,22 +37,15 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sohu.database.DBHelper;
-import com.sohu.kan.Global;
-import com.sohu.utils.FileUtils;
-import com.sohu.utils.HttpDownloader;
 import com.sohu.utils.RAPI;
-import com.sohu.wuhan.Constant;
-import com.sohu.wuhan.HttpRead;
-import com.sohu.wuhan.IReadable;
-import com.sohu.xml.model.ArticleList;
-import com.sohu.xml.parser.ArticleListParser;
-import com.sohu.xml.parser.PullArticleListParser;
+import com.sohu.xml.model.Bookmark;
 
 public class ReadList extends Activity {
 	
@@ -61,23 +54,30 @@ public class ReadList extends Activity {
     private ListViewAdapter myAdapter; 
 	private ListView listView;
 	private boolean visflag = false; 
-    private TextView refresh;
+    private ImageView refresh;
     private TextView emptylist;
+    private Button guide;
     private EditText filter;
-    private TextView sort;
+    private ImageView sort;
     
     private RelativeLayout confirm;
-    private Button cancel;
-    private Button delete;
-    private TextView sign_num; 
+    private RelativeLayout set_articles_read;
+    private RelativeLayout unreadlist_guide;
+    private RelativeLayout empty_layout;
+    private RelativeLayout relative_list;
     
+    private Button cancel;
+    private Button cancel_set_read;
+    private Button delete;
+    private TextView sign_num;
+    private TextView sign_num_read;
      
-    private List<ArticleList> articleList; 
-    private List<ArticleList> articleListBak;
+    private List<Bookmark> bookmarkList; 
+    private List<Bookmark> bookmarkListBak;
 	
 	private String type;
-	private String category_id;
-	private String category_name;
+	private String folder_name;
+	private String latest;
 	
 	boolean fileExist;
 	
@@ -85,75 +85,81 @@ public class ReadList extends Activity {
 	
 	private RAPI rapi;
 	
-	ProgressDialog downloadFileDialog;
-	
-	private boolean wifi;
-	String token = "649cfef6a94ee38f0c82a26dc8ad341292c7510e";
-	
 	private Global global;
+	private String userid;
+	
+	private ProgressDialog dialog;
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        
-        articleList = new ArrayList<ArticleList>(); 
-        articleListBak = new ArrayList<ArticleList>();
+        global = (Global)getApplication();
+        userid = global.getUserId();
+        bookmarkListBak = new ArrayList<Bookmark>();
         Bundle bundle = this.getIntent().getExtras();
         type = bundle.getString("type");
         
-        category_id = bundle.getString("category_id");
-        category_name = bundle.getString("category_name");
-        wifi = RAPI.checkNetworkConnection(this);
-        rapi = new RAPI(ReadList.this);
+        folder_name = bundle.getString("folder_name");
+        latest = bundle.getString("latest");
+        rapi = new RAPI(ReadList.this,global.getAccessToken(),userid);
         
         getData();
         
+        // 隐藏软键盘
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         //网址排序算法需要一个备份list
-        articleListBak = articleList;
+        bookmarkListBak = bookmarkList;
         
-        if(articleList.size()>0){
-        	setContentView(R.layout.readlist);
-	        ensureUi();
-	        listView = (ListView)findViewById(R.id.list);
-			myAdapter = new ListViewAdapter(ReadList.this); 
-	        listView.setAdapter(myAdapter);  
-	        listView.setScrollBarStyle(1);  
-	        
-	        listView.setOnItemClickListener(new OnItemClickListener()  
-	        {  
-	  
-	            @Override  
-	            public void onItemClick(AdapterView<?> parent,  
-	                    View view, int position, long id)  
-	            {  
-	        		
-	            	Intent intent = new Intent(ReadList.this,Read.class);
-	    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    			Bundle bundle = new Bundle();
-	    			ArrayList<ArticleList> article = new ArrayList<ArticleList>();
-	    			article.add(articleList.get(position));
-	    			bundle.putSerializable("article", article);
-	    			intent.putExtras(bundle);
-//	    			startActivity(intent);
-	    			isHtmlDonwload(intent, articleList.get(position).getKey()); 
-	                  
-	            }  
-	        });  
-	        //长按
-	        listView.setOnItemLongClickListener(new OnItemLongClickListener()
-	        {
-	        	public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) {
-	        		longClickItem(position);
-	        		return false;
-	        	}
-	        });
+        setContentView(R.layout.readlist);
+        ensureUi();
+        empty_layout = (RelativeLayout)findViewById(R.id.empty_layout);
+        relative_list = (RelativeLayout)findViewById(R.id.relative_list);
+        listView = (ListView)findViewById(R.id.list);
+        listView.setDivider(null);
+		myAdapter = new ListViewAdapter(ReadList.this);
+		listView.setAdapter(myAdapter);
+        listView.setScrollBarStyle(1);
+        
+        
+        listView.setOnItemClickListener(new OnItemClickListener()  
+        {  
+  
+            @Override  
+            public void onItemClick(AdapterView<?> parent,  
+                    View view, int position, long id)  
+            {  
+            	Intent intent = new Intent(ReadList.this,Read.class);
+    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    			Bundle bundle = new Bundle();
+    			ArrayList<Bookmark> bookmark = new ArrayList<Bookmark>();
+    			bookmark.add(bookmarkList.get(position));
+    			bundle.putSerializable("bookmark", bookmark);
+    			bundle.putString("type", type);
+    			bundle.putString("latest", latest);
+    			bundle.putString("folder_name", folder_name);
+    			intent.putExtras(bundle);
+    			startActivity(intent);
+            }  
+        });  
+        //长按
+        listView.setOnItemLongClickListener(new OnItemLongClickListener()
+        {
+        	public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) {
+        		longClickItem(position);
+        		return false;
+        	}
+        });
+        if(bookmarkList.size()>0){
+        	 
+	        empty_layout.setVisibility(View.GONE);
+	        if("0".equals(type)){
+	        	rapi.downloadResource(global.getImgFlag(), bookmarkList, global.getUserId(), listView);
+	    	}
         }else{
-        	setContentView(R.layout.emptylist);
-        	emptylist = new TextView(this);
-	    	emptylist = (TextView)findViewById(R.id.emptylist);
-	    	emptylist.setVisibility(View.VISIBLE);
+        	relative_list.setVisibility(View.GONE);
         }
         
         //写入xml
@@ -163,64 +169,51 @@ public class ReadList extends Activity {
     }
     
     public void getData(){
+    	bookmarkList = new ArrayList<Bookmark>();
     	db = new DBHelper(this);
     	Cursor cur = null;
     	if(!"".equals(type) && type!=null){
-    		cur = db.loadAllArticles(type);
-    	}else if(!"".equals(category_id) && category_id!=null){
-    		cur = db.loadArticlesByCategory(category_id);
+    		cur = db.loadAllBookmark(type, userid);
+    	}else if(!"".equals(folder_name) && folder_name!=null){
+    		cur = db.loadBookmarkByFolderName(folder_name, userid);
+    	}else if(!"".equals(latest) && latest!=null){
+    		cur = db.loadBookmarkByTime(userid);
     	}
-    	
-    	ArticleList article;
+    	Bookmark bookmark;
     	if(cur.moveToFirst()){
     		do{
-    			article = new ArticleList();
-    			article.setKey(cur.getString(0));
-    			article.setTitle(cur.getString(1));
-    			article.setUrl(cur.getString(2));
-    			article.setDownloadUrl(cur.getString(3));
-    			article.setImageUrls(cur.getString(4));
-    			article.setIsRead(cur.getString(5));
-    			article.setCreateTime(cur.getString(6));
-    			articleList.add(article);
-    			article = null;
+    			bookmark = new Bookmark();
+    			bookmark.setId(cur.getInt(0));
+    			bookmark.setUrl(cur.getString(1));
+    			bookmark.setTitle(cur.getString(2));
+    			bookmark.setDescription(cur.getString(3));
+    			bookmark.setIsStar(cur.getInt(4));
+    			bookmark.setCreateTime(cur.getString(5));
+    			bookmark.setReadTime(cur.getString(6));
+    			bookmark.setFolderName(cur.getString(7));
+    			bookmark.setReadProgress(cur.getString(8));
+    			bookmark.setVersion(cur.getInt(9));
+    			bookmark.setTextVersion(cur.getInt(10));
+    			bookmark.setIsReady(cur.getInt(11));
+    			bookmark.setIsDownload(cur.getInt(12));
+    			if(!"".equals(latest) && latest!=null){
+    	    		if(bookmark.getReadTime()!=null && !"null".equals(bookmark.getReadTime())){
+    	    			bookmarkList.add(bookmark);
+    	    			System.out.println(bookmark.getTitle()+"这个不是null+++++");
+    	    		}else{
+    	    			System.out.println(bookmark.getTitle()+"这个是null------");
+    	    		}
+    	    	}else{
+    	    		bookmarkList.add(bookmark);
+    	    	}
+    			bookmark = null;
     		}
     		while(cur.moveToNext());
     	}
+    	System.out.println("getData中bookmarkList个数"+bookmarkList.size());
     	cur.close();
     	db.close();
     }
-    
-    public void isHtmlDonwload(Intent intent, String key){
-    	downloadFileDialog = new ProgressDialog(this);
-    	global = (Global)getApplication();
-    	FileUtils file;
-    	if(global.getSaveFlag()){
-    		file = new FileUtils("sd");
-    	}else{
-    		file = new FileUtils();
-    	}
-    	
-		fileExist = file.isFileExist(token+"/"+key+".html");
-        if(fileExist){
-        	downloadFileDialog.dismiss();
-        	//跳转
-        	startActivity(intent);
-        }else{
-        	downloadFileDialog.setTitle("请稍后");
-        	downloadFileDialog.setMessage("正在下载文件...");//设置title和message报错
-        	downloadFileDialog.setIndeterminate(true);
-        	downloadFileDialog.setCancelable(true);
-        	downloadFileDialog.show();
-        	try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-        	isHtmlDonwload(intent, key);
-        }
-	}
     
     public void longClickItem(int position){
     	final int pos = position;
@@ -234,7 +227,7 @@ public class ReadList extends Activity {
     		items = new String[] { "编辑", "分享", "删除" };
     	}
     	new AlertDialog.Builder(this)
-		.setTitle(articleList.get(pos).getTitle())
+		.setTitle(bookmarkList.get(pos).getTitle())
 		.setIcon(android.R.drawable.ic_dialog_info)
 		.setItems(items, 
 			new DialogInterface.OnClickListener() {
@@ -246,16 +239,15 @@ public class ReadList extends Activity {
 	    		      			Toast.makeText(ReadList.this, "操作成功", Toast.LENGTH_SHORT).show();
 	    	        			//本地设已读
 	    	        			DBHelper db = new DBHelper(ReadList.this);
-	    	        			db.setArticleRead(articleList.get(pos).getKey());
+	    	        			db.setBookmarkRead(bookmarkList.get(pos).getId());
 	    	        			db.close();
-	    	        			articleList.remove(pos);
+	    	        			bookmarkList.remove(pos);
 	    	        			myAdapter.notifyDataSetChanged();
 	    		      			break; 
 	    		      		}
 	    		      		case 1:
 	    		      		{
 	    		      			editArticle(pos);
-	    		      			
 	    		      			break; 
 	    		      		}
 	    		      		case 2:
@@ -283,7 +275,11 @@ public class ReadList extends Activity {
 	    		      		}
 	    		      		case 2:
 	    		      		{
-	    		      			deleteArticle(pos);
+	    		      			if(!"".equals(latest) && latest!=null){
+	    		      				deleteFromLatest(pos);
+	    		      			}else{
+	    		      				deleteArticle(pos);
+	    		      			}
 	    		      			break; 
 	    		      		}
 			      		}
@@ -298,10 +294,12 @@ public class ReadList extends Activity {
     	Intent intent = new Intent(this,EditArticle.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		Bundle bundle = new Bundle();
-		ArrayList<ArticleList> article = new ArrayList<ArticleList>();
-		article.add(articleList.get(pos));
-		bundle.putSerializable("article", article);
+		ArrayList<Bookmark> bookmark = new ArrayList<Bookmark>();
+		bookmark.add(bookmarkList.get(pos));
+		bundle.putSerializable("bookmark", bookmark);
 		bundle.putString("type", type);
+		bundle.putString("latest", latest);
+		bundle.putString("folder_name", folder_name);
 		intent.putExtras(bundle);
 		startActivity(intent);
     }
@@ -321,13 +319,32 @@ public class ReadList extends Activity {
     	       .setCancelable(false)
     	       .setPositiveButton("确定", new DialogInterface.OnClickListener() {
     	           public void onClick(DialogInterface dialog, int id) {
-    	        	    db = new DBHelper(ReadList.this);
-    	        	   	//本地删除
-	                	db.deleteArticle(articleList.get(pos).getKey());
 	                	//服务器删除
-	                	rapi = new RAPI(ReadList.this);
-    	                rapi.deleteArticle(articleList.get(pos).getKey());
-    	                articleList.remove(pos);
+	                	rapi = new RAPI(ReadList.this,global.getAccessToken(),userid);
+    	                rapi.asyncDeleteArticle(bookmarkList.get(pos).getId(), global.getImgFlag());
+    	                bookmarkList.remove(pos);
+    	                myAdapter.notifyDataSetChanged(); 
+    	           }
+    	       })
+    	       .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                dialog.cancel();
+    	           }
+    	       });
+    	builder.create().show();
+    }
+    
+    public void deleteFromLatest(int position){
+    	final int pos = position;
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setMessage("确认要将该文章从最近阅读中移除?")
+    	       .setCancelable(false)
+    	       .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+	                	//本地和服务器清空阅读时间
+	                	rapi = new RAPI(ReadList.this,global.getAccessToken(),userid);
+    	                rapi.asyncDeleteArticleReadTime(bookmarkList.get(pos));
+    	                bookmarkList.remove(pos);
     	                myAdapter.notifyDataSetChanged(); 
     	           }
     	       })
@@ -340,103 +357,36 @@ public class ReadList extends Activity {
     }
     
     public void ensureUi(){
-    	list_title = new TextView(this);
+    	unreadlist_guide = (RelativeLayout)findViewById(R.id.unreadlist_guide);
+    	if("1".equals(global.getUnreadlistGuide()))
+    		unreadlist_guide.setVisibility(View.GONE);
+    	unreadlist_guide.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    			DBHelper db = new DBHelper(ReadList.this);
+    			db.setGuideRead(global.getUserId(), "unreadlist_guide");
+    			db.close();
+    			global.setUnreadlistGuide("1");
+    			unreadlist_guide.setVisibility(View.GONE);
+    		}
+    	});
+    	
     	list_title = (TextView)findViewById(R.id.list_title);
     	list_title.setText("未读文章");
     	if("1".equals(type)){
     		list_title.setText("已读文章");
-    	}else if(!"".equals(category_id) && category_id!=null){
-    		list_title.setText(category_name);
+    	}else if("1".equals(latest)){
+    		list_title.setText("最近阅读");
+    	}else if(!"".equals(folder_name) && folder_name!=null){
+    		list_title.setText(folder_name);
     	}
     	
-    	refresh = new TextView(this);
-    	refresh = (TextView)findViewById(R.id.refresh);
+    	refresh = (ImageView)findViewById(R.id.refresh);
     	refresh.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
-    			Toast.makeText(ReadList.this, "刷新", Toast.LENGTH_SHORT).show();
-    			//同步服务器数据
-//    			RAPI rapi = new RAPI(ReadList.this);
-//    			if(rapi.dataSync()!=null){
-//    				articleList = new ArrayList<ArticleList>();
-//    				articleList = rapi.dataSync();
-//    			}
-//    	    	for(int t=0;t<articleList.size();t++){
-//    	    		System.out.println(articleList.get(t).getTitle());
-//    	    	}
-    			if(wifi){
-    	    		articleList = new ArrayList<ArticleList>();
-    	        	//wifi情况
-    	        	System.out.println("正在下载");
-    	        	IReadable ir;
-    	        	ir = HttpRead.instance();
-    	    		if (!ir.init(token)) {
-    	    			System.out.println("初始化失败");
-    	    			// Log.Error(" 初始化失败!");
-    	    		}else{
-    	    			ir.asyncProbeArticle(new Handler(){
-    	    				public void  handleMessage(Message msg) {
-    	    					
-    	    					Bundle data = msg.getData();
-    	    					Constant.Error error = (Constant.Error)data.getSerializable("error");
-    	    					if (error != Constant.Error.OK) {
-    	    						System.out.println("-------------报错---------------");
-    	    						System.out.println(error);
-    	    						System.out.println("-------------报错结束---------------");
-    	    						
-    	    						//hint to users.
-    	    					} else {
-    	    						String rtns = data.getString("result");
-    	    						System.out.println("-------------取list数据---------------");
-    	    						if (null != rtns){
-    	    							ByteArrayInputStream is;
-    	    							try {  
-    	    								is = new ByteArrayInputStream(rtns.getBytes("utf-8"));
-    	    								ArticleListParser parser; 
-    	    			                    parser = new PullArticleListParser(); 
-    	    			                    db = new DBHelper(ReadList.this);
-    	    			                    List<ArticleList> list = parser.parse(is);
-    	    			                    if(list.size()>0)
-    	    			                    db.truncateArticle();
-    	    			                    for(int i=0;i<list.size();i++){
-    	    			                    	//根据download_url下html和image_url下图片
-    	    			                    	Thread download = new downloadHtmlAndImages(list.get(i).getKey(),list.get(i).getDownloadUrl(),list.get(i).getImageUrls());
-    	    			                    	download.start();
-    	    			                        //用户传递到下个activity的arraylist
-    	    			                    	db.insertArticle(list.get(i));
-    	    			                    	articleList.add(list.get(i));
-    	    			                    }
-    	    			                    for(int b=0;b<articleList.size();b++){
-	    			                        	System.out.println("文章标题:"+articleList.get(b).getTitle());
-	    			                        }
-    	    			                } catch (UnsupportedEncodingException e1) {
-    	    								// TODO Auto-generated catch block
-    	    								e1.printStackTrace();
-    	    								System.out.println(e1+"UnsupportedEncodingException e1有这样的错222222");
-    	    							} catch (Exception e) {  
-    	    			                	System.out.println(e+"Exception有这样的错22222222222");
-    	    			                } 
-    	    						}
-    	    						db.close();
-    	    						System.out.println("-------------取数据结束---------------");
-    	    					}
-    	    				}
-    	    			});
-    	    		}
-    	        }else{
-    	        	//离线情况  记录离线操作
-    	        	System.out.println("暂不支持离线阅读,请先连接WIFI!");
-    	        }
-    			try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    			myAdapter.notifyDataSetChanged();  
+    			new RefreshList().execute();
     		}
     	});
     	
-    	filter = new EditText(this);
     	filter = (EditText)findViewById(R.id.filter);
     	filter.addTextChangedListener(new TextWatcher(){
             @Override
@@ -449,8 +399,8 @@ public class ReadList extends Activity {
             public void beforeTextChanged(CharSequence s, int start, int count,
                     int after) {
                 // TODO Auto-generated method stub
-                articleList = null;
-                articleList = new ArrayList<ArticleList>();
+            	bookmarkList = null;
+            	bookmarkList = new ArrayList<Bookmark>();
             }
 
             @Override
@@ -459,39 +409,46 @@ public class ReadList extends Activity {
                 // TODO Auto-generated method stub
                 //关键是这里,监听输入的字符串,如果大于零,则可点击,enable.
             	if(!"".equals(s) && s!=null){
-	            	for(int n=0;n<articleListBak.size();n++){
-		            	if(articleListBak.get(n).getTitle().contains(s) || articleListBak.get(n).getUrl().contains(s)){
-		            		articleList.add(articleListBak.get(n));
+	            	for(int n=0;n<bookmarkListBak.size();n++){
+		            	if(bookmarkListBak.get(n).getTitle().contains(s) || bookmarkListBak.get(n).getUrl().contains(s)){
+		            		bookmarkList.add(bookmarkListBak.get(n));
 		            	}
 	            	}
             	}else{
-            		articleList = articleListBak;
+            		bookmarkList = bookmarkListBak;
             	}
             	myAdapter.notifyDataSetChanged();
             }
         });
     	
-    	sort = new TextView(this);
-    	sort = (TextView)findViewById(R.id.sort);
-    	sort.setOnClickListener(new OnClickListener(){
-    		public void onClick(View v){
-    			dialogSingle();
-    		}
-    	});
-    	
-    	confirm = new RelativeLayout(this);
+//    	RelativeLayout list_bottom_tools = (RelativeLayout)findViewById(R.id.list_bottom_tools);
+//    	Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bg_bottom_black);
+//    	BitmapDrawable bd = new BitmapDrawable(bitmap);
+//    	bd.setTileModeXY(TileMode.REPEAT , TileMode.CLAMP );
+//    	bd.setDither(true);
+//
+//    	list_bottom_tools.setBackgroundDrawable(bd);
+    	sort = (ImageView)findViewById(R.id.sort);
+    	if(!"".equals(latest) && latest!=null){
+    		sort.setVisibility(View.INVISIBLE);
+    	}else{
+    		sort.setOnClickListener(new OnClickListener(){
+	    		public void onClick(View v){
+	    			dialogSingle();
+	    		}
+	    	});
+    	}
     	confirm = (RelativeLayout)findViewById(R.id.confirm);
     	
-    	cancel = new Button(this);
     	cancel = (Button)findViewById(R.id.cancel);
     	cancel.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
     			visflag = false;
     			confirm.setVisibility(View.GONE);
+    			myAdapter.notifyDataSetChanged();
     		}
     	});
     	
-    	delete = new Button(this);
     	delete = (Button)findViewById(R.id.delete);
     	delete.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
@@ -499,50 +456,71 @@ public class ReadList extends Activity {
     		}
     	});
     	
-    	sign_num = new TextView(this);
     	sign_num = (TextView)findViewById(R.id.sign_num);
-    }
-    
-    class downloadHtmlAndImages extends Thread
-    {        
-    	private String key;
-    	private String download_url;
-    	private String[] image_url;
-
-    	public downloadHtmlAndImages(String key, String download_url, String image_urls) {
-    		this.key = key;
-    		this.download_url = download_url;
-    		image_url = image_urls.trim().split("\\|");
+    	
+    	sign_num_read = (TextView)findViewById(R.id.sign_num_read);
+    	sign_num_read.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    			//批量为已读
+    			Toast.makeText(ReadList.this, "操作成功", Toast.LENGTH_SHORT).show(); 
+    			
+    			ArrayList<Integer> strList = new ArrayList<Integer>();
+                for(Integer in:idList)  
+                {  
+             	   strList.add(bookmarkList.get(in).getId());
+             	   bookmarkList.get(in).setId(-1);
+             	   bookmarkList.set(in, bookmarkList.get(in));  
+                }  
+                Iterator<Bookmark> it = bookmarkList.iterator();  
+                while(it.hasNext())  
+                {  
+             	   Bookmark al = (Bookmark)it.next();  
+                    if(al.getId()==-1)  
+                    {  
+                        it.remove();  
+                    }  
+                }  
+                db = new DBHelper(ReadList.this);
+                for(int d=0;d<strList.size();d++){
+             	   //本地设为已读
+             	   db.setBookmarkRead(strList.get(d));
+             	   Bookmark bookmark = new Bookmark();
+             	   bookmark.setId(strList.get(d));
+             	   bookmark.setReadProgress(1+"");
+             	   //服务器设为已读
+             	   rapi = new RAPI(ReadList.this,global.getAccessToken(),userid);
+	               rapi.asyncUpdateReadProgress(bookmark);
+                }
+                idList.clear();
+                myAdapter.notifyDataSetChanged();  
+                sign_num_read.setText("标记 0 条为已读");
+    		}
+    	});
+    	
+    	set_articles_read = (RelativeLayout)findViewById(R.id.set_articles_read);
+    	cancel_set_read = (Button)findViewById(R.id.cancel_set_read);
+    	cancel_set_read.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    			visflag = false;
+    			set_articles_read.setVisibility(View.GONE);
+    			myAdapter.notifyDataSetChanged();
+    		}
+    	});
+    	
+    	emptylist = (TextView)findViewById(R.id.empty_list);
+    	guide = (Button)findViewById(R.id.guide);
+    	guide.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    			Intent intent = new Intent(ReadList.this,Collection.class);
+    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    			startActivity(intent);
+    		}
+    	});
+    	if("0".equals(type)){
+    		emptylist.setText("您还没有收藏任何网页到未读列表");
+    		guide.setVisibility(View.VISIBLE);
     	}
-        @Override
-        public void run() {
-            // TODO Auto-generated method stub
-            super.run();
-            synchronized(this){
-//	            System.out.println("机身内存路径:"+getFilesDir());
-	            HttpDownloader httpDownloader = new HttpDownloader();
-	            httpDownloader.downFile(download_url, "/download/", key+".html");
-	            
-	//          String lrc = httpDownloader.download("http://192.168.1.101:8080/20111021/a.lrc");  
-	            for(int m=0;m<image_url.length;m++){
-	            	if(!"0".equals(image_url[m])){
-	            		httpDownloader.downFile(image_url[m], "/download/", key+"_"+m);
-	            	}
-	            }
-            }
-//            db.save("lidan");//数据库操作
-//            Cursor cur = db.loadAll();
-//            StringBuffer sf = new StringBuffer();
-//            cur.moveToFirst();
-//            while (!cur.isAfterLast()) {
-//    			sf.append(cur.getInt(0)).append(" : ").append(
-//    					cur.getString(1)).append("\n");
-//    			cur.moveToNext();
-//    			System.out.println(sf);
-//    		}
-        }
-        
-    }   
+    }
     
     //单选框
     protected void dialogSingle() {
@@ -556,21 +534,21 @@ public class ReadList extends Activity {
 	    		      		case 0:
 		    		      		{
 		    		      			Toast.makeText(ReadList.this, "最新收藏", Toast.LENGTH_SHORT).show(); 
-		    		      			articleList = arrayListSort(false);
+		    		      			bookmarkList = arrayListSort(false);
 		    		      			myAdapter.notifyDataSetChanged();
 		    		      			break; 
 		    		      		}
 	    		      		case 1:
 		    		      		{
 		    		      			Toast.makeText(ReadList.this, "最早收藏", Toast.LENGTH_SHORT).show();
-		    		      			articleList = arrayListSort(true);
+		    		      			bookmarkList = arrayListSort(true);
 		    		      			myAdapter.notifyDataSetChanged();
 		    		      			break; 
 		    		      		}
 	    		      		case 2:
 		    		      		{
 		    		      			Toast.makeText(ReadList.this, "网址排序", Toast.LENGTH_SHORT).show();
-		    		      			articleList = arrayListUrlSort();
+		    		      			bookmarkList = arrayListUrlSort();
 		    		      			myAdapter.notifyDataSetChanged();
 		    		      			break; 
 		    		      		}
@@ -582,13 +560,13 @@ public class ReadList extends Activity {
     }
     
     //网址排序
-    private ArrayList<ArticleList> arrayListUrlSort(){
-    	ArrayList<ArticleList> resultList =  new ArrayList<ArticleList>();
-    	ArrayList<ArticleList> tempList =  new ArrayList<ArticleList>();
-    	for(int a=0;a<articleList.size();a++){
-    		tempList.add(articleList.get(a));
+    private ArrayList<Bookmark> arrayListUrlSort(){
+    	ArrayList<Bookmark> resultList =  new ArrayList<Bookmark>();
+    	ArrayList<Bookmark> tempList =  new ArrayList<Bookmark>();
+    	for(int a=0;a<bookmarkList.size();a++){
+    		tempList.add(bookmarkList.get(a));
     	}
-    	Pattern p = Pattern.compile("(?<=http://|\\.)[^.]*?\\.(com|cn|net|org|biz|info|cc|tv|us)",Pattern.CASE_INSENSITIVE);
+    	Pattern p = Pattern.compile("(?<=http://|\\.)[^.]*?\\.(com|cn|net|org|biz|info|cc|tv|us|uk)",Pattern.CASE_INSENSITIVE);
     	Matcher m1;
     	Matcher m2;
     	for(int i=0;i<tempList.size();i++) {
@@ -612,84 +590,72 @@ public class ReadList extends Activity {
     }
     
     //文章排序 最近收藏 最早收藏
-    private ArrayList<ArticleList> arrayListSort(boolean flag){
-    	ArrayList<ArticleList> tempList =  new ArrayList<ArticleList>();
-    	for(int a=0;a<articleList.size();a++){
-    		tempList.add(articleList.get(a));
+    private ArrayList<Bookmark> arrayListSort(boolean flag){
+    	ArrayList<Bookmark> tempList =  new ArrayList<Bookmark>();
+    	for(int a=0;a<bookmarkList.size();a++){
+    		tempList.add(bookmarkList.get(a));
     	}
     	for(int i=0;i<tempList.size()-1;i++) {
 		    for(int j=1;j<tempList.size()-i;j++) {
-			    ArticleList article;
-			    if(compareTime(tempList.get(j-1).getCreateTime(),tempList.get(j).getCreateTime())==flag) {   //比较两个整数的大小
-			    	article=tempList.get(j-1);
+			    Bookmark bookmark;
+			    if((Integer.parseInt(tempList.get(j-1).getCreateTime())>Integer.parseInt(tempList.get(j).getCreateTime()))==flag) {   //比较两个整数的大小
+			    	bookmark=tempList.get(j-1);
 			    	tempList.set((j-1),tempList.get(j));
-			    	tempList.set(j,article);
+			    	tempList.set(j,bookmark);
 			    }
 		    }
 		}
     	return tempList;
     }
     
-    //将字符串形式的日期时间做比较
-    public boolean compareTime(String time1, String time2){
-    	java.text.DateFormat df=new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	java.util.Calendar c1=java.util.Calendar.getInstance();
-    	java.util.Calendar c2=java.util.Calendar.getInstance();
-    	try
-    	{
-    		c1.setTime(df.parse(time1));
-    		c2.setTime(df.parse(time2));
-    	}catch(java.text.ParseException e){
-    	}
-    	int result=c1.compareTo(c2);
-    	if(result==0)
-    	//c1相等c2
-    	return false;
-    	else if(result<0)
-        //c1小于c2
-    	return false;
-    	else
-    	//c1大于c2
-    	return true;
-    }
-    
     //确认框
     protected void dialogConfirm() {
     	if(idList.size()>0)  
         {
+    		String message;
+    		if(!"".equals(latest) && latest!=null){
+        		message = "确认要将选中的文章从最近阅读中移除?";
+        	}else{
+        		message = "确认删除?";
+        	}
 	    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    	builder.setMessage("确认删除?")
+	    	builder.setMessage(message)
 	    	       .setCancelable(false)
 	    	       .setPositiveButton("确定", new DialogInterface.OnClickListener() {
 	    	           public void onClick(DialogInterface dialog, int id) {
-    	        	   		//dialog.dismiss();
-	    	        	   ArrayList<String> strList = new ArrayList<String>();
+	    	        	   ArrayList<Integer> strList = new ArrayList<Integer>();
     	                   for(Integer in:idList)  
     	                   {  
-    	                	   strList.add(articleList.get(in).getKey());
-    	                	   articleList.get(in).setKey("-1");
-    	                	   articleList.set(in, articleList.get(in));  
+    	                	   strList.add(bookmarkList.get(in).getId());
+    	                	   bookmarkList.get(in).setId(-1);
+    	                	   bookmarkList.set(in, bookmarkList.get(in));  
     	                   }  
-    	                   Iterator<ArticleList> it = articleList.iterator();  
+    	                   Iterator<Bookmark> it = bookmarkList.iterator();  
     	                   while(it.hasNext())  
     	                   {  
-    	                	   ArticleList al = (ArticleList)it.next();  
-    	                       if(al.getKey().equals("-1"))  
+    	                	   Bookmark al = (Bookmark)it.next();  
+    	                       if(al.getId()==-1)  
     	                       {  
     	                           it.remove();  
     	                       }  
     	                   }  
-    	                   db = new DBHelper(ReadList.this);
+    	                   
     	                   for(int d=0;d<strList.size();d++){
-    	                	   //本地删除
-    	                	   db.deleteArticle(strList.get(d));
     	                	   //服务器删除
-    	                	   rapi = new RAPI(ReadList.this);
-        	                   rapi.deleteArticle(strList.get(d));
+    	                	   rapi = new RAPI(ReadList.this,global.getAccessToken(),userid);
+    	                	   if(!"".equals(latest) && latest!=null){
+    	                		   for(int e=0;e<bookmarkList.size();e++){
+    	                			   if(bookmarkList.get(e).getId()==strList.get(d))
+    	                				   System.out.println(bookmarkList.get(e).getId()+"|"+strList.get(d));
+    	                				   rapi.asyncDeleteArticleReadTime(bookmarkList.get(e));
+    	                		   }
+	    	                   }else{
+	    	                	   rapi.asyncDeleteArticle(strList.get(d), global.getImgFlag());
+	    	                   }
     	                   }
     	                   idList.clear();  
     	                   myAdapter.notifyDataSetChanged();  
-    	                   sign_num.setText("标记 0 条");
+	                	   sign_num.setText("标记 0 条");
     	                   //UnRead.this.finish();
 	    	           }
 	    	       })
@@ -717,13 +683,13 @@ public class ReadList extends Activity {
         @Override  
         public int getCount()  
         {  
-            return articleList.size();  
+            return bookmarkList.size();  
         }  
   
         @Override  
         public Object getItem(int position)  
         {  
-            return articleList.get(position);  
+            return bookmarkList.get(position);  
         }  
   
         @Override  
@@ -739,16 +705,31 @@ public class ReadList extends Activity {
         {  
             ViewHolder holder = new ViewHolder();  
             final int pos = position;  
-            if(convertView==null)  
-            {  
-                System.out.println("convertView==null");  
-                convertView  = mInflater.inflate(R.layout.list_item, null);  
-            }  
+//            if(convertView==null)  
+//            {  
+            convertView  = mInflater.inflate(R.layout.list_item, null);
+//            }  
+//                if("1".equals(articleList.get(pos).getIsRead().toString()))
+//                	convertView.setClickable(true);//不可点击
+//                else
+//                	convertView.setClickable(false);//可点击
             holder.title = (TextView)convertView.findViewById(R.id.title);  
             holder.url = (TextView)convertView.findViewById(R.id.url);  
             holder.checkItem = (CheckBox)convertView.findViewById(R.id.checkItem);  
-            holder.title.setText(articleList.get(position).getTitle()); 
-            holder.url.setText(articleList.get(position).getUrl()); 
+            holder.title.setText(bookmarkList.get(position).getTitle());
+            if("".equals(type) || type==null){
+        		if("1".equals(bookmarkList.get(position).getReadProgress())){
+        			holder.title.setTextColor(R.color.has_read_color);
+        		}
+        	}
+            
+            Pattern p = Pattern.compile("(?<=http://|\\.)[^.]*?\\.(com|cn|net|org|biz|info|cc|tv|us|uk)",Pattern.CASE_INSENSITIVE);
+        	Matcher m;
+        	m = p.matcher(bookmarkList.get(position).getUrl());
+    		m.find();
+    		m.group();
+            
+            holder.url.setText(m.group()); 
             holder.checkItem.setChecked(false);  
   
             holder.checkItem.setOnCheckedChangeListener(new OnCheckedChangeListener()  
@@ -762,19 +743,28 @@ public class ReadList extends Activity {
                     {  
                         idList.add(pos);  
                     }  
-                    else  
+                    else 
                     {  
-                        if(idList.contains(pos))  
+                        if(!isChecked && idList.contains(pos))  
                         {  
                             idList.remove(Integer.valueOf(pos));  
                         }  
-                    }  
-                          
-                    System.out.println(idList.toString());  
-                    sign_num.setText("标记  "+idList.size()+" 条");
+                    }       
+                	sign_num.setText("标记  "+idList.size()+" 条");
+                	sign_num_read.setText("标记"+idList.size()+"条为已读");
                 }  
             });  
-              
+            if(idList.contains(position)){
+            	holder.checkItem.setChecked(true);  
+            }else{
+            	holder.checkItem.setChecked(false);  
+            }
+            if(bookmarkList.get(position).getIsDownload()==1){
+            	convertView.setClickable(false);
+            	convertView.setBackgroundResource(R.drawable.sohu_main_item);
+            }else{
+            	convertView.setClickable(true);
+            }
             if(visflag)  
             {  
                 holder.checkItem.setVisibility(View.VISIBLE);  
@@ -783,23 +773,13 @@ public class ReadList extends Activity {
             {  
                 holder.checkItem.setVisibility(View.INVISIBLE);  
             }  
-//            if (idList != null)
-//
-//                for (int i = 0; i < idList.size(); i++) {
-//
-//                        if (position == idList.get(i))
-//
-//                        	holder.checkItem.setChecked(true);
-//
-//                }
-          
             return convertView;  
         }  
-        class ViewHolder  
+        class ViewHolder
         {  
-            TextView title; 
+            TextView title;
             TextView url;
-            CheckBox checkItem;  
+            CheckBox checkItem;
         }  
           
     } 
@@ -807,13 +787,20 @@ public class ReadList extends Activity {
     @Override  
     public boolean onCreateOptionsMenu(Menu menu)  
     {  
-          
-        menu.add(0, 1, 0, "已读");  
-        menu.add(0, 2, 0, "最近阅读");  
-        menu.add(0, 3, 0, "标记");  
-        menu.add(0, 4, 0, "刷新");  
-        menu.add(0, 5, 0, "设置");  
-        menu.add(0, 6, 0, "关于");  
+    	if("0".equals(type)){
+        	menu.add(0, 1, 0, "已读").setIcon(R.drawable.ic_menu_already_read);
+        }else{
+        	menu.add(0, 1, 0, "未读").setIcon(R.drawable.ic_menu_has_not_read);
+        }
+    	if("1".equals(type) || "0".equals(type)){
+    		menu.add(0, 2, 0, "最近阅读").setIcon(R.drawable.ic_menu_reading_history);  
+        }else{
+        	menu.add(0, 2, 0, "已读").setIcon(R.drawable.ic_menu_already_read);
+        }
+        menu.add(0, 3, 0, "标记").setIcon(R.drawable.ic_menu_mark);  
+        menu.add(0, 4, 0, "刷新").setIcon(R.drawable.ic_menu_refresh);  
+        menu.add(0, 5, 0, "设置").setIcon(R.drawable.ic_menu_settings);  
+        menu.add(0, 6, 0, "意见反馈").setIcon(R.drawable.ic_menu_feedback);  
         return super.onCreateOptionsMenu(menu);  
 //        MenuInflater inflater = getMenuInflater();
 //        
@@ -828,12 +815,40 @@ public class ReadList extends Activity {
         {  
 	        case 1: 
 	        {  
-	        	Toast.makeText(ReadList.this, "已读", Toast.LENGTH_SHORT).show();               
+	        	if("0".equals(type)){
+	        		Intent intent = new Intent(this,ReadList.class);
+	    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    			Bundle bundle = new Bundle();
+	    			bundle.putString("type", "1");
+	    			intent.putExtras(bundle);
+	    			startActivity(intent);
+	            }else{
+	            	Intent intent = new Intent(this,ReadList.class);
+	    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    			Bundle bundle = new Bundle();
+	    			bundle.putString("type", "0");
+	    			intent.putExtras(bundle);
+	    			startActivity(intent);
+	            }
 	            break;  
 	        }
 	        case 2: 
 	        {  
-	        	Toast.makeText(ReadList.this, "最近阅读", Toast.LENGTH_SHORT).show();               
+	        	if("1".equals(type) || "0".equals(type)){
+	        		Intent intent = new Intent(ReadList.this,ReadList.class);
+	    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    			Bundle bundle = new Bundle();
+	    			bundle.putString("latest", "1");
+	    			intent.putExtras(bundle);
+	    			startActivity(intent);
+	            }else{
+	            	Intent intent = new Intent(this,ReadList.class);
+	    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    			Bundle bundle = new Bundle();
+	    			bundle.putString("type", "1");
+	    			intent.putExtras(bundle);
+	    			startActivity(intent);
+	            }         
 	            break;  
 	        }
             case 3:  // 标记
@@ -841,34 +856,102 @@ public class ReadList extends Activity {
                 if(visflag==true)  
                 {  
                     visflag = false;  
-                    confirm.setVisibility(View.INVISIBLE);  
+                    if("0".equals(type)){
+                    	set_articles_read.setVisibility(View.INVISIBLE);
+                    }else{
+                    	confirm.setVisibility(View.INVISIBLE);
+                    }
                     idList.clear();  
                 }  
                 else  
                 {  
                     visflag = true;  
-                    confirm.setVisibility(View.VISIBLE);  
+                    if("0".equals(type)){
+                    	set_articles_read.setVisibility(View.VISIBLE);
+                    }else{
+                    	confirm.setVisibility(View.VISIBLE);
+                    }
                 }  
                 this.myAdapter.notifyDataSetInvalidated();  
                 break;  
             } 
             case 4: 
 	        {  
-	        	Toast.makeText(ReadList.this, "刷新", Toast.LENGTH_SHORT).show();               
+	        	new RefreshList().execute();
 	            break;  
 	        }
             case 5: 
-	        {  
-	        	Toast.makeText(ReadList.this, "设置", Toast.LENGTH_SHORT).show();               
+	        {    
+	        	Intent intent = new Intent(this,Setting.class);
+    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    			startActivity(intent);
 	            break;  
 	        }
             case 6: 
 	        {  
-	        	Toast.makeText(ReadList.this, "关于", Toast.LENGTH_SHORT).show();               
+	        	Toast.makeText(ReadList.this, "意见反馈", Toast.LENGTH_SHORT).show();               
 	            break;  
 	        }
         }  
         return super.onOptionsItemSelected(item);  
-    }  
+    }
+    
+    private ProgressDialog showProgressDialogInfo(){
+    	if(dialog == null){
+    		ProgressDialog progressDialog = new ProgressDialog(this);
+    		progressDialog.setTitle("请稍后");//
+    		progressDialog.setMessage("处理中...");//设置title和message报错
+    		progressDialog.setIndeterminate(true);
+    		progressDialog.setCancelable(true);
+    		dialog = progressDialog;
+    	}
+    	dialog.show();
+    	
+    	return dialog;
+    }
+    
+    private void dismissProgressDialog() {
+        try {
+        	dialog.dismiss();
+        } catch (IllegalArgumentException e) {
+          e.printStackTrace();
+        }
+    }
+    
+    class RefreshList extends AsyncTask<Void, Void, Boolean>{
+    	
+    	protected void onPreExecute(){
+    		showProgressDialogInfo();
+    	}
+    	
+    	protected Boolean doInBackground(Void... params){
+    		//更新bookmark表和category数据
+    		SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(ReadList.this);
+			rapi.refreshList(preferences,global);
+			ReadList.this.getData();
+    		return false;
+    	}
+    	
+    	protected void onPostExecute(Boolean loggedIn){
+			if(bookmarkList.size()>0){
+				for(int t=0;t<bookmarkList.size();t++){
+		    		System.out.println("bookmarkid:"+bookmarkList.get(t).getId());
+		    		System.out.println(bookmarkList.get(t).getTitle());
+		    	}
+				empty_layout.setVisibility(View.GONE);
+				relative_list.setVisibility(View.VISIBLE);
+				myAdapter.notifyDataSetChanged();
+				//重新下载文件
+				rapi.downloadResource(global.getImgFlag(), bookmarkList, global.getUserId(), listView);
+			}else{
+				empty_layout.setVisibility(View.VISIBLE);
+			}
+    		dismissProgressDialog();
+    	}
+    	
+    	protected void onCancelled(){
+    		dismissProgressDialog();
+    	}
+    }
      
 }

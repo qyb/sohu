@@ -22,14 +22,15 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sohu.database.DBHelper;
 import com.sohu.utils.RAPI;
-import com.sohu.xml.model.ArticleList;
+import com.sohu.xml.model.Bookmark;
 
 public class EditArticle extends Activity {
 	
@@ -40,9 +41,9 @@ public class EditArticle extends Activity {
 	private TextView no_category;
 	private TextView go_to_create_category;
 	private Button submit;
-	private Button add_category;
+	private ImageView add_category;
 	
-	private List<ArticleList> articleList; 
+	private List<Bookmark> bookmarkList; 
 	
 	private DBHelper db;
 	
@@ -54,51 +55,72 @@ public class EditArticle extends Activity {
 	
 	private ArrayAdapter<String> adapter;
 	
-	private LinearLayout empty_category;
-	private LinearLayout category_list;
+	private RelativeLayout empty_category;
+	private RelativeLayout category_list;
 	
 	private String type;
+	private String latest;
+	private String folder_name;
 	
 //	private String m[];
 	
-	private int category_id;
+	private String my_category_name;
 	private int position;
 	
+	private Global global; 
+	
+	private RAPI rapi;
+	
+	private String access_token;
+	private String userid;
 	
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.edit_article);
+        global = (Global)getApplication();
+        access_token = global.getAccessToken();
+        userid = global.getUserId();
+        rapi = new RAPI(this,access_token,userid);
         
         Bundle bundle = this.getIntent().getExtras();
         type = bundle.getString("type");
-        articleList = (ArrayList<ArticleList>) bundle.getSerializable("article");
-        db = new DBHelper(this);
-        category_id = getDefaultCategory(articleList.get(0).getKey());
+        latest = bundle.getString("latest");
+        folder_name = bundle.getString("folder_name");
+        
+        bookmarkList = (ArrayList<Bookmark>) bundle.getSerializable("bookmark");
+        
+        my_category_name = getDefaultCategory(bookmarkList.get(0).getId());
         getAllCategory();
         ensureUi();
 	}
 	
-	public int getDefaultCategory(String key){
-		Cursor cur = db.getCategoryByKey(key);
+	public String getDefaultCategory(int id){
+		db = new DBHelper(EditArticle.this);
+		Cursor cur = db.getCategoryById(id+"");
 		cur.moveToFirst();
-		int id = cur.getInt(0);
+		String categoryName = cur.getString(0);
 		cur.close();
-		return id;
+		db.close();
+		return categoryName;
 	}
 	
 	public List<Map<String, Object>> getAllCategory(){
-		
+//		categoryList = rapi.listFolder();
 		Map<String, Object> map = new HashMap<String, Object>();
-		
-		Cursor cur = db.loadAllCategory();
+		map.put("category", "选择分类");
+		map.put("id", "");
+		map.put("time", "");
+		categoryList.add(map);
+		map = new HashMap<String, Object>();
+		categoryNameList.add("选择分类");
+		db = new DBHelper(this);
+		Cursor cur = db.loadAllCategory(userid);
 		if(cur.moveToFirst()){
 			do{
-				System.out.println(cur.getInt(0)+" : "+cur.getString(1)+" : "+cur.getString(2));
-				map.put("id", cur.getInt(0));
 				map.put("category", cur.getString(1));
+				map.put("id", cur.getInt(0));
 				map.put("time", cur.getString(2));
-				
 				categoryNameList.add(cur.getString(1));
 				categoryList.add(map);
 			
@@ -108,7 +130,7 @@ public class EditArticle extends Activity {
 		}
 		
 		cur.close();
-//		db.close();
+		db.close();
 		return categoryList;
 	}
 	
@@ -118,12 +140,12 @@ public class EditArticle extends Activity {
 		title_name = (TextView)findViewById(R.id.title_name);
 		
 		title_text = (EditText)findViewById(R.id.title_text);
-		title_text.setText(articleList.get(0).getTitle());
+		title_text.setText(bookmarkList.get(0).getTitle());
 		
 		category_name = (TextView)findViewById(R.id.category_name);
 		no_category = (TextView)findViewById(R.id.no_category);
 		
-		add_category = (Button)findViewById(R.id.add_category);
+		add_category = (ImageView)findViewById(R.id.add_category);
 		add_category.setOnClickListener(new OnClickListener(){
 			public void onClick(View v){
 				final EditText updateCategory = new EditText(EditArticle.this);
@@ -135,16 +157,40 @@ public class EditArticle extends Activity {
                                    public void onClick(DialogInterface dialog,
                                            int arg1) {
                                        // TODO Auto-generated method stub
-                                       Toast.makeText(EditArticle.this, updateCategory.getText(), Toast.LENGTH_SHORT).show();
-                                       db.addCategory(updateCategory.getText().toString());
-                                       categoryList = new ArrayList<Map<String, Object>>();
-                                       categoryNameList = new ArrayList();
-                                       getAllCategory();
-                                       position = categoryList.size()-1;
-                                       adapter = new SimpleArrayAdapter();
-                           			   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                           			   spinner.setAdapter(adapter);
-                                       spinner.setSelection(position,true);
+                                	   boolean flag = true;
+                                	   if(updateCategory.getText().toString().trim().length()<0 || updateCategory.getText().toString().trim().length()>20){
+                       					   Toast.makeText(EditArticle.this, "分类名必须在0到20个字符内", Toast.LENGTH_SHORT).show();
+                       					   flag = false;
+                       				   }
+                       				   if("".equals(updateCategory.getText().toString().trim())){
+                       					   Toast.makeText(EditArticle.this, "输入不能为空", Toast.LENGTH_SHORT).show();
+                       					   flag = false;
+                       				   }
+                       				   if(updateCategory.getText().toString().startsWith("_") || updateCategory.getText().toString().contains(",")){
+                       					   Toast.makeText(EditArticle.this, "分类名称不能以下划线开头并且不能出现逗号", Toast.LENGTH_SHORT).show();
+                       					   flag = false;
+                       				   }
+                       				   for(int p=0;p<categoryNameList.size();p++){
+                       					   if(categoryNameList.get(p).equals(updateCategory.getText().toString())){
+                       						   Toast.makeText(EditArticle.this, "已存在分类"+updateCategory.getText().toString(), Toast.LENGTH_SHORT).show();
+                       						   flag = false;
+                       					   }
+                       				   }
+                       				   if(flag){
+	                                       db = new DBHelper(EditArticle.this);
+	                                       db.addCategory(updateCategory.getText().toString().trim().replace("'", ""),userid);
+	                                       db.close();
+	                                       rapi.asyncCreateFolder(updateCategory.getText().toString());
+	                                       
+	                                       categoryList = new ArrayList<Map<String, Object>>();
+	                                       categoryNameList = new ArrayList();
+	                                       getAllCategory();
+	                                       position = categoryList.size()-1;
+	                                       adapter = new SimpleArrayAdapter();
+	                           			   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	                           			   spinner.setAdapter(adapter);
+	                                       spinner.setSelection(position,true);
+                       				   }
                                    }
                                }
                                )
@@ -161,14 +207,15 @@ public class EditArticle extends Activity {
 			}
 		});
 		
-		empty_category = (LinearLayout)findViewById(R.id.empty_category);
-		category_list = (LinearLayout)findViewById(R.id.category_list);
-		if(categoryList.size()>0){
+		empty_category = (RelativeLayout)findViewById(R.id.empty_category);
+		category_list = (RelativeLayout)findViewById(R.id.category_list);
+		if(categoryList.size()>1){
 			
 //			m = new String[categoryList.size()];
-			for(int i=0;i<categoryList.size();i++){
+			for(int i=1;i<categoryList.size();i++){
 //				m[i] = categoryList.get(i).get("category").toString();
-				if(Integer.parseInt(categoryList.get(i).get("id").toString()) == category_id)
+				System.out.println(categoryList.get(i).get("category").toString()+"=?"+my_category_name);
+				if(categoryList.get(i).get("category").toString().equals(my_category_name))
 					position = i;
 			}
 			spinner = (Spinner) findViewById(R.id.category_spinner);
@@ -200,34 +247,44 @@ public class EditArticle extends Activity {
 		submit = (Button)findViewById(R.id.submit);
 		submit.setOnClickListener(new OnClickListener(){
 			public void onClick(View v){
-				for(int i=0;i<categoryList.size();i++){
+				for(int i=1;i<categoryList.size();i++){
 //					m[i] = categoryList.get(i).get("category").toString();
-					if(Integer.parseInt(categoryList.get(i).get("id").toString()) == category_id)
+					if(categoryList.get(i).get("category").toString().equals(my_category_name))
 						position = i;
 				}
-				if(categoryList.size()!=0){
-					db.updateArticle(Integer.parseInt(categoryList.get(position).get("id").toString()),title_text.getText().toString(),articleList.get(0).getKey());
+				db = new DBHelper(EditArticle.this);
+				if(categoryList.size()!=1){
+					db.updateBookmark(categoryList.get(position).get("category").toString(),title_text.getText().toString(),bookmarkList.get(0).getId()+"");
 				}else{
-					db.updateArticle(0,title_text.getText().toString(),articleList.get(0).getKey());
+					db.updateBookmark("",title_text.getText().toString(),bookmarkList.get(0).getId()+"");
 				}
+				db.close();
 				Hashtable ht = new Hashtable();
-				if(categoryList.size()!=0){
-					ht.put("category_id", categoryList.get(position).get("id").toString());
+				if(categoryList.size()!=1){
+					ht.put("category_name", categoryList.get(position).get("category").toString());
+				}else{
+					ht.put("category_name", "");
 				}
 				ht.put("title", title_text.getText().toString());
-				RAPI rapi = new RAPI(EditArticle.this);
-				rapi.updateArticle(articleList.get(0).getKey(), ht);
+				rapi.updateBookmark(bookmarkList.get(0).getId(), ht);
 				
 				
-				Intent intent = new Intent(EditArticle.this,ReadList.class);
+				Intent intent = new Intent();
+				
     			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     			Bundle bundle = new Bundle();
-    			if(categoryList.size()!=0){
-    				bundle.putString("category_id", categoryList.get(position).get("id").toString());
-    				bundle.putString("category_name", categoryList.get(position).get("category").toString());
-				}else{
+				if(!"".equals(type) && type!=null){
+					intent.setClass(EditArticle.this,ReadList.class);
 					bundle.putString("type", type);
-				}
+		    	}else if(!"".equals(folder_name) && folder_name!=null){
+		    		intent.setClass(EditArticle.this,ReadList.class);
+		    		bundle.putString("folder_name", folder_name);
+		    	}else if(!"".equals(latest) && latest!=null){
+		    		intent.setClass(EditArticle.this,ReadList.class);
+		    		bundle.putString("latest", latest);
+		    	}else{
+		    		intent.setClass(EditArticle.this,Read.class);
+		    	}
     			intent.putExtras(bundle);
     			startActivity(intent);
 			}
@@ -238,7 +295,7 @@ public class EditArticle extends Activity {
 	
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
 		            long arg3) {
-			category_id = Integer.parseInt(categoryList.get(pos).get("id").toString());
+			my_category_name = categoryList.get(pos).get("category").toString();
 		}
 		
 		public void onNothingSelected(AdapterView<?> arg0) {

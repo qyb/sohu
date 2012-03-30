@@ -1,6 +1,7 @@
 package com.sohu.utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,14 +53,40 @@ public class HttpDownloader {
         return sb.toString();  
     }  
     //通过url下载文件
-    public int downFile(String urlStr,String path,String fileName){  
+    public int downFileByUrl(String urlStr,String path,String fileName){  
         InputStream inputStream = null;  
         if(fileUtils.isFileExist(fileName)){  
             return 1;  
         }else{  
             try {  
                 inputStream = getInputSteamFromUrl(urlStr);  
+//                inputStream = new ByteArrayInputStream(urlStr.getBytes());
             } catch (IOException e) {  
+                e.printStackTrace();  
+                return -1;  
+            }  
+            File resultFile = fileUtils.write2SDFromInput(path, fileName, inputStream);  
+            if(resultFile == null){  
+                return -1;  
+            }  
+        }  
+        try {  
+            inputStream.close();  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+        return 0;  
+    }  
+    
+  //通过url下载文件
+    public int downFileByString(byte[] str,String path,String fileName){  
+        InputStream inputStream = null;  
+        if(fileUtils.isFileExist(fileName)){  
+            return 1;  
+        }else{  
+            try {  
+                inputStream = new ByteArrayInputStream(str);
+            } catch (Exception e) {  
                 e.printStackTrace();  
                 return -1;  
             }  

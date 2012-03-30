@@ -2,4 +2,9 @@
 <resources>
     <string name="app">搜狐随身看</string>
     <string name="app_name">搜狐随身看</string>
+    <string name="create_category"><u>创建分类</u></string>
+    <drawable name="font_gray">#bfbfbf</drawable>
+    <string name="accept">同意<u>搜狐用户注册协议</u></string>
+    <string name="background">#FRFRFR</string>
+    <color name="has_read_color">#707070</color>  
 </resources>

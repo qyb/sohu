@@ -1,38 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="#CCCCCC">
+  android:background="@drawable/repeat_bg">
   
-  <RelativeLayout
-	android:orientation="horizontal"
-	android:layout_height="wrap_content"
-	android:layout_width="match_parent"
-	android:background="#333333" 
-    >
     <TextView 
 	  	android:id="@+id/list_title"
 	  	android:layout_width="match_parent"
 	  	android:layout_height="wrap_content"
-	  	android:background="#333333" 
 	  	android:gravity="center"
-	  	android:layout_centerVertical="true"
-	  	android:textColor="#fff"
-	  	
-	  	android:text="所有分类"
+	  	android:layout_alignParentTop="true"
+	  	android:background="@drawable/bg_title"
+	  	android:textSize="18dip"
+	  	android:textColor="#FFFFFF"
+	  	android:text="文章分类"
 	  />
-    <Button
-    	android:id="@+id/add_category"
-    	android:layout_width="wrap_content"
-    	android:layout_height="38dip"
-    	android:layout_alignParentRight="true"
-    	android:layout_centerVertical="true"
-    	android:gravity="center"
-    	android:text="添加"
-    />
-   </RelativeLayout>
     <ListView 
     	android:id="@+id/categorylist"
     	android:scrollbars="vertical"
@@ -40,7 +24,42 @@
     	android:layout_height="wrap_content"
     	android:layout_weight="1"
     	android:fadingEdgeLength="0dip"
-    	android:background="#CCCCCC"
+    	android:layout_below="@+id/list_title"
     	android:cacheColorHint="#CCCCCC"
+    	android:layout_marginTop="-5dip"
     />
-</LinearLayout>
+    <TextView
+   		android:id="@+id/divide_line"
+   		android:layout_width="match_parent"
+   		android:layout_height="1dip"
+   		android:layout_below="@+id/categorylist"
+   		android:background="#E7E9E9"
+   	/>
+    <RelativeLayout
+    	android:id="@+id/add_category"
+    	android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/categorylist"
+	    android:layout_alignParentLeft="true"
+	    android:layout_marginTop="8dip"
+    >
+    	<ImageView 
+    		android:id="@+id/add_category_icon"
+    		android:layout_width="22dip"
+	    	android:layout_height="22dip"
+	    	android:src="@drawable/sohu_add_category"
+	    	android:layout_marginLeft="10dip"
+    	/>
+	    <TextView
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:layout_centerVertical="true"
+	    	android:layout_toRightOf="@+id/add_category_icon"
+	    	android:gravity="center"
+	    	android:textColor="#313131"
+	    	android:textSize="18dip"
+	    	android:layout_marginLeft="15dip"
+	    	android:text="添加新分类"
+	    />
+    </RelativeLayout>
+</RelativeLayout>

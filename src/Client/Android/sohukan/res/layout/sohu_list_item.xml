@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <RelativeLayout android:id="@+id/unRead" android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:background="@drawable/sohu_main_item"
+        android:clickable="true">
+  
+	    <ImageView 
+	        android:layout_width="20dp" 
+	        android:layout_height="20dp" 
+	        android:layout_marginLeft="10.0dip" 
+	        android:src="@drawable/ic_has_not_read" 
+	        android:layout_centerVertical="true" />
+	    
+	    <RelativeLayout  android:orientation="horizontal" 
+	        android:paddingLeft="10.0dip" 
+	        android:paddingTop="10.0dip" 
+	        android:paddingRight="10.0dip" 
+	        android:paddingBottom="5.0dip" 
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content" 
+	        android:layout_marginLeft="20.0dip" 
+	        android:layout_marginTop="5.0dip" 
+	        android:layout_marginRight="30.0dip" 
+	        android:layout_marginBottom="5.0dip" 
+	        android:minHeight="50.0dip">
+	        
+	        <TextView 
+	            android:textSize="16.0dip" android:textColor="#313131" 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:layout_marginLeft="8.0dip" 
+	            android:text="未读"  />
+	        
+	        <TextView 
+		        android:id="@+id/count_unread"
+	            android:textSize="16.0dip" android:textColor="#7ca900" 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:layout_alignParentRight="true"
+	            android:text="(0)"  />
+	    </RelativeLayout>
+	    <ImageView
+	            android:layout_width="20dp" 
+	            android:layout_height="20dp" 
+	            android:src="@drawable/ic_arrow" 
+	            android:layout_centerVertical="true" 
+	            android:layout_marginRight="10.0dip" 
+	            android:layout_alignParentRight="true"/>
+	</RelativeLayout>
+    
+    <RelativeLayout android:id="@+id/latest" android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:background="@drawable/sohu_main_item"
+        android:clickable="true">
+  
+	    <ImageView 
+	        android:layout_width="20dp" 
+	        android:layout_height="20dp" 
+	        android:layout_marginLeft="10.0dip" 
+	        android:src="@drawable/ic_reading_history" 
+	        android:layout_centerVertical="true" />
+	    
+	    <RelativeLayout  android:orientation="horizontal" 
+	        android:paddingLeft="10.0dip" 
+	        android:paddingTop="10.0dip" 
+	        android:paddingRight="10.0dip" 
+	        android:paddingBottom="5.0dip" 
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content" 
+	        android:layout_marginLeft="20.0dip" 
+	        android:layout_marginTop="5.0dip" 
+	        android:layout_marginRight="30.0dip" 
+	        android:layout_marginBottom="5.0dip" 
+	        
+	        android:minHeight="50.0dip">
+	        
+	        <TextView 
+	            android:textSize="16.0dip" android:textColor="#313131" 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:layout_marginLeft="8.0dip" 
+	            android:text="最近阅读"  />
+	        
+	        <TextView 
+		        android:id="@+id/count_latest"
+	            android:textSize="16.0dip" android:textColor="#ff818286" 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:layout_alignParentRight="true"
+	            android:text=""  />
+	    </RelativeLayout>
+	    <ImageView
+	            android:layout_width="20dp" 
+	            android:layout_height="20dp" 
+	            android:src="@drawable/ic_arrow" 
+	            android:layout_centerVertical="true" 
+	            android:layout_marginRight="10.0dip" 
+	            android:layout_alignParentRight="true"/>
+	</RelativeLayout>
+	
+    <RelativeLayout android:id="@+id/read" android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:background="@drawable/sohu_main_item"
+        android:clickable="true">
+  
+	    <ImageView 
+	        android:layout_width="20dp" 
+	        android:layout_height="20dp" 
+	        android:layout_marginLeft="10.0dip" 
+	        android:src="@drawable/ic_already_read" 
+	        android:layout_centerVertical="true" />	    
+	    <RelativeLayout  android:orientation="horizontal" 
+	        android:paddingLeft="10.0dip" 
+	        android:paddingTop="10.0dip" 
+	        android:paddingRight="10.0dip" 
+	        android:paddingBottom="5.0dip" 
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content" 
+	        android:layout_marginLeft="20.0dip" 
+	        android:layout_marginTop="5.0dip" 
+	        android:layout_marginRight="30.0dip" 
+	        android:layout_marginBottom="5.0dip" 
+	        
+	        android:minHeight="50.0dip">
+	        
+	        <TextView 
+	            android:textSize="16.0dip" android:textColor="#313131" 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:layout_marginLeft="8.0dip" 
+	            android:text="已读"  />
+	        
+	        <TextView 
+		        android:id="@+id/count_read"
+	            android:textSize="16.0dip" android:textColor="#ff818286" 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:layout_alignParentRight="true"
+	            android:text="(0)"  />
+	    </RelativeLayout>
+	    <ImageView
+	            android:layout_width="20dp" 
+	            android:layout_height="20dp" 
+	            android:src="@drawable/ic_arrow" 
+	            android:layout_centerVertical="true" 
+	            android:layout_marginRight="10.0dip" 
+	            android:layout_alignParentRight="true"/>
+	</RelativeLayout>
+    
+    
+    <RelativeLayout android:id="@+id/articleClass" android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:background="@drawable/sohu_main_item"
+        android:clickable="true">
+  
+	    <ImageView 
+	        android:layout_width="20dp" 
+	        android:layout_height="20dp" 
+	        android:layout_marginLeft="10.0dip" 
+	        android:src="@drawable/ic_category" 
+	        android:layout_centerVertical="true" />
+	    
+	    <RelativeLayout  android:orientation="horizontal" 
+	        android:paddingLeft="10.0dip" 
+	        android:paddingTop="10.0dip" 
+	        android:paddingRight="10.0dip" 
+	        android:paddingBottom="5.0dip" 
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content" 
+	        android:layout_marginLeft="20.0dip" 
+	        android:layout_marginTop="5.0dip" 
+	        android:layout_marginRight="30.0dip" 
+	        android:layout_marginBottom="5.0dip" 
+	        
+	        android:minHeight="50.0dip">
+	        
+	        <TextView 
+	            android:textSize="16.0dip" android:textColor="#313131" 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:layout_marginLeft="8.0dip" 
+	            android:text="文章分类"  />
+	        
+	        <TextView 
+		        android:id="@+id/count_category"
+	            android:textSize="16.0dip" android:textColor="#ff818286" 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:layout_alignParentRight="true"
+	            android:text="(0)"  />
+	    </RelativeLayout>
+	    <ImageView
+	            android:layout_width="20dp" 
+	            android:layout_height="20dp" 
+	            android:src="@drawable/ic_arrow" 
+	            android:layout_centerVertical="true" 
+	            android:layout_marginRight="10.0dip" 
+	            android:layout_alignParentRight="true"/>
+	</RelativeLayout>
+	
+	<TextView
+   		android:id="@+id/divide_line"
+   		android:layout_width="match_parent"
+   		android:layout_height="1dip"
+   		android:layout_below="@+id/articleClass"
+   		android:background="#E7E9E9"
+   	/>
+   	
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp">
+        <Button android:id="@+id/add" 		android:background="@drawable/sohu_btn_web" android:layout_width="64dp" android:layout_height="64dp"
+            android:layout_marginRight="30dp"/>
+        <Button android:id="@+id/settings" 	android:background="@drawable/sohu_btn_settings" android:layout_width="64dp" android:layout_height="64dp"
+            android:layout_marginLeft="30dp"/>
+        
+    </LinearLayout>
+    
+</LinearLayout>

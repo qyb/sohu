@@ -203,6 +203,10 @@ public class FileUtils {
 	        }
 	    }else{
 	    	System.out.println("不存在此目录");
+	    	if(f.isFile()){
+	    		f.delete();
+	    	}
+	    	System.out.println("删除此文件");
 	    }
    }
       

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/repeat_bg">
+    <TextView 
+	  	android:layout_width="match_parent"
+	  	android:layout_height="wrap_content"
+	  	android:gravity="center"
+	  	android:background="@drawable/bg_title"
+	  	android:textSize="18dip"
+	  	android:textColor="#FFFFFF"
+	  	android:text="意见反馈"
+	  	/>
+	  <EditText 
+	  	android:id="@+id/feedback_content"
+	  	android:layout_width="match_parent"
+	  	android:layout_height="128dip"
+	  	android:layout_margin="8dip"
+	  	android:gravity="top"
+	  	android:hint="欢迎对我们提出您宝贵的意见"
+	  	/>
+	  <RelativeLayout
+	  	android:layout_width="match_parent"
+  		android:layout_height="wrap_content"
+	  >
+	  <Button 
+    	android:id="@+id/feedback_submit"
+    	android:layout_width="128dip"
+    	android:layout_height="wrap_content"
+    	android:layout_margin="8dip"
+    	android:gravity="center"
+    	android:textSize="20sp"
+    	android:background="@drawable/btn_green"
+    	android:textColor="#fff"
+    	android:layout_centerVertical="true"
+  		android:layout_centerHorizontal="true"
+    	android:text="提 交"
+    	/>
+      </RelativeLayout>
+</LinearLayout>

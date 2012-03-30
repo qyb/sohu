@@ -11,14 +11,14 @@
     <TextView 
 	  	android:id="@+id/settings_title"
 	  	android:layout_width="match_parent"
-	  	android:layout_height="wrap_content"
-	  	android:background="#333333" 
-	  	android:textColor="#fff"
-	  	android:textSize="32px" 
+	  	android:layout_height="24dip"
+	  	android:background="#7e7f79" 
+	  	android:textColor="#ffffff"
+	  	android:textSize="14dip"
+	  	android:paddingLeft="3dip"
 	  	android:text="账号设置"
 	  />
 	<RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:orientation="vertical"
 	  android:layout_width="match_parent"
 	  android:layout_height="wrap_content"
@@ -26,34 +26,22 @@
 	  <TextView android:id="@+id/account_title"
 	   android:layout_width="match_parent"
 	   android:layout_height="wrap_content"
-	   android:textColor="#fff"
-	   android:textSize="32px" 
-	   android:text="账号:123"
+	   android:textColor="#ffffff"
+	   android:textSize="18dip"
 	   />
-	</RelativeLayout>
-	<TextView 
-    	android:layout_width="match_parent"
-    	android:layout_height="0.8dip"
-    	android:background="#fff"
-    />
-	<RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
-	  android:orientation="vertical"
-	  android:layout_width="match_parent"
-	  android:layout_height="wrap_content"
-	  android:padding="5dip">
-	  <TextView android:id="@+id/modify_password_title"
+	   <TextView android:id="@+id/account_description"
 	   android:layout_width="match_parent"
 	   android:layout_height="wrap_content"
-	   android:textColor="#fff"
-	   android:textSize="32px"
-	   android:text="修改密码"
+	   android:layout_below="@+id/account_title"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip" 
+	   android:text="当前登录账号"
 	   />
 	</RelativeLayout>
 	<TextView 
     	android:layout_width="match_parent"
     	android:layout_height="0.8dip"
-    	android:background="#fff"
+    	android:background="#191a1c"
     />
 	<RelativeLayout
 	  xmlns:android="http://schemas.android.com/apk/res/android"
@@ -64,34 +52,86 @@
 	  <TextView android:id="@+id/logout_title"
 	   android:layout_width="match_parent"
 	   android:layout_height="wrap_content"
-	   android:textColor="#fff"
-	   android:textSize="32px" 
+	   android:textColor="#ffffff"
+	   android:textSize="18dip"
 	   android:text="注销登录"
+	   />
+	   <TextView android:id="@+id/logout_description"
+	   android:layout_width="match_parent"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/logout_title"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip" 
+	   android:text="点击后，可退出登录状态"
 	   />
 	</RelativeLayout>
 	<TextView 
 	  	android:id="@+id/data_manager_title"
 	  	android:layout_width="match_parent"
-	  	android:layout_height="wrap_content"
-	  	android:background="#333333" 
-	  	android:textColor="#fff"
-	  	android:textSize="32px" 
+	  	android:layout_height="24dip"
+	  	android:background="#7e7f79" 
+	  	android:textColor="#ffffff"
+	  	android:textSize="14dip"
+	  	android:paddingLeft="3dip"
 	  	android:text="数据管理"
 	  />
 	  <RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:orientation="vertical"
 	  android:layout_width="match_parent"
 	  android:layout_height="wrap_content"
 	  android:padding="5dip">
-	  <TextView android:id="@+id/display_imgtitle"
+	  <TextView android:id="@+id/wifi_sync_title"
 	   android:layout_width="280dip"
 	   android:layout_height="wrap_content"
-	   android:textColor="#fff"
-	   android:textSize="32px" 
+	   android:textColor="#ffffff"
+	   android:textSize="18dip"
+	   android:layout_centerVertical="true"
+	   android:text="仅在WIFI下主动同步"
+	   />
+	   <TextView android:id="@+id/wifi_sync_description"
+	   android:layout_width="match_parent"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/wifi_sync_title"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip" 
+	   android:layout_marginTop="8dip"
+	   android:text="在wifi网络下启动软件时主动同步文章"
+	   />
+	   <CheckBox 
+	   	android:id="@+id/wifi_sync"
+	   	android:layout_width="wrap_content"
+	  	android:layout_height="wrap_content"
+	  	android:layout_alignParentRight="true"
+	   />
+	</RelativeLayout>
+	<TextView 
+    	android:layout_width="match_parent"
+    	android:layout_height="0.8dip"
+    	android:background="#191a1c"
+    />
+	  <RelativeLayout
+	  android:orientation="vertical"
+	  android:layout_width="match_parent"
+	  android:layout_height="wrap_content"
+	  android:padding="5dip">
+	  <TextView android:id="@+id/display_img_title"
+	   android:layout_width="280dip"
+	   android:layout_height="wrap_content"
+	   android:textColor="#ffffff"
+	   android:textSize="18dip"
+	   android:layout_centerVertical="true"
 	   android:text="文章中显示图片"
 	   />
-	   <ToggleButton 
+	   <TextView android:id="@+id/display_img_description"
+	   android:layout_width="match_parent"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/display_img_title"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip"
+	   android:layout_marginTop="8dip"
+	   android:text="是否需在精简后的文章中加载图片"
+	   />
+	   <CheckBox 
 	   	android:id="@+id/display_img"
 	   	android:layout_width="wrap_content"
 	  	android:layout_height="wrap_content"
@@ -101,10 +141,9 @@
 	<TextView 
     	android:layout_width="match_parent"
     	android:layout_height="0.8dip"
-    	android:background="#fff"
+    	android:background="#191a1c"
     />
 	<RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:orientation="vertical"
 	  android:layout_width="match_parent"
 	  android:layout_height="wrap_content"
@@ -113,10 +152,20 @@
 	   android:layout_width="wrap_content"
 	   android:layout_height="wrap_content"
 	   android:textColor="#fff"
-	   android:textSize="32px"
+	   android:textSize="18dip"
+	   android:layout_centerVertical="true"
 	   android:text="离线内容缓存到SD卡"
 	   />
-	   <ToggleButton 
+	   <TextView android:id="@+id/save_to_sd_description"
+	   android:layout_width="match_parent"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/save_to_sd_title"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip"
+	   android:layout_marginTop="8dip"
+	   android:text="是否需将下载的文章数据存储到SD卡中"
+	   />
+	   <CheckBox 
 	   	android:id="@+id/save_to_sd"
 	   	android:layout_width="wrap_content"
 	  	android:layout_height="wrap_content"
@@ -126,10 +175,9 @@
 	<TextView 
     	android:layout_width="match_parent"
     	android:layout_height="0.8dip"
-    	android:background="#fff"
+    	android:background="#191a1c"
     />
 	<RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:orientation="vertical"
 	  android:layout_width="match_parent"
 	  android:layout_height="wrap_content"
@@ -138,21 +186,29 @@
 	   android:layout_width="match_parent"
 	   android:layout_height="wrap_content"
 	   android:textColor="#fff"
-	   android:textSize="32px" 
-	   android:text="清楚缓存"
+	   android:textSize="18dip" 
+	   android:text="清除缓存"
+	   />
+	   <TextView android:id="@+id/trun_cache_description"
+	   android:layout_width="match_parent"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/trun_cache"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip" 
+	   android:text="点击后，本地离线内容将全部清除"
 	   />
 	</RelativeLayout>
 	<TextView 
 	  	android:id="@+id/about_title"
 	  	android:layout_width="match_parent"
 	  	android:layout_height="wrap_content"
-	  	android:background="#333333" 
-	  	android:textColor="#fff"
-	  	android:textSize="32px" 
+	  	android:background="#7e7f79" 
+	  	android:textColor="#ffffff"
+	  	android:textSize="14dip"
+	  	android:paddingLeft="3dip"
 	  	android:text="关于"
 	  />
 	  <RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:orientation="vertical"
 	  android:layout_width="match_parent"
 	  android:layout_height="wrap_content"
@@ -161,36 +217,24 @@
 	   android:layout_width="match_parent"
 	   android:layout_height="wrap_content"
 	   android:textColor="#fff"
-	   android:textSize="32px" 
+	   android:textSize="20dip" 
 	   android:text="检查新版本"
 	   />
-	</RelativeLayout>
-	<TextView 
-    	android:layout_width="match_parent"
-    	android:layout_height="0.8dip"
-    	android:background="#fff"
-    />
-	<RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
-	  android:orientation="vertical"
-	  android:layout_width="match_parent"
-	  android:layout_height="wrap_content"
-	  android:padding="5dip">
-	  <TextView android:id="@+id/current_version"
+	   <TextView android:id="@+id/check_version_description"
 	   android:layout_width="match_parent"
 	   android:layout_height="wrap_content"
-	   android:textColor="#fff"
-	   android:textSize="32px"
-	   android:text="版本  1.0"
+	   android:layout_below="@+id/check_version"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip" 
+	   android:text="（当前版本1.0）"
 	   />
 	</RelativeLayout>
 	<TextView 
     	android:layout_width="match_parent"
     	android:layout_height="0.8dip"
-    	android:background="#fff"
+    	android:background="#191a1c"
     />
 	<RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:orientation="vertical"
 	  android:layout_width="match_parent"
 	  android:layout_height="wrap_content"
@@ -198,18 +242,25 @@
 	  <TextView android:id="@+id/how_to_use"
 	   android:layout_width="match_parent"
 	   android:layout_height="wrap_content"
-	   android:textColor="#fff"
-	   android:textSize="32px" 
+	   android:textColor="#ffffff"
+	   android:textSize="18dip" 
 	   android:text="使用引导"
+	   />
+	   <TextView android:id="@+id/how_to_use_description"
+	   android:layout_width="match_parent"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/how_to_use"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip" 
+	   android:text="教你如何玩转搜狐看"
 	   />
 	</RelativeLayout>
 	<TextView 
     	android:layout_width="match_parent"
     	android:layout_height="0.8dip"
-    	android:background="#fff"
+    	android:background="#191a1c"
     />
 	<RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:orientation="vertical"
 	  android:layout_width="match_parent"
 	  android:layout_height="wrap_content"
@@ -217,9 +268,17 @@
 	  <TextView android:id="@+id/suggestion_box"
 	   android:layout_width="match_parent"
 	   android:layout_height="wrap_content"
-	   android:textColor="#fff"
-	   android:textSize="32px" 
+	   android:textColor="#ffffff"
+	   android:textSize="18dip" 
 	   android:text="意见反馈"
+	   />
+	   <TextView android:id="@+id/suggestion_box_description"
+	   android:layout_width="match_parent"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/suggestion_box"
+	   android:textColor="#bfbfbf"
+	   android:textSize="12dip" 
+	   android:text="提出你的改进建议"
 	   />
 	</RelativeLayout>
 </LinearLayout>
